@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Meet our leadership and technical team of registered Quantity Surveyors with extensive experience in pre-contract and post-contract services across Tanzania.">
+    <title>Leadership & Team | KJ & Associates Consultancy Ltd</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: { DEFAULT: '#0d4d2c', light: '#1a7a47', dark: '#083d22' },
+                        accent: { DEFAULT: '#d4a855', light: '#e8c882', dark: '#b8923e' },
+                    },
+                },
+            },
+        }
+    </script>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/themes.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-wrapper">
+                <a href="index.html" class="logo">
+                    <span class="logo-text">KJ & Associates</span>
+                    <span class="logo-subtitle">Consultancy Ltd</span>
+                </a>
+                <button class="mobile-menu-toggle" aria-label="Toggle menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                <ul class="nav-menu">
+                    <li><a href="index.html">Home</a></li>
+                    <li class="dropdown">
+                        <a href="about.html">About Us <span class="dropdown-arrow">▼</span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="about.html#profile">Company Profile</a></li>
+                            <li><a href="team.html">Leadership & Team</a></li>
+                            <li><a href="about.html#structure">Organization Structure</a></li>
+                            <li><a href="about.html#technology">Technology & Tools</a></li>
+                        </ul>
+                    </li>
+                    <li class="dropdown">
+                        <a href="services/index.html">Services <span class="dropdown-arrow">▼</span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="services/index.html#pre-contract">Pre-Contract Services</a></li>
+                            <li><a href="services/index.html#post-contract">Post-Contract Services</a></li>
+                            <li><a href="services/index.html#tendering">Tendering & Documentation</a></li>
+                            <li><a href="services/index.html#dispute">Dispute Support</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="projects/index.html">Projects</a></li>
+                    <li><a href="clients.html">Clients</a></li>
+                    <li><a href="blog/index.html">Blog</a></li>
+                    <li><a href="contact.html" class="btn-primary">Contact Us</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <section class="page-header">
+        <div class="container">
+            <h1>Leadership & Team</h1>
+            <p>
+                Our leadership and technical team is composed of registered Quantity Surveyors with extensive experience in pre-contract and post-contract services across building and civil engineering projects in Tanzania.
+            </p>
+        </div>
+    </section>
+
+    <!-- Leadership Section -->
+    <section id="leadership" class="content-section">
+        <div class="container">
+            <h2 class="section-title">Leadership</h2>
+            <div class="team-grid" id="leadershipGrid">
+                <!-- Leadership members will be loaded dynamically -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Technical Team Section -->
+    <section id="technical-team" class="content-section bg-light">
+        <div class="container">
+            <h2 class="section-title">Technical Team</h2>
+            <div class="team-grid" id="technicalTeamGrid">
+                <!-- Technical team members will be loaded dynamically -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Organization Hierarchy Note -->
+    <section class="content-section">
+        <div class="container">
+            <div class="hierarchy-note" style="background: var(--white); padding: 2rem; border-radius: var(--radius-lg); border: 1px solid var(--gray-200); text-align: center; max-width: 800px; margin: 0 auto;">
+                <p style="color: var(--text-secondary); font-size: 0.95rem; line-height: 1.7; margin: 0;">
+                    <strong style="color: var(--primary);">Organization Structure:</strong> Managing Director → Director → Registered Quantity Surveyors → Assistant Quantity Surveyors
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="container text-center">
+            <h2>Ready to Work With Us?</h2>
+            <p>Let's discuss how we can help with your next project.</p>
+            <a href="contact.html" class="btn btn-white btn-lg">Get in Touch</a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>KJ & Associates</h3>
+                    <p>Professional quantity surveying and construction project management services in Tanzania.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="about.html">About Us</a></li>
+                        <li><a href="services/index.html">Services</a></li>
+                        <li><a href="projects/index.html">Projects</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                        <li><a href="privacy.html">Privacy Policy</a></li>
+                        <li><a href="terms.html">Terms of Service</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h4>Contact</h4>
+                    <p id="footer-phone"></p>
+                    <p id="footer-email"></p>
+                    <p id="footer-address"></p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 KJ & Associates Consultancy Ltd. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- WhatsApp Floating Button -->
+    <a href="#" id="whatsappBtn" class="whatsapp-float" target="_blank" rel="noopener noreferrer" aria-label="Chat on WhatsApp">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
+        </svg>
+    </a>
+
+    <!-- Scripts -->
+    <script src="js/main.js"></script>
+    <script>
+        // Image path normalization helper
+        function normalizeImagePath(path) {
+            if (!path || path.trim() === '') return '';
+            if (path.startsWith('http://') || path.startsWith('https://')) return path;
+            if (path.startsWith('/')) {
+                if (window.location.protocol === 'file:') {
+                    return path.substring(1);
+                }
+                return path;
+            }
+            return path;
+        }
+        
+        // Load and render team data
+        function loadTeam() {
+            const savedData = localStorage.getItem('kj_cms_data');
+            let teamData = [];
+
+            if (savedData) {
+                try {
+                    const cmsData = JSON.parse(savedData);
+                    teamData = cmsData.team || [];
+                } catch (e) {
+                    console.error('Error parsing CMS data:', e);
+                }
+            }
+
+            // Fallback to default team data if none found
+            if (teamData.length === 0) {
+                teamData = [
+                    { id: 1, name: "QS Kashebo Jassony Rwezaula", role: "Managing Director & Lead Quantity Surveyor", experience: 35, qualifications: "Registered Quantity Surveyor", bio: "Registered Quantity Surveyor with over 35 years' experience in pre-contract and post-contract quantity surveying, cost control, contract administration, and supervision of large public, private, and donor-funded construction projects.", photo: "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=400&q=80", category: "leadership" },
+                    { id: 2, name: "QS Adelhard A. Kweyamba", role: "Director & Senior Quantity Surveyor", experience: 20, qualifications: "Registered Quantity Surveyor", bio: "Senior Quantity Surveyor with over 20 years' experience in cost estimation, bills of quantities, tender documentation, contract administration, and delivery of building and civil engineering projects.", photo: "/images/team/adelhard-kweyamba.jpg", category: "leadership" },
+                    { id: 3, name: "Esther Ndosi", role: "Registered Quantity Surveyor", experience: 8, qualifications: "Registered Quantity Surveyor", bio: "Registered Quantity Surveyor experienced in pre- and post-contract services, including cost planning, valuations, and contract administration.", photo: "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=400&q=80", category: "technical" },
+                    { id: 4, name: "Temu L. Godlove", role: "Registered Quantity Surveyor", experience: 6, qualifications: "Registered Quantity Surveyor", bio: "Registered Quantity Surveyor with experience in cost control, preparation of bills of quantities, valuations, and project support.", photo: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&q=80", category: "technical" },
+                    { id: 5, name: "Phillemon J. Rwezaula", role: "Registered Quantity Surveyor", experience: 5, qualifications: "Registered Quantity Surveyor", bio: "Registered Quantity Surveyor involved in tendering processes, cost management, and contract administration across various construction projects.", photo: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&q=80", category: "technical" },
+                    { id: 6, name: "Tillya Innocent Donald", role: "Registered Quantity Surveyor", experience: 5, qualifications: "Registered Quantity Surveyor", bio: "Registered Quantity Surveyor with experience in pre- and post-contract duties, project management support, and contract administration.", photo: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&q=80", category: "technical" },
+                    { id: 7, name: "Mary Gobolo", role: "Assistant Quantity Surveyor", experience: 6, qualifications: "Assistant Quantity Surveyor", bio: "Assistant Quantity Surveyor providing measurement, bills of quantities preparation, and site-based quantity surveying support.", photo: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&q=80", category: "technical" }
+                ];
+            }
+
+            // Separate leadership and technical team
+            const leadership = teamData.filter(member => member.category === 'leadership' || !member.category || member.role.toLowerCase().includes('director') || member.role.toLowerCase().includes('lead'));
+            const technicalTeam = teamData.filter(member => member.category === 'technical' || (member.category !== 'leadership' && !member.role.toLowerCase().includes('director') && !member.role.toLowerCase().includes('lead')));
+
+            renderTeam(leadership, 'leadershipGrid');
+            renderTeam(technicalTeam, 'technicalTeamGrid');
+        }
+
+        function renderTeam(teamMembers, containerId) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+
+            if (teamMembers.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">No team members to display.</p>';
+                return;
+            }
+
+            container.innerHTML = teamMembers.map(member => {
+                // Photo can be URL or base64 data
+                let photoPath = member.photo || '';
+                if (photoPath && !photoPath.startsWith('data:image') && !photoPath.startsWith('http')) {
+                    photoPath = normalizeImagePath(photoPath);
+                }
+                const hasPhoto = photoPath && photoPath.trim() !== '';
+                const experienceText = member.experience ? `${member.experience}+ Years` : '';
+                
+                return `
+                    <div class="team-member">
+                        ${hasPhoto 
+                            ? `<img src="${photoPath}" alt="${member.name}" class="team-photo" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />`
+                            : ''
+                        }
+                        <div class="team-photo-placeholder" style="display: ${hasPhoto ? 'none' : 'flex'};">
+                            <span>Photo</span>
+                        </div>
+                        <h3>${member.name || 'Team Member'}</h3>
+                        <p class="team-role">${member.role || ''}</p>
+                        ${member.qualifications ? `<p class="team-qualifications">${member.qualifications}</p>` : ''}
+                        ${experienceText ? `<p class="team-experience">${experienceText} Experience</p>` : ''}
+                        ${member.bio ? `<p class="team-bio">${member.bio}</p>` : ''}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Load team when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            loadTeam();
+        });
+    </script>
+</body>
+</html>
+

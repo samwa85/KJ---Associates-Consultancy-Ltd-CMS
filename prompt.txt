@@ -1,0 +1,93 @@
+Create a modern, professional, responsive website for a Tanzanian consulting firm:
+
+Brand:
+- Name: KJ & Associates Consultancy Ltd
+- Industry: Quantity Surveying + Construction Project Management
+- Tone: trustworthy, corporate, clean, government/donor-friendly
+- Colors: green + white + dark gray (professional). Use strong typography and lots of whitespace.
+
+Main Goal:
+- Convert visitors into leads: "Request a Consultation" and "Contact Us".
+- Showcase services, experience/projects, clients, and certifications.
+
+Pages and Sections:
+
+1) HOME
+- Hero: "Quantity Surveyors & Construction Project Managers"
+- Subtext: locally registered QS firm with 17+ years operations and directors with 15+ years experience, serving private/public and donor-funded projects.
+- CTAs: "Request a Consultation" and "View Projects"
+- "Our Core Services" cards (6–8 cards):
+  - Inception & Feasibility
+  - Pre-Contract Cost Control
+  - Tender & Contract Documentation
+  - Tender Selection & Appraisal
+  - Interim Valuations
+  - Post-Contract Cost Control
+  - Final Account
+  - Dispute / Claims Support (ADR & litigation support)
+- "Why Choose Us" (3–6 points): cost forecasting, speed/accuracy using QS software tools, value for money, experience in civil + building works.
+- "Featured Projects" (6 cards) with value, location, status
+- "Trusted By" client logos/scroll list
+- Footer: address, phone, email, quick links, certifications link
+
+2) ABOUT US
+- Company profile summary
+- Organization structure: show simple org chart (Managing Director, Director, Director of Operations, departments)
+- Philosophy: informed commercial flexible approach, proactive service, director involvement
+- Technology & Tools: mention QS software for bills of quantities, cost planning, cash flow projections, measurement from CAD/drawings, e-tendering support.
+- Team section: list key staff with years of experience and roles.
+
+3) SERVICES (index + detail pages)
+- Services index with cards. Each service has:
+  - overview
+  - key tasks (bullets)
+  - deliverables
+  - "Talk to Us" CTA
+- Use the QS service breakdown from the document:
+  - Inception & feasibility (budget estimate, cost plan, cash flow)
+  - Pre-contract cost control
+  - Tender & contract documentation (insurance, warranties, bonds, contracts)
+  - Tender selection and appraisal (shortlisting, evaluation, report)
+  - Interim valuations
+  - Post-contract cost control (variation valuations, cost reports)
+  - Final account
+  - Dispute management / ADR / litigation support
+
+4) PROJECTS / EXPERIENCE
+- Projects listing page with filters:
+  - Sector: Building / Civil
+  - Funding: Government / World Bank / AfDB / Others
+  - Status: Completed / Ongoing
+- Each project card: title, client, location, contract value, duration, year, status.
+- Project detail page template: overview, client, location, value, duration, services provided, gallery.
+
+5) CLIENTS
+- Grid list of clients, grouped by category:
+  - Government & Agencies
+  - Banks & Financial Institutions
+  - International Organizations / Donors
+  - Private Sector
+- Add a short trust paragraph.
+
+6) CERTIFICATIONS & LEGAL
+- Gallery page for certificates: TIN, VAT, business license, incorporation, AQRB practicing certificates, insurance schedule.
+- Each item opens in a lightbox.
+
+7) CONTACT
+- Contact form: Name, Email, Phone, Company, Service Needed, Message
+- Include WhatsApp button
+- Map embed placeholder
+- Office hours placeholder
+
+SEO + Technical Requirements:
+- Fast loading, mobile-first, accessible
+- Proper H1/H2 structure, meta titles and descriptions per page
+- Schema.org: Organization + LocalBusiness + Service + WebSite
+- OpenGraph and Twitter meta tags
+- Clear navigation and sticky header
+- Use clean URLs: /services, /projects, /clients, /certifications, /contact
+- Add a simple CMS structure for: Services, Projects, Team, Certificates, Clients.
+
+Deliverable:
+- Generate the full site with all pages, reusable components, and CMS collections based on the schema above.
+

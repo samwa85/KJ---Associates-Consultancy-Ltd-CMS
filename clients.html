@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Our trusted clients include government agencies, banks, international organizations, and private sector companies.">
+    <title>Clients | KJ & Associates Consultancy Ltd</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: { DEFAULT: '#0d4d2c', light: '#1a7a47', dark: '#083d22' },
+                        accent: { DEFAULT: '#d4a855', light: '#e8c882', dark: '#b8923e' },
+                    },
+                },
+            },
+        }
+    </script>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/themes.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-wrapper">
+                <a href="index.html" class="logo">
+                    <span class="logo-text">KJ & Associates</span>
+                    <span class="logo-subtitle">Consultancy Ltd</span>
+                </a>
+                <button class="mobile-menu-toggle" aria-label="Toggle menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                <ul class="nav-menu">
+                    <li><a href="index.html">Home</a></li>
+                    <li class="dropdown">
+                        <a href="about.html">About Us <span class="dropdown-arrow">▼</span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="about.html#profile">Company Profile</a></li>
+                            <li><a href="about.html#team">Leadership & Team</a></li>
+                            <li><a href="about.html#structure">Organization Structure</a></li>
+                            <li><a href="about.html#technology">Technology & Tools</a></li>
+                        </ul>
+                    </li>
+                    <li class="dropdown">
+                        <a href="services/index.html">Services <span class="dropdown-arrow">▼</span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="services/index.html#pre-contract">Pre-Contract Services</a></li>
+                            <li><a href="services/index.html#post-contract">Post-Contract Services</a></li>
+                            <li><a href="services/index.html#tendering">Tendering & Contract Documentation</a></li>
+                            <li><a href="services/index.html#dispute">Dispute / Claims Support</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="projects/index.html">Projects</a></li>
+                    <li><a href="clients.html" class="active">Clients</a></li>
+                    <li><a href="certifications.html">Certifications</a></li>
+                    <li><a href="contact.html" class="btn-primary">Contact Us</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <section class="page-header">
+        <div class="container">
+            <h1>Our Clients</h1>
+            <p>Trusted by leading organizations across Tanzania</p>
+        </div>
+    </section>
+
+    <!-- Trust Statement -->
+    <section class="content-section">
+        <div class="container">
+            <div class="content-text" style="max-width: 800px; margin: 0 auto 3rem; text-align: center;">
+                <p>We are proud to serve a diverse range of clients including government agencies, financial institutions, international organizations, and private sector companies. Our commitment to excellence and professional service has earned the trust of organizations across Tanzania.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Clients by Category - Dynamically Loaded -->
+    <section class="content-section" style="background: var(--gray-light);">
+        <div class="container">
+            <h2 class="section-title">Government & Agencies</h2>
+            <div class="clients-grid" id="governmentClientsGrid">
+                <!-- Loaded from CMS -->
+            </div>
+        </div>
+    </section>
+
+    <section class="content-section">
+        <div class="container">
+            <h2 class="section-title">International Organizations / Donors</h2>
+            <div class="clients-grid" id="donorClientsGrid">
+                <!-- Loaded from CMS -->
+            </div>
+        </div>
+    </section>
+
+    <section class="content-section" style="background: var(--gray-light);">
+        <div class="container">
+            <h2 class="section-title">Banks & Financial Institutions</h2>
+            <div class="clients-grid" id="bankClientsGrid">
+                <!-- Loaded from CMS -->
+            </div>
+        </div>
+    </section>
+
+    <section class="content-section">
+        <div class="container">
+            <h2 class="section-title">Private Sector</h2>
+            <div class="clients-grid" id="privateClientsGrid">
+                <!-- Loaded from CMS -->
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // Load clients from CMS
+        function loadClientsPage() {
+            const savedData = localStorage.getItem('kj_cms_data');
+            let clients = [];
+            let imageData = {};
+
+            if (savedData) {
+                try {
+                    const cmsData = JSON.parse(savedData);
+                    clients = cmsData.clients || [];
+                    imageData = cmsData._imageData || {};
+                } catch (e) {
+                    console.error('Error parsing CMS data:', e);
+                }
+            }
+
+            // Group clients by category
+            const categories = {
+                'Government': document.getElementById('governmentClientsGrid'),
+                'Donor': document.getElementById('donorClientsGrid'),
+                'Bank': document.getElementById('bankClientsGrid'),
+                'Private': document.getElementById('privateClientsGrid')
+            };
+
+            // Clear all grids
+            Object.values(categories).forEach(grid => {
+                if (grid) grid.innerHTML = '';
+            });
+
+            // Render clients by category
+            clients.forEach(client => {
+                const grid = categories[client.category];
+                if (!grid) return;
+
+                let logoPath = client.logo || '';
+                
+                // Check if we have base64 data stored for this logo
+                if (logoPath && imageData && imageData[logoPath]) {
+                    logoPath = imageData[logoPath]; // Use base64 data
+                }
+                
+                const hasLogo = logoPath && logoPath.trim() !== '' && !logoPath.includes('undefined');
+
+                const clientEl = document.createElement('div');
+                clientEl.className = 'client-item';
+                clientEl.innerHTML = `
+                    ${hasLogo 
+                        ? `<div class="client-logo-img"><img src="${logoPath}" alt="${client.name}" style="max-height: 60px; max-width: 150px; object-fit: contain;" onerror="this.parentElement.innerHTML='<span>${client.name.substring(0,3).toUpperCase()}</span>'"></div>`
+                        : `<div class="client-logo-placeholder">${client.name.substring(0,3).toUpperCase()}</div>`
+                    }
+                    <p class="client-name">${client.name}</p>
+                    ${client.website ? `<a href="${client.website}" target="_blank" class="client-website">Visit Website →</a>` : ''}
+                `;
+                grid.appendChild(clientEl);
+            });
+
+            // Show empty state for categories with no clients
+            Object.entries(categories).forEach(([category, grid]) => {
+                if (grid && grid.children.length === 0) {
+                    grid.innerHTML = `<div class="empty-client-state">No ${category.toLowerCase()} clients added yet</div>`;
+                }
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', loadClientsPage);
+    </script>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <h3>KJ & Associates</h3>
+                    <p>Quantity Surveyors & Construction Project Managers</p>
+                    <p class="footer-location">📍 KIJITONYAMA, MABATINI ROAD<br>DAR ES SALAAM, TANZANIA</p>
+                </div>
+                <div class="footer-col">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="about.html">About Us</a></li>
+                        <li><a href="services/index.html">Services</a></li>
+                        <li><a href="projects/index.html">Projects</a></li>
+                        <li><a href="clients.html">Clients</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Resources</h4>
+                    <ul>
+                        <li><a href="certifications.html">Certifications</a></li>
+                        <li><a href="contact.html">Contact Us</a></li>
+                        <li><a href="privacy.html">Privacy Policy</a></li>
+                        <li><a href="terms.html">Terms of Service</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Contact</h4>
+                    <p>Email: <a href="mailto:md@kjconsultancy.co.tz">md@kjconsultancy.co.tz</a></p>
+                    <p>Email: <a href="mailto:info@kjconsultancy.co.tz">info@kjconsultancy.co.tz</a></p>
+                    <p>Phone: <a href="tel:+255768757779">+255 768 757 779</a></p>
+                    <div class="social-links">
+                        <a href="#" aria-label="LinkedIn">LinkedIn</a>
+                        <a href="#" aria-label="Facebook">Facebook</a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 KJ & Associates Consultancy Ltd. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+</body>
+</html>
+

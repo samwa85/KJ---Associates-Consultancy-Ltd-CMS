@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Terms of Service for KJ & Associates Consultancy Ltd - Professional quantity surveying and construction project management services.">
+    <title>Terms of Service | KJ & Associates Consultancy Ltd</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: { DEFAULT: '#0d4d2c', light: '#1a7a47', dark: '#083d22' },
+                        accent: { DEFAULT: '#d4a855', light: '#e8c882', dark: '#b8923e' },
+                    },
+                },
+            },
+        }
+    </script>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/themes.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        .legal-content {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 4rem 1.5rem;
+        }
+        .legal-content h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin: 2.5rem 0 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--gray-200);
+        }
+        .legal-content h3 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 1.75rem 0 0.75rem;
+        }
+        .legal-content p {
+            color: var(--text-secondary);
+            line-height: 1.8;
+            margin-bottom: 1rem;
+        }
+        .legal-content ul, .legal-content ol {
+            margin: 1rem 0 1.5rem 1.5rem;
+            color: var(--text-secondary);
+        }
+        .legal-content ul li, .legal-content ol li {
+            margin-bottom: 0.5rem;
+            line-height: 1.7;
+            position: relative;
+            padding-left: 1.5rem;
+        }
+        .legal-content ul li::before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: var(--primary);
+            font-weight: 700;
+        }
+        .legal-content ol {
+            list-style: none;
+            counter-reset: item;
+        }
+        .legal-content ol li::before {
+            content: counter(item) ".";
+            counter-increment: item;
+            position: absolute;
+            left: 0;
+            color: var(--primary);
+            font-weight: 700;
+        }
+        .legal-content .effective-date {
+            background: var(--gray-50);
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary);
+            margin-bottom: 2rem;
+        }
+        .legal-content .effective-date p {
+            margin: 0;
+            font-weight: 500;
+        }
+        .legal-content .highlight-box {
+            background: linear-gradient(135deg, rgba(13, 77, 44, 0.05) 0%, rgba(26, 122, 71, 0.05) 100%);
+            border: 1px solid rgba(13, 77, 44, 0.2);
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin: 1.5rem 0;
+        }
+        .legal-content .highlight-box p {
+            margin-bottom: 0.5rem;
+        }
+        .legal-content .highlight-box p:last-child {
+            margin-bottom: 0;
+        }
+        .legal-content .contact-box {
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary) 100%);
+            color: white;
+            padding: 2rem;
+            border-radius: 12px;
+            margin-top: 3rem;
+        }
+        .legal-content .contact-box h3 {
+            color: white;
+            margin-top: 0;
+        }
+        .legal-content .contact-box p {
+            color: rgba(255,255,255,0.9);
+        }
+        .legal-content .contact-box a {
+            color: var(--accent);
+            text-decoration: underline;
+        }
+        .legal-content strong {
+            color: var(--text-primary);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-wrapper">
+                <a href="index.html" class="logo">
+                    <span class="logo-text">KJ & Associates</span>
+                    <span class="logo-subtitle">Consultancy Ltd</span>
+                </a>
+                <button class="mobile-menu-toggle" aria-label="Toggle menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                <ul class="nav-menu">
+                    <li><a href="index.html">Home</a></li>
+                    <li class="dropdown">
+                        <a href="about.html">About Us <span class="dropdown-arrow">▼</span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="about.html#profile">Company Profile</a></li>
+                            <li><a href="about.html#team">Leadership & Team</a></li>
+                            <li><a href="about.html#structure">Organization Structure</a></li>
+                            <li><a href="about.html#technology">Technology & Tools</a></li>
+                        </ul>
+                    </li>
+                    <li class="dropdown">
+                        <a href="services/index.html">Services <span class="dropdown-arrow">▼</span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="services/index.html#pre-contract">Pre-Contract Services</a></li>
+                            <li><a href="services/index.html#post-contract">Post-Contract Services</a></li>
+                            <li><a href="services/index.html#tendering">Tendering & Documentation</a></li>
+                            <li><a href="services/index.html#dispute">Dispute Support</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="projects/index.html">Projects</a></li>
+                    <li><a href="clients.html">Clients</a></li>
+                    <li><a href="certifications.html">Certifications</a></li>
+                    <li><a href="contact.html" class="btn-primary">Contact Us</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <section class="page-header">
+        <div class="container">
+            <h1>Terms of Service</h1>
+            <p>Terms and conditions governing our professional services</p>
+        </div>
+    </section>
+
+    <!-- Terms Content -->
+    <section class="legal-content">
+        <div class="effective-date">
+            <p>📅 <strong>Effective Date:</strong> January 1, 2024 | <strong>Last Updated:</strong> January 1, 2026</p>
+        </div>
+
+        <p>Welcome to KJ & Associates Consultancy Ltd. These Terms of Service ("Terms") govern your use of our website and the professional services we provide. By accessing our website or engaging our services, you agree to be bound by these Terms.</p>
+
+        <div class="highlight-box">
+            <p><strong>🏢 Company Information:</strong></p>
+            <p>KJ & Associates Consultancy Ltd is a registered Quantity Surveying and Construction Project Management firm in Tanzania, licensed by the Architects and Quantity Surveyors Registration Board (AQSRB).</p>
+        </div>
+
+        <h2>1. Services Overview</h2>
+        <p>KJ & Associates Consultancy Ltd provides professional quantity surveying and construction project management services, including but not limited to:</p>
+        <ul>
+            <li>Pre-contract services (cost planning, feasibility studies, bills of quantities)</li>
+            <li>Post-contract services (valuations, cost control, final accounts)</li>
+            <li>Tendering and contract documentation</li>
+            <li>Project management and administration</li>
+            <li>Dispute resolution and claims support</li>
+            <li>Technical advisory services</li>
+        </ul>
+
+        <h2>2. Professional Standards</h2>
+        <p>All services provided by KJ & Associates Consultancy Ltd are delivered in accordance with:</p>
+        <ul>
+            <li>The Architects and Quantity Surveyors Act of Tanzania</li>
+            <li>Professional guidelines issued by AQSRB</li>
+            <li>International best practices in quantity surveying</li>
+            <li>Applicable Tanzanian laws and regulations</li>
+            <li>Client-specific requirements and project specifications</li>
+        </ul>
+
+        <h2>3. Engagement and Agreements</h2>
+        
+        <h3>3.1 Service Agreements</h3>
+        <p>Professional services are provided under formal service agreements or contracts that specify:</p>
+        <ul>
+            <li>Scope of services to be provided</li>
+            <li>Project timeline and milestones</li>
+            <li>Fee structure and payment terms</li>
+            <li>Responsibilities of all parties</li>
+            <li>Deliverables and acceptance criteria</li>
+        </ul>
+
+        <h3>3.2 Fee Basis</h3>
+        <p>Our professional fees may be calculated on various bases depending on the nature of services:</p>
+        <ul>
+            <li>Percentage of construction cost</li>
+            <li>Lump sum or fixed fee</li>
+            <li>Time-based charges</li>
+            <li>As otherwise agreed in writing</li>
+        </ul>
+
+        <h2>4. Client Responsibilities</h2>
+        <p>Clients engaging our services agree to:</p>
+        <ul>
+            <li>Provide accurate, complete, and timely information necessary for service delivery</li>
+            <li>Grant reasonable access to project sites and relevant documentation</li>
+            <li>Make timely decisions and approvals to avoid project delays</li>
+            <li>Pay fees in accordance with agreed terms</li>
+            <li>Communicate any changes in project scope or requirements promptly</li>
+            <li>Maintain confidentiality of proprietary methodologies and tools</li>
+        </ul>
+
+        <h2>5. Intellectual Property</h2>
+        
+        <h3>5.1 Our Property</h3>
+        <p>All methodologies, tools, templates, and processes developed by KJ & Associates remain our intellectual property. Clients receive a license to use deliverables for the specific project purpose.</p>
+
+        <h3>5.2 Project Deliverables</h3>
+        <p>Upon full payment of fees, clients receive the right to use project-specific deliverables (reports, drawings, specifications) for the intended project purpose. Copyright in underlying methodologies remains with KJ & Associates.</p>
+
+        <h2>6. Confidentiality</h2>
+        <p>We maintain strict confidentiality regarding all client information and project details. This includes:</p>
+        <ul>
+            <li>Financial information and cost data</li>
+            <li>Project designs and specifications</li>
+            <li>Business strategies and plans</li>
+            <li>Tender information and pricing</li>
+            <li>Any information marked as confidential</li>
+        </ul>
+        <p>Confidentiality obligations survive the termination of any service agreement.</p>
+
+        <h2>7. Limitation of Liability</h2>
+        
+        <h3>7.1 Professional Services</h3>
+        <p>Our liability for professional services is limited to the fees paid for the specific service giving rise to the claim, except in cases of gross negligence or willful misconduct.</p>
+
+        <h3>7.2 Website Use</h3>
+        <p>Information provided on our website is for general informational purposes only and should not be relied upon as professional advice. We are not liable for any decisions made based on website content without formal engagement.</p>
+
+        <h3>7.3 Exclusions</h3>
+        <p>We are not liable for:</p>
+        <ul>
+            <li>Delays caused by circumstances beyond our reasonable control</li>
+            <li>Losses arising from inaccurate information provided by clients</li>
+            <li>Consequential, indirect, or special damages</li>
+            <li>Third-party actions or omissions</li>
+        </ul>
+
+        <h2>8. Insurance</h2>
+        <p>KJ & Associates maintains professional indemnity insurance appropriate for our practice. Details of coverage can be provided upon request for specific engagements.</p>
+
+        <h2>9. Dispute Resolution</h2>
+        <p>Any disputes arising from our services shall be resolved through the following process:</p>
+        <ol>
+            <li>Good faith negotiations between parties</li>
+            <li>Mediation by a mutually agreed mediator</li>
+            <li>Arbitration in accordance with Tanzanian arbitration laws</li>
+            <li>If unresolved, litigation in Tanzanian courts</li>
+        </ol>
+
+        <h2>10. Termination</h2>
+        <p>Either party may terminate service agreements in accordance with the terms specified therein. Upon termination:</p>
+        <ul>
+            <li>All outstanding fees become immediately due</li>
+            <li>Work products completed to date shall be delivered</li>
+            <li>Confidentiality obligations continue</li>
+            <li>Client shall compensate for work performed and expenses incurred</li>
+        </ul>
+
+        <h2>11. Website Terms</h2>
+        
+        <h3>11.1 Acceptable Use</h3>
+        <p>You agree not to:</p>
+        <ul>
+            <li>Use our website for any unlawful purpose</li>
+            <li>Attempt to gain unauthorized access to our systems</li>
+            <li>Transmit malicious code or interfere with website operation</li>
+            <li>Copy, reproduce, or distribute website content without permission</li>
+        </ul>
+
+        <h3>11.2 Third-Party Links</h3>
+        <p>Our website may contain links to third-party websites. We are not responsible for the content or practices of these external sites.</p>
+
+        <h2>12. Amendments</h2>
+        <p>We reserve the right to modify these Terms at any time. Changes will be effective upon posting to our website. Continued use of our website or services after changes constitutes acceptance of the modified Terms.</p>
+
+        <h2>13. Governing Law</h2>
+        <p>These Terms are governed by the laws of the United Republic of Tanzania. Any legal proceedings shall be conducted in courts of competent jurisdiction in Tanzania.</p>
+
+        <h2>14. Severability</h2>
+        <p>If any provision of these Terms is found to be invalid or unenforceable, the remaining provisions shall continue in full force and effect.</p>
+
+        <div class="contact-box">
+            <h3>📬 Questions About Our Terms?</h3>
+            <p>If you have any questions about these Terms of Service or require clarification on any matter, please contact us:</p>
+            <p><strong>KJ & Associates Consultancy Ltd</strong><br>
+            Kijitonyama, Mabatini Road<br>
+            Dar es Salaam, Tanzania</p>
+            <p>📧 Email: <a href="mailto:info@kjconsultancy.co.tz">info@kjconsultancy.co.tz</a><br>
+            📞 Phone: <a href="tel:+255768757779">+255 768 757 779</a></p>
+        </div>
+    </section>
+
+    <!-- Back to Top Button -->
+    <button id="backToTop" class="back-to-top" aria-label="Back to top">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 15l-6-6-6 6"/>
+        </svg>
+    </button>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <h3>KJ & Associates</h3>
+                    <p>Quantity Surveyors & Construction Project Managers serving Tanzania with excellence for 17+ years.</p>
+                    <p class="footer-location">📍 KIJITONYAMA, MABATINI ROAD<br>DAR ES SALAAM, TANZANIA</p>
+                </div>
+                <div class="footer-col">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="about.html">About Us</a></li>
+                        <li><a href="services/index.html">Services</a></li>
+                        <li><a href="projects/index.html">Projects</a></li>
+                        <li><a href="clients.html">Clients</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Resources</h4>
+                    <ul>
+                        <li><a href="certifications.html">Certifications</a></li>
+                        <li><a href="contact.html">Contact Us</a></li>
+                        <li><a href="privacy.html">Privacy Policy</a></li>
+                        <li><a href="terms.html">Terms of Service</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Contact</h4>
+                    <p>📧 <a href="mailto:md@kjconsultancy.co.tz">md@kjconsultancy.co.tz</a></p>
+                    <p>📧 <a href="mailto:info@kjconsultancy.co.tz">info@kjconsultancy.co.tz</a></p>
+                    <p>📞 <a href="tel:+255768757779">+255 768 757 779</a></p>
+                    <div class="social-links">
+                        <a href="#" aria-label="LinkedIn">in</a>
+                        <a href="#" aria-label="Facebook">f</a>
+                        <a href="#" aria-label="Twitter">𝕏</a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 KJ & Associates Consultancy Ltd. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+</body>
+</html>
+

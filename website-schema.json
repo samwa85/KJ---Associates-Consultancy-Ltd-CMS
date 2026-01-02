@@ -1,0 +1,485 @@
+{
+  "site": {
+    "brandName": "KJ & Associates Consultancy Ltd",
+    "tagline": "Quantity Surveyors & Construction Project Managers",
+    "primaryCTA": {
+      "label": "Request a Consultation",
+      "href": "/contact"
+    },
+    "secondaryCTA": {
+      "label": "View Our Projects",
+      "href": "/projects"
+    },
+    "contacts": {
+      "phones": [],
+      "email": "",
+      "address": "",
+      "city": "Dar es Salaam, Tanzania"
+    },
+    "socialLinks": {
+      "linkedin": "",
+      "facebook": "",
+      "instagram": ""
+    }
+  },
+  "sitemap": {
+    "mainNavigation": [
+      {
+        "label": "Home",
+        "href": "/",
+        "weight": 1
+      },
+      {
+        "label": "About Us",
+        "href": "/about",
+        "weight": 2,
+        "children": [
+          {
+            "label": "Company Profile",
+            "href": "/about#profile"
+          },
+          {
+            "label": "Leadership & Team",
+            "href": "/about#team"
+          },
+          {
+            "label": "Organization Structure",
+            "href": "/about#structure"
+          },
+          {
+            "label": "Technology & Tools",
+            "href": "/about#technology"
+          }
+        ]
+      },
+      {
+        "label": "Services",
+        "href": "/services",
+        "weight": 3,
+        "children": [
+          {
+            "label": "Pre-Contract Services",
+            "href": "/services/pre-contract"
+          },
+          {
+            "label": "Post-Contract Services",
+            "href": "/services/post-contract"
+          },
+          {
+            "label": "Tendering & Contract Documentation",
+            "href": "/services/tendering"
+          },
+          {
+            "label": "Dispute / Claims Support",
+            "href": "/services/dispute-support"
+          }
+        ]
+      },
+      {
+        "label": "Projects",
+        "href": "/projects",
+        "weight": 4
+      },
+      {
+        "label": "Clients",
+        "href": "/clients",
+        "weight": 5
+      },
+      {
+        "label": "Certifications",
+        "href": "/certifications",
+        "weight": 6
+      },
+      {
+        "label": "Contact",
+        "href": "/contact",
+        "weight": 7
+      }
+    ],
+    "utilityPages": [
+      {
+        "label": "Privacy Policy",
+        "href": "/privacy"
+      },
+      {
+        "label": "Terms of Service",
+        "href": "/terms"
+      }
+    ]
+  },
+  "contentModels": {
+    "services": [
+      {
+        "title": "Inception & Feasibility",
+        "slug": "inception-feasibility",
+        "category": "pre-contract",
+        "summary": "Budget estimates, cost plans, and cash flow forecasts during project inception and feasibility stages.",
+        "icon": "lightbulb",
+        "bullets": [
+          "Initial budget estimates",
+          "Cost planning and advice",
+          "Cash flow forecasts",
+          "Feasibility cost analysis"
+        ],
+        "detailSections": [
+          {
+            "heading": "What we do",
+            "content": "We provide comprehensive cost planning and feasibility analysis from the earliest stages of your project, ensuring informed decision-making and budget control."
+          },
+          {
+            "heading": "Deliverables",
+            "content": "Budget estimates, detailed cost plans, cash flow projections, and feasibility reports."
+          },
+          {
+            "heading": "Who it helps",
+            "content": "Project owners, developers, and funding agencies requiring early-stage cost certainty."
+          }
+        ]
+      },
+      {
+        "title": "Pre-Contract Cost Control",
+        "slug": "pre-contract-cost-control",
+        "category": "pre-contract",
+        "summary": "Cost planning, estimates, and budget control during design stages.",
+        "icon": "calculator",
+        "bullets": [
+          "Preliminary cost plan",
+          "Cost advice during design",
+          "Periodic reports and cash flow forecasts",
+          "Value engineering"
+        ],
+        "detailSections": [
+          {
+            "heading": "What we do",
+            "content": "We monitor and control costs throughout the design phase, providing regular updates and recommendations to keep your project on budget."
+          },
+          {
+            "heading": "Deliverables",
+            "content": "Cost plans, periodic cost reports, cash flow forecasts, and value engineering recommendations."
+          },
+          {
+            "heading": "Who it helps",
+            "content": "Architects, engineers, and project owners managing design-stage budgets."
+          }
+        ]
+      },
+      {
+        "title": "Tender & Contract Documentation",
+        "slug": "tender-contract-documentation",
+        "category": "tendering",
+        "summary": "Preparation of bills of quantities, tender documents, and contract administration.",
+        "icon": "file-text",
+        "bullets": [
+          "Bills of quantities (BOQ)",
+          "Tender documentation",
+          "Contract preparation",
+          "Insurance and warranty documentation",
+          "Performance bonds"
+        ],
+        "detailSections": [
+          {
+            "heading": "What we do",
+            "content": "We prepare comprehensive tender documentation including detailed bills of quantities, contract terms, and all supporting documentation required for procurement."
+          },
+          {
+            "heading": "Deliverables",
+            "content": "Bills of quantities, tender documents, contract agreements, insurance schedules, and performance bonds."
+          },
+          {
+            "heading": "Who it helps",
+            "content": "Project owners, government agencies, and organizations requiring professional procurement documentation."
+          }
+        ]
+      },
+      {
+        "title": "Tender Selection & Appraisal",
+        "slug": "tender-selection-appraisal",
+        "category": "tendering",
+        "summary": "Evaluation and shortlisting of tenders with detailed appraisal reports.",
+        "icon": "check-circle",
+        "bullets": [
+          "Tender evaluation",
+          "Shortlisting recommendations",
+          "Comparative analysis",
+          "Appraisal reports"
+        ],
+        "detailSections": [
+          {
+            "heading": "What we do",
+            "content": "We conduct thorough evaluation of submitted tenders, providing detailed analysis and recommendations for contractor selection."
+          },
+          {
+            "heading": "Deliverables",
+            "content": "Tender evaluation reports, shortlisting recommendations, comparative analysis, and selection justifications."
+          },
+          {
+            "heading": "Who it helps",
+            "content": "Procurement departments, project managers, and decision-makers requiring objective tender assessment."
+          }
+        ]
+      },
+      {
+        "title": "Interim Valuations",
+        "slug": "interim-valuations",
+        "category": "post-contract",
+        "summary": "Monthly valuations and payment certifications during construction.",
+        "icon": "calendar",
+        "bullets": [
+          "Monthly valuations",
+          "Payment certifications",
+          "Progress assessments",
+          "Variation valuations"
+        ],
+        "detailSections": [
+          {
+            "heading": "What we do",
+            "content": "We provide accurate monthly valuations and payment certifications based on work completed, ensuring fair and timely payments."
+          },
+          {
+            "heading": "Deliverables",
+            "content": "Monthly valuation reports, payment certificates, progress assessments, and variation valuations."
+          },
+          {
+            "heading": "Who it helps",
+            "content": "Contractors, project owners, and financial institutions managing construction payments."
+          }
+        ]
+      },
+      {
+        "title": "Post-Contract Cost Control",
+        "slug": "post-contract-cost-control",
+        "category": "post-contract",
+        "summary": "Cost monitoring, variation management, and financial reporting during construction.",
+        "icon": "trending-up",
+        "bullets": [
+          "Cost monitoring and reporting",
+          "Variation valuations",
+          "Cost forecasting",
+          "Financial reports"
+        ],
+        "detailSections": [
+          {
+            "heading": "What we do",
+            "content": "We monitor project costs throughout construction, managing variations and providing regular financial reports to keep stakeholders informed."
+          },
+          {
+            "heading": "Deliverables",
+            "content": "Cost reports, variation valuations, cost forecasts, and financial summaries."
+          },
+          {
+            "heading": "Who it helps",
+            "content": "Project managers, owners, and funders requiring ongoing cost visibility and control."
+          }
+        ]
+      },
+      {
+        "title": "Final Account",
+        "slug": "final-account",
+        "category": "post-contract",
+        "summary": "Preparation and agreement of final accounts upon project completion.",
+        "icon": "file-check",
+        "bullets": [
+          "Final account preparation",
+          "Variation reconciliation",
+          "Final payment certification",
+          "Account agreement"
+        ],
+        "detailSections": [
+          {
+            "heading": "What we do",
+            "content": "We prepare comprehensive final accounts, reconciling all variations and certifying final payments upon project completion."
+          },
+          {
+            "heading": "Deliverables",
+            "content": "Final account statements, variation reconciliations, final payment certificates, and account agreements."
+          },
+          {
+            "heading": "Who it helps",
+            "content": "All parties requiring closure of project financial matters."
+          }
+        ]
+      },
+      {
+        "title": "Dispute / Claims Support",
+        "slug": "dispute-claims-support",
+        "category": "dispute-support",
+        "summary": "Alternative dispute resolution, claims preparation, and litigation support.",
+        "icon": "scale",
+        "bullets": [
+          "Alternative Dispute Resolution (ADR)",
+          "Claims preparation and evaluation",
+          "Litigation support",
+          "Expert witness services"
+        ],
+        "detailSections": [
+          {
+            "heading": "What we do",
+            "content": "We provide expert support for construction disputes, including ADR facilitation, claims preparation, and litigation support services."
+          },
+          {
+            "heading": "Deliverables",
+            "content": "Claims reports, expert witness statements, ADR documentation, and litigation support materials."
+          },
+          {
+            "heading": "Who it helps",
+            "content": "Parties involved in construction disputes requiring expert quantity surveying support."
+          }
+        ]
+      }
+    ],
+    "projects": [
+      {
+        "title": "Proposed Development of Morogoro Central Market",
+        "slug": "morogoro-central-market",
+        "location": "Morogoro, Tanzania",
+        "client": "Morogoro Municipal Council",
+        "funding": "World Bank",
+        "value": {
+          "amount": 17000000000,
+          "currency": "TZS"
+        },
+        "durationMonths": 24,
+        "year": 2018,
+        "status": "Completed",
+        "sector": "Building",
+        "servicesProvided": [
+          "Pre-contract QS",
+          "Post-contract QS"
+        ],
+        "summary": "Quantity surveying services from inception to final account for the development of Morogoro Central Market.",
+        "images": []
+      }
+    ],
+    "teamMembers": [
+      {
+        "fullName": "QS Kashebo J. Rwezaula",
+        "role": "Managing Director / Team Leader",
+        "qualifications": "Registered Quantity Surveyor",
+        "experienceYears": 37,
+        "bio": "Experienced in pre and post contract duties, project management and contract administration.",
+        "photo": ""
+      }
+    ],
+    "certificates": [
+      {
+        "title": "AQRB Practising Certificate",
+        "issuer": "Architects and Quantity Surveyors Registration Board (AQRB)",
+        "issueDate": "",
+        "expiryDate": "",
+        "documentImage": "",
+        "notes": "Registered Quantity Surveyor practicing certificate"
+      },
+      {
+        "title": "TIN Certificate",
+        "issuer": "Tanzania Revenue Authority",
+        "issueDate": "",
+        "expiryDate": "",
+        "documentImage": "",
+        "notes": "Tax Identification Number certificate"
+      },
+      {
+        "title": "VAT Registration",
+        "issuer": "Tanzania Revenue Authority",
+        "issueDate": "",
+        "expiryDate": "",
+        "documentImage": "",
+        "notes": "Value Added Tax registration certificate"
+      },
+      {
+        "title": "Business License",
+        "issuer": "Business Registration and Licensing Agency (BRELA)",
+        "issueDate": "",
+        "expiryDate": "",
+        "documentImage": "",
+        "notes": "Company business license"
+      },
+      {
+        "title": "Certificate of Incorporation",
+        "issuer": "Business Registration and Licensing Agency (BRELA)",
+        "issueDate": "",
+        "expiryDate": "",
+        "documentImage": "",
+        "notes": "Company incorporation certificate"
+      },
+      {
+        "title": "Professional Indemnity Insurance",
+        "issuer": "Insurance Company",
+        "issueDate": "",
+        "expiryDate": "",
+        "documentImage": "",
+        "notes": "Professional indemnity insurance schedule"
+      }
+    ],
+    "clients": [
+      {
+        "name": "Bank of Tanzania (BOT)",
+        "category": "Government / Public Institution",
+        "logo": ""
+      },
+      {
+        "name": "Ministry of Works",
+        "category": "Government / Public Institution",
+        "logo": ""
+      },
+      {
+        "name": "World Bank",
+        "category": "International Organization / Donor",
+        "logo": ""
+      },
+      {
+        "name": "African Development Bank (AfDB)",
+        "category": "International Organization / Donor",
+        "logo": ""
+      },
+      {
+        "name": "UNDP",
+        "category": "International Organization / Donor",
+        "logo": ""
+      },
+      {
+        "name": "UNHCR",
+        "category": "International Organization / Donor",
+        "logo": ""
+      }
+    ]
+  },
+  "seoSettings": {
+    "defaultTitle": "KJ & Associates Consultancy Ltd | Quantity Surveyors & Construction Project Managers",
+    "defaultDescription": "Professional quantity surveying and construction project management services in Tanzania. 17+ years experience serving public, private, and donor-funded projects.",
+    "defaultKeywords": [
+      "quantity surveyor",
+      "construction project management",
+      "Tanzania",
+      "cost control",
+      "tender documentation",
+      "final accounts",
+      "construction consultancy"
+    ],
+    "schemaMarkup": {
+      "organization": {
+        "@type": "Organization",
+        "name": "KJ & Associates Consultancy Ltd",
+        "url": "",
+        "logo": "",
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "Dar es Salaam",
+          "addressCountry": "TZ"
+        }
+      },
+      "localBusiness": {
+        "@type": "LocalBusiness",
+        "@id": "",
+        "name": "KJ & Associates Consultancy Ltd",
+        "image": "",
+        "telephone": "",
+        "address": {
+          "@type": "PostalAddress",
+          "addressLocality": "Dar es Salaam",
+          "addressCountry": "TZ"
+        }
+      }
+    }
+  }
+}
+

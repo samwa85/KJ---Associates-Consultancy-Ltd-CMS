@@ -1,0 +1,343 @@
+{
+  "slides": [
+    {
+      "id": 1,
+      "tagline": "BUILD ANYTHING WITH US",
+      "title": "Precision Through",
+      "titleHighlight": "Digital Tools.",
+      "buttonText": "Contact Us",
+      "buttonLink": "contact.html",
+      "image": "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=1200&q=80",
+      "active": true
+    },
+    {
+      "id": 2,
+      "tagline": "PROFESSIONAL QUANTITY SURVEYING",
+      "title": "Expert Cost",
+      "titleHighlight": "Management.",
+      "buttonText": "Our Services",
+      "buttonLink": "services/index.html",
+      "image": "https://images.unsplash.com/photo-1541888946425-d81bb19240f5?w=1200&q=80",
+      "active": true
+    },
+    {
+      "id": 3,
+      "tagline": "17+ YEARS OF EXCELLENCE",
+      "title": "Cost Control",
+      "titleHighlight": "Expertise.",
+      "buttonText": "About Us",
+      "buttonLink": "about.html",
+      "image": "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1200&q=80",
+      "active": true
+    },
+    {
+      "id": 4,
+      "tagline": "TRUSTED BY LEADING ORGANIZATIONS",
+      "title": "Government &",
+      "titleHighlight": "Private Sector.",
+      "buttonText": "View Projects",
+      "buttonLink": "projects/index.html",
+      "image": "https://images.unsplash.com/photo-1590496793929-36417d3117de?w=1200&q=80",
+      "active": true
+    },
+    {
+      "id": 5,
+      "tagline": "COMMITTED TO YOUR SUCCESS",
+      "title": "Delivering Value",
+      "titleHighlight": "Every Project.",
+      "buttonText": "Get Started",
+      "buttonLink": "contact.html",
+      "image": "https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=1200&q=80",
+      "active": true
+    }
+  ],
+  "projects": [
+    {
+      "id": 1,
+      "title": "Morogoro Central Market",
+      "client": "Morogoro Municipal Council",
+      "location": "Morogoro, Tanzania",
+      "value": "17,000,000,000",
+      "funding": "World Bank",
+      "sector": "Building",
+      "status": "Completed",
+      "year": 2023,
+      "duration": 24,
+      "description": "Quantity surveying services from inception to final account for the development of modern market facilities.",
+      "image": "https://images.unsplash.com/photo-1541888946425-d81bb19240f5?w=800&q=80",
+      "services": ["Pre-contract QS", "Post-contract QS", "Final Account"]
+    },
+    {
+      "id": 2,
+      "title": "TANROADS Highway Upgrade",
+      "client": "TANROADS",
+      "location": "Dar es Salaam, Tanzania",
+      "value": "45,000,000,000",
+      "funding": "AfDB",
+      "sector": "Civil",
+      "status": "Ongoing",
+      "year": 2024,
+      "duration": 36,
+      "description": "Cost management and quantity surveying for major highway infrastructure upgrade project.",
+      "image": "https://images.unsplash.com/photo-1590496793929-36417d3117de?w=800&q=80",
+      "services": ["Cost Planning", "Interim Valuations", "Variation Management"]
+    },
+    {
+      "id": 3,
+      "title": "Bank of Tanzania HQ Renovation",
+      "client": "Bank of Tanzania",
+      "location": "Dar es Salaam, Tanzania",
+      "value": "8,500,000,000",
+      "funding": "Self-funded",
+      "sector": "Building",
+      "status": "Completed",
+      "year": 2022,
+      "duration": 18,
+      "description": "Complete renovation and modernization of headquarters building with cost control services.",
+      "image": "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&q=80",
+      "services": ["Pre-contract QS", "Post-contract QS", "Cost Control"]
+    }
+  ],
+  "team": [
+    {
+      "id": 1,
+      "name": "QS Kashebo J. Rwezaula",
+      "role": "Managing Director",
+      "experience": 37,
+      "qualifications": "Registered Quantity Surveyor",
+      "bio": "Experienced in pre and post contract duties, project management and contract administration.",
+      "photo": "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=400&q=80",
+      "email": "kashebo@kjassociates.co.tz",
+      "linkedin": ""
+    },
+    {
+      "id": 2,
+      "name": "QS John Mwakasege",
+      "role": "Director",
+      "experience": 25,
+      "qualifications": "Registered Quantity Surveyor",
+      "bio": "Specializes in cost planning, tender documentation and contract administration.",
+      "photo": "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&q=80",
+      "email": "john@kjassociates.co.tz",
+      "linkedin": ""
+    },
+    {
+      "id": 3,
+      "name": "QS Sarah Kimaro",
+      "role": "Director of Operations",
+      "experience": 20,
+      "qualifications": "Registered Quantity Surveyor",
+      "bio": "Expert in project coordination, interim valuations and final accounts.",
+      "photo": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&q=80",
+      "email": "sarah@kjassociates.co.tz",
+      "linkedin": ""
+    }
+  ],
+  "clients": [
+    { "id": 1, "name": "Bank of Tanzania", "category": "Government", "logo": "", "website": "https://www.bot.go.tz" },
+    { "id": 2, "name": "World Bank", "category": "Donor", "logo": "", "website": "https://www.worldbank.org" },
+    { "id": 3, "name": "TANROADS", "category": "Government", "logo": "", "website": "" },
+    { "id": 4, "name": "African Development Bank", "category": "Donor", "logo": "", "website": "https://www.afdb.org" },
+    { "id": 5, "name": "UNHCR", "category": "Donor", "logo": "", "website": "https://www.unhcr.org" },
+    { "id": 6, "name": "UNDP", "category": "Donor", "logo": "", "website": "https://www.undp.org" }
+  ],
+  "testimonials": [
+    {
+      "id": 1,
+      "name": "James Mwangi",
+      "position": "Project Director",
+      "company": "TANROADS",
+      "text": "KJ & Associates delivered exceptional cost management services for our highway project. Their attention to detail and professional approach exceeded our expectations.",
+      "photo": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&q=80",
+      "rating": 5
+    },
+    {
+      "id": 2,
+      "name": "Grace Massawe",
+      "position": "Procurement Manager",
+      "company": "Bank of Tanzania",
+      "text": "We have worked with KJ & Associates on multiple projects. Their expertise in quantity surveying and commitment to accuracy is unmatched.",
+      "photo": "https://images.unsplash.com/photo-1573497019940-1c28c88b4f3e?w=200&q=80",
+      "rating": 5
+    },
+    {
+      "id": 3,
+      "name": "Michael Ochieng",
+      "position": "Regional Manager",
+      "company": "World Bank Tanzania",
+      "text": "Professional, reliable, and thorough. KJ & Associates has been instrumental in ensuring our funded projects are delivered within budget.",
+      "photo": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&q=80",
+      "rating": 5
+    }
+  ],
+  "services": [
+    {
+      "id": 1,
+      "title": "Pre-Contract Cost Control",
+      "icon": "🧮",
+      "category": "pre-contract",
+      "summary": "Cost planning, estimates, and budget control during design stages.",
+      "features": ["Preliminary cost plan", "Cost advice during design", "Periodic reports and cash flow forecasts", "Value engineering recommendations"]
+    },
+    {
+      "id": 2,
+      "title": "Tender & Contract Documentation",
+      "icon": "📋",
+      "category": "tendering",
+      "summary": "Comprehensive tender preparation and contract documentation services.",
+      "features": ["Bills of quantities preparation", "Contract document compilation", "Tender evaluation support", "Contractor prequalification"]
+    },
+    {
+      "id": 3,
+      "title": "Post-Contract Cost Control",
+      "icon": "📊",
+      "category": "post-contract",
+      "summary": "Ongoing cost monitoring and control during construction phase.",
+      "features": ["Interim valuations", "Variation assessment", "Cost reporting", "Final account preparation"]
+    },
+    {
+      "id": 4,
+      "title": "Dispute Resolution Support",
+      "icon": "⚖️",
+      "category": "dispute",
+      "summary": "Expert support for construction disputes and claims management.",
+      "features": ["Claims preparation", "Expert witness services", "ADR support", "Litigation support"]
+    }
+  ],
+  "branding": {
+    "logoType": "text",
+    "logoText": "KJ & Associates",
+    "logoSubtitle": "Consultancy Ltd",
+    "logoImageUrl": "",
+    "logoImageUrlDark": "",
+    "faviconUrl": ""
+  },
+  "contact": {
+    "phone": "+255 XXX XXX XXX",
+    "whatsapp": "+255XXXXXXXXX",
+    "email": "info@kjassociates.co.tz",
+    "email2": "",
+    "address": "Dar es Salaam, Tanzania",
+    "city": "Dar es Salaam",
+    "country": "Tanzania",
+    "hours": "Monday - Friday: 8:00 AM - 5:00 PM\nSaturday: 9:00 AM - 1:00 PM\nSunday: Closed",
+    "mapUrl": "",
+    "social": {
+      "linkedin": "",
+      "facebook": "",
+      "twitter": "",
+      "instagram": ""
+    }
+  },
+  "seo": {
+    "title": "KJ & Associates Consultancy Ltd",
+    "description": "Professional quantity surveying and construction project management services in Tanzania. 17+ years experience serving public, private, and donor-funded projects.",
+    "keywords": "quantity surveyor, construction, Tanzania, cost control, project management, Dar es Salaam",
+    "ogImage": ""
+  },
+  "blog": [
+    {
+      "id": 1,
+      "title": "Understanding Cost Escalation in Tanzanian Construction Projects",
+      "slug": "cost-escalation-tanzania",
+      "excerpt": "Learn about the key factors driving cost escalation in construction projects and strategies to mitigate financial risks during project execution.",
+      "content": "<p>Cost escalation is one of the most significant challenges facing construction projects in Tanzania. Understanding the factors that contribute to cost increases is essential for effective project management and budget control.</p><h2>Key Factors Driving Cost Escalation</h2><p>Several factors contribute to cost escalation in Tanzanian construction projects:</p><ul><li><strong>Currency Fluctuations:</strong> The Tanzanian Shilling's volatility against major currencies impacts the cost of imported materials and equipment.</li><li><strong>Material Price Increases:</strong> Global supply chain disruptions and local demand pressures can significantly affect construction material prices.</li><li><strong>Labor Cost Changes:</strong> Skilled labor shortages often lead to wage increases during project execution.</li><li><strong>Regulatory Changes:</strong> New building codes, environmental regulations, and tax policies can add unexpected costs.</li></ul><h2>Strategies for Mitigation</h2><p>Effective cost management requires proactive strategies including comprehensive cost planning, appropriate contract provisions, and regular monitoring.</p>",
+      "category": "cost-management",
+      "image": "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=800&q=80",
+      "author": "QS Kashebo J. Rwezaula",
+      "authorPhoto": "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=200&q=80",
+      "authorRole": "Managing Director",
+      "authorBio": "With over 37 years of experience in quantity surveying and construction project management, QS Kashebo leads KJ & Associates with a commitment to excellence and client satisfaction.",
+      "date": "2024-12-15",
+      "tags": ["Cost Management", "Construction", "Tanzania", "Budget Control"],
+      "featured": true,
+      "published": true
+    },
+    {
+      "id": 2,
+      "title": "New AQRB Regulations: What Contractors Need to Know",
+      "slug": "aqrb-regulations-2024",
+      "excerpt": "A comprehensive guide to the latest regulations from the Architects and Quantity Surveyors Registration Board and their impact on construction projects.",
+      "content": "<p>The Architects and Quantity Surveyors Registration Board (AQRB) has introduced several new regulations that will significantly impact how construction projects are managed in Tanzania.</p><h2>Overview of New Regulations</h2><p>Key changes include enhanced qualification requirements, mandatory CPD requirements, updated fee structures, and stricter compliance measures.</p><h2>Impact on Contractors</h2><p>Contractors must ensure that all quantity surveying and architectural services are provided by AQRB-registered professionals.</p>",
+      "category": "regulations",
+      "image": "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=800&q=80",
+      "author": "QS John Mwakasege",
+      "authorPhoto": "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&q=80",
+      "authorRole": "Director",
+      "authorBio": "QS John Mwakasege brings 25 years of experience in cost planning, tender documentation, and contract administration to KJ & Associates.",
+      "date": "2024-12-10",
+      "tags": ["Regulations", "AQRB", "Compliance", "Professional Standards"],
+      "featured": false,
+      "published": true
+    },
+    {
+      "id": 3,
+      "title": "Project Spotlight: Morogoro Central Market Development",
+      "slug": "morogoro-market-spotlight",
+      "excerpt": "An in-depth look at our role in the World Bank-funded Morogoro Central Market project, showcasing our cost management expertise.",
+      "content": "<p>The Morogoro Central Market Development project stands as one of our most significant achievements, demonstrating KJ & Associates' capability in managing large-scale, donor-funded construction projects.</p><h2>Project Overview</h2><p>The project involved the development of modern market facilities to serve the growing commercial needs of Morogoro Municipality.</p><h2>Our Role</h2><p>KJ & Associates provided comprehensive quantity surveying services throughout the project lifecycle including pre-contract services, post-contract services, and final account preparation.</p>",
+      "category": "project-spotlight",
+      "image": "https://images.unsplash.com/photo-1541888946425-d81bb19240f5?w=800&q=80",
+      "author": "QS Sarah Kimaro",
+      "authorPhoto": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=200&q=80",
+      "authorRole": "Director of Operations",
+      "authorBio": "QS Sarah Kimaro is an expert in project coordination, interim valuations, and final accounts with 20 years of experience in the construction industry.",
+      "date": "2024-12-05",
+      "tags": ["Project Spotlight", "World Bank", "Morogoro", "Market Development"],
+      "featured": false,
+      "published": true
+    },
+    {
+      "id": 4,
+      "title": "Construction Industry Outlook for Tanzania 2025",
+      "slug": "construction-outlook-2025",
+      "excerpt": "Analysis of emerging trends, opportunities, and challenges facing the Tanzanian construction industry in the coming year.",
+      "content": "<p>As we approach 2025, the Tanzanian construction industry stands at a pivotal moment. This analysis examines the key trends, opportunities, and challenges that will shape the sector.</p><h2>Emerging Trends</h2><p>Digital transformation, sustainable construction, and infrastructure development are key trends driving the industry forward.</p>",
+      "category": "industry-insights",
+      "image": "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&q=80",
+      "author": "QS Kashebo J. Rwezaula",
+      "authorPhoto": "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=200&q=80",
+      "authorRole": "Managing Director",
+      "authorBio": "With over 37 years of experience in quantity surveying and construction project management.",
+      "date": "2024-11-28",
+      "tags": ["Industry Insights", "Market Analysis", "Tanzania", "2025 Outlook"],
+      "featured": false,
+      "published": true
+    },
+    {
+      "id": 5,
+      "title": "KJ & Associates Celebrates 17 Years of Excellence",
+      "slug": "17-years-anniversary",
+      "excerpt": "Reflecting on our journey, achievements, and commitment to delivering quality quantity surveying services in Tanzania.",
+      "content": "<p>KJ & Associates Consultancy Ltd proudly celebrates 17 years of delivering exceptional quantity surveying and construction project management services in Tanzania.</p><h2>Our Journey</h2><p>Founded in 2007, KJ & Associates has grown from a small consultancy to one of Tanzania's leading quantity surveying firms.</p>",
+      "category": "company-news",
+      "image": "https://images.unsplash.com/photo-1521737711867-e3b97375f902?w=800&q=80",
+      "author": "KJ & Associates Team",
+      "authorPhoto": "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=200&q=80",
+      "authorRole": "KJ & Associates",
+      "authorBio": "KJ & Associates Consultancy Ltd is a leading quantity surveying firm in Tanzania.",
+      "date": "2024-11-20",
+      "tags": ["Company News", "Anniversary", "Milestone"],
+      "featured": false,
+      "published": true
+    },
+    {
+      "id": 6,
+      "title": "5 Tips for Effective Construction Budget Management",
+      "slug": "budget-management-tips",
+      "excerpt": "Practical advice from our experts on maintaining budget control throughout your construction project lifecycle.",
+      "content": "<p>Effective budget management is crucial for construction project success. Based on our 17+ years of experience, here are five essential tips for maintaining budget control.</p><h2>1. Start with Accurate Cost Estimates</h2><p>The foundation of effective budget management is accurate cost estimation at the project outset.</p><h2>2. Implement Robust Cost Monitoring Systems</h2><p>Regular monitoring allows early identification of budget variances.</p>",
+      "category": "cost-management",
+      "image": "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=800&q=80",
+      "author": "QS John Mwakasege",
+      "authorPhoto": "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&q=80",
+      "authorRole": "Director",
+      "authorBio": "QS John Mwakasege brings 25 years of experience in cost planning and contract administration.",
+      "date": "2024-11-15",
+      "tags": ["Cost Management", "Budget Tips", "Construction", "Best Practices"],
+      "featured": false,
+      "published": true
+    }
+  ]
+}
+

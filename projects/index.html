@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="View our portfolio of quantity surveying projects across Tanzania, including building and civil engineering works.">
+    <title>Projects | KJ & Associates Consultancy Ltd</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: { DEFAULT: '#0d4d2c', light: '#1a7a47', dark: '#083d22' },
+                        accent: { DEFAULT: '#d4a855', light: '#e8c882', dark: '#b8923e' },
+                    },
+                },
+            },
+        }
+    </script>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/themes.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .project-card {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        .project-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 32px rgba(0,0,0,0.15);
+        }
+        .project-image-container {
+            position: relative;
+            width: 100%;
+            height: 240px;
+            overflow: hidden;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+        }
+        .project-image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+        .project-card:hover .project-image-container img {
+            transform: scale(1.1);
+        }
+        .project-image-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 3rem;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+        }
+        .project-badge {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            z-index: 2;
+        }
+        .project-badge.completed {
+            background: #22c55e;
+            color: white;
+        }
+        .project-badge.ongoing {
+            background: #f59e0b;
+            color: white;
+        }
+        .project-content {
+            padding: 1.5rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .project-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin-bottom: 0.75rem;
+            line-height: 1.3;
+        }
+        .project-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+            color: var(--gray-600);
+        }
+        .project-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .project-meta-item svg {
+            width: 16px;
+            height: 16px;
+            flex-shrink: 0;
+        }
+        .project-services {
+            margin-top: auto;
+            padding-top: 1rem;
+            border-top: 1px solid var(--gray-200);
+        }
+        .project-services-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--gray-500);
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+        .project-services-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+        .service-tag {
+            padding: 0.25rem 0.75rem;
+            background: var(--gray-100);
+            border-radius: 12px;
+            font-size: 0.8rem;
+            color: var(--gray-700);
+        }
+        /* Projects Page - Stats Section */
+        .projects-stats {
+            background: var(--gray-50);
+            padding: 0 0 4rem;
+            margin-top: -5rem;
+            position: relative;
+            z-index: 10;
+        }
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2rem;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+        .stat-card {
+            background: white;
+            border-radius: 24px;
+            padding: 2.5rem 2rem;
+            text-align: center;
+            box-shadow: 0 4px 24px rgba(13, 77, 44, 0.08);
+            border: 1px solid rgba(13, 77, 44, 0.06);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--primary-light) 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .stat-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 50px rgba(13, 77, 44, 0.12);
+        }
+        .stat-card:hover::before {
+            opacity: 1;
+        }
+        .stat-icon {
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.25rem;
+            font-size: 1.75rem;
+            color: white;
+            box-shadow: 0 8px 24px rgba(13, 77, 44, 0.2);
+        }
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.1;
+            margin-bottom: 0.75rem;
+        }
+        .stat-label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--gray-500);
+            text-transform: uppercase;
+            letter-spacing: 0.12em;
+        }
+        @media (max-width: 992px) {
+            .stats-container {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1.5rem;
+            }
+            .stat-card {
+                padding: 2rem 1.5rem;
+            }
+        }
+        @media (max-width: 576px) {
+            .stats-container {
+                grid-template-columns: 1fr 1fr;
+                gap: 1rem;
+            }
+            .stat-card {
+                padding: 1.5rem 1rem;
+                border-radius: 16px;
+            }
+            .stat-number {
+                font-size: 2rem;
+            }
+            .stat-icon {
+                width: 48px;
+                height: 48px;
+                font-size: 1.25rem;
+                border-radius: 14px;
+                margin-bottom: 1rem;
+            }
+        }
+        .filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            justify-content: center;
+            margin-bottom: 3rem;
+        }
+        .filter-btn {
+            padding: 0.75rem 1.5rem;
+            border: 2px solid var(--gray-300);
+            background: white;
+            border-radius: 30px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--gray-700);
+        }
+        .filter-btn:hover,
+        .filter-btn.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+        }
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+        @media (max-width: 768px) {
+            .projects-grid {
+                grid-template-columns: 1fr;
+            }
+            .stat-number {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-wrapper">
+                <a href="../index.html" class="logo">
+                    <span class="logo-text">KJ & Associates</span>
+                    <span class="logo-subtitle">Consultancy Ltd</span>
+                </a>
+                <button class="mobile-menu-toggle" aria-label="Toggle menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                <ul class="nav-menu">
+                    <li><a href="../index.html">Home</a></li>
+                    <li class="dropdown">
+                        <a href="../about.html">About Us <span class="dropdown-arrow">▼</span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="../about.html#profile">Company Profile</a></li>
+                            <li><a href="../about.html#team">Leadership & Team</a></li>
+                            <li><a href="../about.html#structure">Organization Structure</a></li>
+                            <li><a href="../about.html#technology">Technology & Tools</a></li>
+                        </ul>
+                    </li>
+                    <li class="dropdown">
+                        <a href="../services/index.html">Services <span class="dropdown-arrow">▼</span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="../services/index.html#pre-contract">Pre-Contract Services</a></li>
+                            <li><a href="../services/index.html#post-contract">Post-Contract Services</a></li>
+                            <li><a href="../services/index.html#tendering">Tendering & Contract Documentation</a></li>
+                            <li><a href="../services/index.html#dispute">Dispute / Claims Support</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="index.html" class="active">Projects</a></li>
+                    <li><a href="../clients.html">Clients</a></li>
+                    <li><a href="../certifications.html">Certifications</a></li>
+                    <li><a href="../contact.html" class="btn-primary">Contact Us</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <section class="page-header">
+        <div class="container">
+            <h1>Our Projects</h1>
+            <p>Showcasing our expertise across diverse sectors and project types throughout Tanzania</p>
+        </div>
+    </section>
+
+    <!-- Projects Stats -->
+    <section class="projects-stats">
+        <div class="container">
+            <div class="stats-container">
+                <div class="stat-card">
+                    <div class="stat-icon">📊</div>
+                    <div class="stat-number" id="totalProjects">15</div>
+                    <div class="stat-label">Total Projects</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">✅</div>
+                    <div class="stat-number" id="completedProjects">9</div>
+                    <div class="stat-label">Completed</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🚧</div>
+                    <div class="stat-number" id="ongoingProjects">6</div>
+                    <div class="stat-label">Ongoing</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">💰</div>
+                    <div class="stat-number" id="totalValue">200B+</div>
+                    <div class="stat-label">TZS Value</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Filters -->
+    <section class="content-section" style="padding-top: 2rem;">
+        <div class="container">
+            <div class="filters">
+                <button class="filter-btn active" data-filter="all">All Projects</button>
+                <button class="filter-btn" data-filter="building">Building</button>
+                <button class="filter-btn" data-filter="civil">Civil</button>
+                <button class="filter-btn" data-filter="government">Government</button>
+                <button class="filter-btn" data-filter="world-bank">World Bank</button>
+                <button class="filter-btn" data-filter="private">Private</button>
+                <button class="filter-btn" data-filter="completed">Completed</button>
+                <button class="filter-btn" data-filter="ongoing">Ongoing</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Projects Grid -->
+    <section class="content-section" style="background: var(--gray-50); padding: 4rem 0;">
+        <div class="container">
+            <div class="projects-grid" id="projectsGrid">
+                <!-- Projects will be loaded dynamically from CMS data -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <h3>KJ & Associates</h3>
+                    <p>Quantity Surveyors & Construction Project Managers</p>
+                    <p class="footer-location">📍 KIJITONYAMA, MABATINI ROAD<br>DAR ES SALAAM, TANZANIA</p>
+                </div>
+                <div class="footer-col">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="../about.html">About Us</a></li>
+                        <li><a href="../services/index.html">Services</a></li>
+                        <li><a href="index.html">Projects</a></li>
+                        <li><a href="../clients.html">Clients</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Resources</h4>
+                    <ul>
+                        <li><a href="../certifications.html">Certifications</a></li>
+                        <li><a href="../contact.html">Contact Us</a></li>
+                        <li><a href="../privacy.html">Privacy Policy</a></li>
+                        <li><a href="../terms.html">Terms of Service</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Contact</h4>
+                    <p>Email: <a href="mailto:md@kjconsultancy.co.tz">md@kjconsultancy.co.tz</a></p>
+                    <p>Email: <a href="mailto:info@kjconsultancy.co.tz">info@kjconsultancy.co.tz</a></p>
+                    <p>Phone: <a href="tel:+255768757779">+255 768 757 779</a></p>
+                    <div class="social-links">
+                        <a href="#" aria-label="LinkedIn">LinkedIn</a>
+                        <a href="#" aria-label="Facebook">Facebook</a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 KJ & Associates Consultancy Ltd. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../js/main.js"></script>
+    <script>
+        // Load and render projects from CMS data
+        function loadProjects() {
+            const savedData = localStorage.getItem('kj_cms_data');
+            let projects = [];
+            let cmsData = null;
+            
+            if (savedData) {
+                try {
+                    cmsData = JSON.parse(savedData);
+                    projects = cmsData.projects || [];
+                } catch (e) {
+                    console.error('Error parsing CMS data:', e);
+                }
+            }
+            
+            // Default 15 projects
+            const defaultProjects = [
+                { id: 1, title: "Residential Complex Apartments – Oysterbay", client: "Private Developer", location: "Oysterbay, Dar es Salaam", value: "24,000,000,000", funding: "Private", sector: "Building", status: "Ongoing", year: 2024, image: "", services: ["Pre-contract QS", "Post-contract QS"] },
+                { id: 2, title: "Commercial & Residential Building – Mwai Kibaki Road", client: "Private Developer", location: "Dar es Salaam", value: "15,000,000,000", funding: "Private", sector: "Building", status: "Ongoing", year: 2024, image: "", services: ["Quantity Surveying Services"] },
+                { id: 3, title: "Asha Rose Migiro Residential House", client: "Private Client", location: "Bahari Beach, Dar es Salaam", value: "800,000,000", funding: "Private", sector: "Building", status: "Completed", year: 2023, image: "", services: ["Quantity Surveying"] },
+                { id: 4, title: "Water Institute Vertical Extension Project", client: "Ministry of Water", location: "Dar es Salaam", value: "15,000,000,000", funding: "World Bank", sector: "Building", status: "Ongoing", year: 2024, image: "", services: ["Estimates", "BOQs", "Interim Valuations", "Final Accounts"] },
+                { id: 5, title: "Sisters of Mary Girls' Town School – Building No. 2", client: "Registered Trustee of Sisters of Mary", location: "Tanzania", value: "7,000,000,000", funding: "Private", sector: "Building", status: "Completed", year: 2023, image: "", services: ["Design & Supervision QS Support"] },
+                { id: 6, title: "Renovation & Small Works – 36 Hospitals", client: "Ministry of Health / Philips", location: "Nationwide", value: "", funding: "Government", sector: "Building", status: "Completed", year: 2023, image: "", services: ["Quantity Surveying", "Cost Control"] },
+                { id: 7, title: "Refurbishment of 20 Health Facilities", client: "Government of Tanzania", location: "Dar es Salaam Corridor", value: "", funding: "World Bank", sector: "Building", status: "Completed", year: 2022, image: "", services: ["QS Services"] },
+                { id: 8, title: "Rehabilitation of Airstrips – Mikumi & Ruaha National Parks", client: "Government of Tanzania", location: "Mikumi & Ruaha", value: "80,000,000,000", funding: "World Bank", sector: "Civil", status: "Completed", year: 2023, image: "", services: ["Feasibility", "Design & Tender Documentation"] },
+                { id: 9, title: "Urban Infrastructure Development – Sumbawanga", client: "Sumbawanga Municipal Council", location: "Sumbawanga", value: "", funding: "World Bank", sector: "Civil", status: "Completed", year: 2023, image: "", services: ["Construction Supervision Consultancy"] },
+                { id: 10, title: "Oil Jetty & Tank Farm Development – Port of Dar es Salaam", client: "Port Authority / Private Operator", location: "Dar es Salaam Port", value: "", funding: "Private", sector: "Civil", status: "Completed", year: 2022, image: "", services: ["Feasibility", "Engineering Design", "Tender Documents"] },
+                { id: 11, title: "Natural Gas Distribution Network", client: "Government of Tanzania", location: "Dar es Salaam", value: "", funding: "Government", sector: "Civil", status: "Completed", year: 2022, image: "", services: ["Quantity Surveying", "Cost Control"] },
+                { id: 12, title: "Cement Factory – Tanga Cement PLC", client: "Tanga Cement PLC", location: "Tanga", value: "25,000,000", currency: "USD", funding: "Private", sector: "Building", status: "Completed", year: 2021, duration: 24, image: "", services: ["Pre-contract QS", "Post-contract QS"] },
+                { id: 13, title: "MSD Headquarters Office Refurbishment", client: "Medical Stores Department (MSD)", location: "Dar es Salaam", value: "7,387,766,594", funding: "Government", sector: "Building", status: "Ongoing", year: 2024, image: "", services: ["BOQs", "Valuations", "Final Accounts"] },
+                { id: 14, title: "Uongozi Institute – Kondo Village Development", client: "Uongozi Institute", location: "Bagamoyo", value: "70,500,000,000", funding: "Private", sector: "Building", status: "Ongoing", year: 2024, image: "", services: ["Estimates", "BOQs", "Cost Control"] },
+                { id: 15, title: "Mzumbe University Library Rehabilitation & Extension", client: "Mzumbe University", location: "Morogoro", value: "1,250,000", currency: "USD", funding: "Government", sector: "Building", status: "Completed", year: 2023, duration: 12, image: "", services: ["Pre-contract QS", "Post-contract QS"] }
+            ];
+            
+            // Use default projects if none found or if less than 15 projects
+            if (projects.length === 0 || projects.length < 15) {
+                projects = defaultProjects;
+                // Update localStorage if we're using defaults
+                if (cmsData) {
+                    cmsData.projects = defaultProjects;
+                    localStorage.setItem('kj_cms_data', JSON.stringify(cmsData));
+                }
+            }
+            
+            renderProjects(projects, cmsData);
+            updateStats(projects);
+        }
+        
+        function formatValue(value, currency) {
+            if (!value) return 'Value Not Disclosed';
+            if (currency === 'USD') {
+                return `USD ${parseFloat(value.replace(/,/g, '')).toLocaleString()}`;
+            }
+            if (currency === 'EUR') {
+                return `EUR ${parseFloat(value.replace(/,/g, '')).toLocaleString()}`;
+            }
+            // Format TZS values
+            const numValue = parseFloat(value.replace(/,/g, ''));
+            if (numValue >= 1000000000) {
+                return `TZS ${(numValue / 1000000000).toFixed(1)}B`;
+            } else if (numValue >= 1000000) {
+                return `TZS ${(numValue / 1000000).toFixed(1)}M`;
+            }
+            return `TZS ${numValue.toLocaleString()}`;
+        }
+        
+        function renderProjects(projects, cmsData) {
+            const grid = document.getElementById('projectsGrid');
+            if (!grid) return;
+            
+            grid.innerHTML = projects.map(project => {
+                const statusClass = project.status.toLowerCase() === 'completed' ? 'completed' : 'ongoing';
+                const categories = [
+                    project.sector.toLowerCase(),
+                    project.status.toLowerCase(),
+                    project.funding.toLowerCase().replace(/\s+/g, '-')
+                ].join(' ');
+                
+                // Get all images (support both single image and images array)
+                let allImages = [];
+                if (project.images && Array.isArray(project.images) && project.images.length > 0) {
+                    allImages = project.images.map(img => {
+                        if (typeof img === 'string') return img;
+                        // Check for base64 data
+                        if (img.data && img.data.startsWith('data:image')) return img.data;
+                        if (cmsData && cmsData._imageData && cmsData._imageData[img.path]) {
+                            return cmsData._imageData[img.path];
+                        }
+                        return img.path || img.data || '';
+                    }).filter(src => src);
+                } else if (project.image) {
+                    let imageSrc = project.image;
+                    if (cmsData && cmsData._imageData && cmsData._imageData[project.image]) {
+                        imageSrc = cmsData._imageData[project.image];
+                    }
+                    if (imageSrc) allImages.push(imageSrc);
+                }
+                
+                // Generate image HTML - slideshow if multiple images, single if one
+                let imageHtml = '';
+                if (allImages.length > 1) {
+                    // Slideshow for multiple images
+                    const slidesHtml = allImages.map((src, idx) => `
+                        <div class="slide ${idx === 0 ? 'active' : ''}" data-index="${idx}">
+                            <img src="${src}" alt="${project.title} - Image ${idx + 1}" onerror="this.parentElement.style.display='none'">
+                        </div>
+                    `).join('');
+                    
+                    imageHtml = `
+                        <div class="project-slideshow" data-project-id="${project.id}" data-image-count="${allImages.length} images">
+                            <div class="slides-container">${slidesHtml}</div>
+                            <button class="slide-btn prev" onclick="changeSlide(${project.id}, -1)" aria-label="Previous image">❮</button>
+                            <button class="slide-btn next" onclick="changeSlide(${project.id}, 1)" aria-label="Next image">❯</button>
+                            <div class="slide-dots">
+                                ${allImages.map((_, idx) => `<span class="dot ${idx === 0 ? 'active' : ''}" onclick="goToSlide(${project.id}, ${idx})" aria-label="Go to image ${idx + 1}"></span>`).join('')}
+                            </div>
+                        </div>
+                    `;
+                } else if (allImages.length === 1) {
+                    imageHtml = `<img src="${allImages[0]}" alt="${project.title}" onerror="this.parentElement.innerHTML='<div class=\\'project-image-placeholder\\'>🏗️</div>'">`;
+                } else {
+                    imageHtml = `<div class="project-image-placeholder">🏗️</div>`;
+                }
+                
+                return `
+                    <div class="project-card" data-category="${categories}">
+                        <div class="project-image-container">
+                            ${imageHtml}
+                            <div class="project-badge ${statusClass}">${project.status}</div>
+                        </div>
+                        <div class="project-content">
+                            <h3 class="project-title">${project.title}</h3>
+                            <div class="project-meta">
+                                <div class="project-meta-item">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                                        <circle cx="12" cy="10" r="3"></circle>
+                                    </svg>
+                                    <span>${project.location}</span>
+                                </div>
+                                <div class="project-meta-item">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                        <circle cx="9" cy="7" r="4"></circle>
+                                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                                    </svg>
+                                    <span>${project.client}</span>
+                                </div>
+                                <div class="project-meta-item">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <line x1="12" y1="1" x2="12" y2="23"></line>
+                                        <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                                    </svg>
+                                    <span>${formatValue(project.value, project.currency)}</span>
+                                </div>
+                                ${project.funding ? `<div class="project-meta-item">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <circle cx="12" cy="12" r="10"></circle>
+                                        <path d="M12 6v6l4 2"></path>
+                                    </svg>
+                                    <span>${project.funding}</span>
+                                </div>` : ''}
+                            </div>
+                            ${project.services && project.services.length > 0 ? `
+                                <div class="project-services">
+                                    <div class="project-services-label">Services Provided</div>
+                                    <div class="project-services-list">
+                                        ${project.services.map(service => `<span class="service-tag">${service}</span>`).join('')}
+                                    </div>
+                                </div>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        function updateStats(projects) {
+            const completed = projects.filter(p => p.status.toLowerCase() === 'completed').length;
+            const ongoing = projects.filter(p => p.status.toLowerCase() === 'ongoing').length;
+            
+            document.getElementById('totalProjects').textContent = projects.length;
+            document.getElementById('completedProjects').textContent = completed;
+            document.getElementById('ongoingProjects').textContent = ongoing;
+        }
+        
+        // Filter functionality
+        document.addEventListener('DOMContentLoaded', () => {
+            loadProjects();
+            
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            const projectCards = document.querySelectorAll('.project-card');
+            
+            filterButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const filter = this.getAttribute('data-filter');
+                    
+                    // Update active state
+                    filterButtons.forEach(btn => btn.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Filter projects
+                    projectCards.forEach(card => {
+                        const categories = card.getAttribute('data-category');
+                        const shouldShow = filter === 'all' || categories.includes(filter);
+                        
+                        if (shouldShow) {
+                            card.style.display = 'block';
+                            setTimeout(() => {
+                                card.style.opacity = '1';
+                                card.style.transform = 'translateY(0)';
+                            }, 10);
+                        } else {
+                            card.style.opacity = '0';
+                            card.style.transform = 'translateY(20px)';
+                            setTimeout(() => {
+                                card.style.display = 'none';
+                            }, 300);
+                        }
+                    });
+                });
+            });
+        });
+        
+        // Slideshow functions
+        function changeSlide(projectId, direction) {
+            const slideshow = document.querySelector(`.project-slideshow[data-project-id="${projectId}"]`);
+            if (!slideshow) return;
+            
+            const slides = slideshow.querySelectorAll('.slide');
+            const dots = slideshow.querySelectorAll('.dot');
+            let currentIndex = Array.from(slides).findIndex(s => s.classList.contains('active'));
+            
+            // Remove active from current
+            slides[currentIndex].classList.remove('active');
+            dots[currentIndex].classList.remove('active');
+            
+            // Calculate new index
+            currentIndex += direction;
+            if (currentIndex >= slides.length) currentIndex = 0;
+            if (currentIndex < 0) currentIndex = slides.length - 1;
+            
+            // Add active to new
+            slides[currentIndex].classList.add('active');
+            dots[currentIndex].classList.add('active');
+        }
+        
+        function goToSlide(projectId, index) {
+            const slideshow = document.querySelector(`.project-slideshow[data-project-id="${projectId}"]`);
+            if (!slideshow) return;
+            
+            const slides = slideshow.querySelectorAll('.slide');
+            const dots = slideshow.querySelectorAll('.dot');
+            
+            // Remove active from all
+            slides.forEach(s => s.classList.remove('active'));
+            dots.forEach(d => d.classList.remove('active'));
+            
+            // Add active to selected
+            slides[index].classList.add('active');
+            dots[index].classList.add('active');
+        }
+    </script>
+    
+    <style>
+        /* Project Image Container - Improved Canvas Fit */
+        .project-image-container {
+            position: relative;
+            width: 100%;
+            height: 280px;
+            min-height: 280px;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-bottom: 1px solid var(--gray-200);
+            box-sizing: border-box;
+        }
+        
+        .project-image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+            background: transparent;
+            display: block;
+        }
+        
+        .project-image-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            color: var(--gray-400);
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        }
+        
+        /* Project Slideshow Styles - Enhanced UI */
+        .project-slideshow {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            min-height: 280px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            box-sizing: border-box;
+        }
+        
+        .project-slideshow .slides-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            min-height: 280px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-sizing: border-box;
+        }
+        
+        .project-slideshow .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            min-height: 280px;
+            opacity: 0;
+            transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            box-sizing: border-box;
+        }
+        
+        .project-slideshow .slide.active {
+            opacity: 1;
+            z-index: 2;
+        }
+        
+        .project-slideshow .slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+            background: transparent;
+            display: block;
+        }
+        
+        /* Enhanced Navigation Buttons */
+        .project-slideshow .slide-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(13, 77, 44, 0.85);
+            color: white;
+            border: none;
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+            font-size: 1.1rem;
+            border-radius: 50%;
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(4px);
+        }
+        
+        .project-slideshow .slide-btn:hover {
+            background: rgba(13, 77, 44, 1);
+            transform: translateY(-50%) scale(1.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+        
+        .project-slideshow .slide-btn:active {
+            transform: translateY(-50%) scale(0.95);
+        }
+        
+        .project-slideshow .slide-btn.prev {
+            left: 12px;
+        }
+        
+        .project-slideshow .slide-btn.next {
+            right: 12px;
+        }
+        
+        /* Enhanced Dot Indicators */
+        .project-slideshow .slide-dots {
+            position: absolute;
+            bottom: 16px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+            z-index: 10;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 8px 12px;
+            border-radius: 20px;
+            backdrop-filter: blur(4px);
+        }
+        
+        .project-slideshow .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.6);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        
+        .project-slideshow .dot.active {
+            background: white;
+            width: 24px;
+            border-radius: 5px;
+            border-color: rgba(255, 255, 255, 0.8);
+        }
+        
+        .project-slideshow .dot:hover {
+            background: rgba(255, 255, 255, 0.9);
+            transform: scale(1.2);
+        }
+        
+        /* Image counter badge */
+        .project-slideshow::before {
+            content: attr(data-image-count);
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: rgba(0, 0, 0, 0.6);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            z-index: 10;
+            backdrop-filter: blur(4px);
+            display: none;
+        }
+        
+        .project-slideshow[data-image-count]::before {
+            display: block;
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .project-image-container {
+                height: 240px;
+                min-height: 240px;
+            }
+            
+            .project-slideshow {
+                min-height: 240px;
+            }
+            
+            .project-slideshow .slides-container {
+                min-height: 240px;
+            }
+            
+            .project-slideshow .slide {
+                min-height: 240px;
+            }
+            
+            .project-slideshow .slide-btn {
+                width: 36px;
+                height: 36px;
+                padding: 0.5rem;
+                font-size: 0.9rem;
+            }
+            
+            .project-slideshow .slide-btn.prev {
+                left: 8px;
+            }
+            
+            .project-slideshow .slide-btn.next {
+                right: 8px;
+            }
+            
+            .project-slideshow .slide-dots {
+                bottom: 12px;
+                padding: 6px 10px;
+            }
+            
+            .project-slideshow .dot {
+                width: 8px;
+                height: 8px;
+            }
+            
+            .project-slideshow .dot.active {
+                width: 20px;
+            }
+        }
+    </style>
+</body>
+</html>

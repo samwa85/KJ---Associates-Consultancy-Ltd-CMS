@@ -1,0 +1,1172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="" id="metaDescription">
+    <title id="pageTitle">Blog Post | KJ & Associates Consultancy Ltd</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: { DEFAULT: '#0d4d2c', light: '#1a7a47', dark: '#083d22' },
+                        accent: { DEFAULT: '#d4a855', light: '#e8c882', dark: '#b8923e' },
+                    },
+                },
+            },
+        }
+    </script>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/themes.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        /* Blog Post Page Styles */
+        .post-hero {
+            position: relative;
+            height: 60vh;
+            min-height: 400px;
+            max-height: 600px;
+            display: flex;
+            align-items: flex-end;
+            overflow: hidden;
+        }
+        
+        .post-hero-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-size: cover;
+            background-position: center;
+            z-index: 1;
+        }
+        
+        .post-hero-bg::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.3) 50%, rgba(0,0,0,0.1) 100%);
+        }
+        
+        .post-hero .container {
+            position: relative;
+            z-index: 2;
+            padding-bottom: 3rem;
+        }
+        
+        .post-hero .post-category {
+            background: var(--accent);
+            color: var(--primary-dark);
+            font-weight: 700;
+        }
+        
+        .post-hero h1 {
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 800;
+            color: white;
+            line-height: 1.3;
+            margin: 1rem 0;
+            max-width: 900px;
+        }
+        
+        .post-hero .post-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            color: rgba(255,255,255,0.8);
+            font-size: 0.95rem;
+        }
+        
+        .post-hero .post-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .post-hero .post-author-img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid rgba(255,255,255,0.3);
+        }
+        
+        /* Post Content */
+        .post-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 4rem 1.5rem;
+        }
+        
+        .post-content {
+            font-size: 1.125rem;
+            line-height: 1.9;
+            color: var(--gray-700);
+        }
+        
+        .post-content h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin: 2.5rem 0 1rem;
+        }
+        
+        .post-content h3 {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin: 2rem 0 0.75rem;
+        }
+        
+        .post-content p {
+            margin-bottom: 1.5rem;
+        }
+        
+        .post-content ul, .post-content ol {
+            margin: 1.5rem 0;
+            padding-left: 1.5rem;
+        }
+        
+        .post-content li {
+            margin-bottom: 0.75rem;
+        }
+        
+        .post-content blockquote {
+            border-left: 4px solid var(--primary);
+            padding: 1rem 1.5rem;
+            margin: 2rem 0;
+            background: var(--gray-50);
+            border-radius: 0 8px 8px 0;
+            font-style: italic;
+            color: var(--gray-600);
+        }
+        
+        .post-content img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 12px;
+            margin: 2rem 0;
+        }
+        
+        .post-content a {
+            color: var(--primary);
+            text-decoration: underline;
+        }
+        
+        .post-content a:hover {
+            color: var(--primary-dark);
+        }
+        
+        /* Post Tags */
+        .post-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--gray-200);
+        }
+        
+        .post-tag {
+            display: inline-block;
+            padding: 0.4rem 1rem;
+            background: var(--gray-100);
+            color: var(--gray-600);
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .post-tag:hover {
+            background: var(--primary);
+            color: white;
+        }
+        
+        /* Author Box */
+        .author-box {
+            display: flex;
+            gap: 1.5rem;
+            padding: 2rem;
+            background: var(--gray-50);
+            border-radius: 16px;
+            margin-top: 3rem;
+        }
+        
+        .author-box img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        
+        .author-box-content h4 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin-bottom: 0.25rem;
+        }
+        
+        .author-box-content .author-role {
+            font-size: 0.9rem;
+            color: var(--primary);
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+        
+        .author-box-content p {
+            color: var(--gray-600);
+            font-size: 0.95rem;
+            line-height: 1.7;
+        }
+        
+        /* Share Buttons */
+        .share-section {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--gray-200);
+        }
+        
+        .share-section span {
+            font-weight: 600;
+            color: var(--gray-700);
+        }
+        
+        .share-btn {
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: var(--gray-100);
+            color: var(--gray-600);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .share-btn:hover {
+            transform: translateY(-3px);
+        }
+        
+        .share-btn.linkedin:hover { background: #0077b5; color: white; }
+        .share-btn.twitter:hover { background: #1da1f2; color: white; }
+        .share-btn.facebook:hover { background: #1877f2; color: white; }
+        .share-btn.whatsapp:hover { background: #25d366; color: white; }
+        
+        /* Related Posts */
+        .related-posts {
+            padding: 4rem 0;
+            background: var(--gray-50);
+        }
+        
+        .related-posts h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .related-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+        
+        .related-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+        }
+        
+        .related-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.12);
+        }
+        
+        .related-card img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+        }
+        
+        .related-card-content {
+            padding: 1.25rem;
+        }
+        
+        .related-card h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--gray-900);
+            margin-bottom: 0.5rem;
+            line-height: 1.4;
+        }
+        
+        .related-card:hover h3 {
+            color: var(--primary);
+        }
+        
+        .related-card .post-date {
+            font-size: 0.85rem;
+            color: var(--gray-500);
+        }
+        
+        /* Back to Blog */
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            transition: gap 0.3s ease;
+        }
+        
+        .back-link:hover {
+            gap: 0.75rem;
+        }
+        
+        /* Loading State */
+        .loading-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--gray-500);
+        }
+        
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--gray-200);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* 404 State */
+        .not-found {
+            text-align: center;
+            padding: 6rem 2rem;
+        }
+        
+        .not-found h1 {
+            font-size: 3rem;
+            color: var(--gray-300);
+            margin-bottom: 1rem;
+        }
+        
+        .not-found p {
+            color: var(--gray-600);
+            margin-bottom: 2rem;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .post-hero {
+                height: 50vh;
+                min-height: 350px;
+            }
+            
+            .post-container {
+                padding: 2rem 1rem;
+            }
+            
+            .author-box {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .share-section {
+                flex-wrap: wrap;
+            }
+            
+            .related-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-wrapper">
+                <a href="../index.html" class="logo">
+                    <span class="logo-text">KJ & Associates</span>
+                    <span class="logo-subtitle">Consultancy Ltd</span>
+                </a>
+                <button class="mobile-menu-toggle" aria-label="Toggle menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                <ul class="nav-menu">
+                    <li><a href="../index.html">Home</a></li>
+                    <li class="dropdown">
+                        <a href="../about.html">About Us <span class="dropdown-arrow">▼</span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="../about.html#profile">Company Profile</a></li>
+                            <li><a href="../about.html#team">Leadership & Team</a></li>
+                            <li><a href="../about.html#structure">Organization Structure</a></li>
+                            <li><a href="../about.html#technology">Technology & Tools</a></li>
+                        </ul>
+                    </li>
+                    <li class="dropdown">
+                        <a href="../services/index.html">Services <span class="dropdown-arrow">▼</span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="../services/index.html#pre-contract">Pre-Contract Services</a></li>
+                            <li><a href="../services/index.html#post-contract">Post-Contract Services</a></li>
+                            <li><a href="../services/index.html#tendering">Tendering & Documentation</a></li>
+                            <li><a href="../services/index.html#dispute">Dispute Support</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="../projects/index.html">Projects</a></li>
+                    <li><a href="../clients.html">Clients</a></li>
+                    <li><a href="index.html" class="active">Blog</a></li>
+                    <li><a href="../contact.html" class="btn-primary">Contact Us</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Post Hero -->
+    <section class="post-hero" id="postHero">
+        <div class="post-hero-bg" id="postHeroBg"></div>
+        <div class="container">
+            <a href="index.html" class="back-link">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                Back to Blog
+            </a>
+            <span class="post-category" id="postCategory">Loading...</span>
+            <h1 id="postTitle">Loading...</h1>
+            <div class="post-meta">
+                <div class="post-meta-item">
+                    <img src="" alt="" class="post-author-img" id="postAuthorImg">
+                    <span id="postAuthor">Loading...</span>
+                </div>
+                <div class="post-meta-item">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                    <span id="postDate">Loading...</span>
+                </div>
+                <div class="post-meta-item">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    <span id="postReadTime">5 min read</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Post Content -->
+    <article class="post-container" id="postContainer">
+        <div class="loading-state" id="loadingState">
+            <div class="loading-spinner"></div>
+            <p>Loading article...</p>
+        </div>
+        
+        <div class="post-content" id="postContent" style="display: none;">
+            <!-- Content will be loaded dynamically -->
+        </div>
+        
+        <!-- Tags -->
+        <div class="post-tags" id="postTags" style="display: none;">
+            <!-- Tags will be loaded dynamically -->
+        </div>
+        
+        <!-- Share Section -->
+        <div class="share-section" id="shareSection" style="display: none;">
+            <span>Share this article:</span>
+            <a href="#" class="share-btn linkedin" id="shareLinkedin" target="_blank" aria-label="Share on LinkedIn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+            </a>
+            <a href="#" class="share-btn twitter" id="shareTwitter" target="_blank" aria-label="Share on Twitter">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+            </a>
+            <a href="#" class="share-btn facebook" id="shareFacebook" target="_blank" aria-label="Share on Facebook">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+            </a>
+            <a href="#" class="share-btn whatsapp" id="shareWhatsapp" target="_blank" aria-label="Share on WhatsApp">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+            </a>
+        </div>
+        
+        <!-- Author Box -->
+        <div class="author-box" id="authorBox" style="display: none;">
+            <img src="" alt="" id="authorBoxImg">
+            <div class="author-box-content">
+                <h4 id="authorBoxName">Author Name</h4>
+                <p class="author-role" id="authorBoxRole">Role</p>
+                <p id="authorBoxBio">Author biography will appear here.</p>
+            </div>
+        </div>
+    </article>
+
+    <!-- 404 State -->
+    <div class="not-found" id="notFound" style="display: none;">
+        <h1>404</h1>
+        <p>Sorry, this article could not be found.</p>
+        <a href="index.html" class="btn btn-primary">Back to Blog</a>
+    </div>
+
+    <!-- Related Posts -->
+    <section class="related-posts" id="relatedPosts" style="display: none;">
+        <div class="container">
+            <h2>Related Articles</h2>
+            <div class="related-grid" id="relatedGrid">
+                <!-- Related posts will be loaded dynamically -->
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="container">
+            <h2>Need Expert QS Services?</h2>
+            <p>Our team is ready to help with your quantity surveying and project management needs.</p>
+            <a href="../contact.html" class="btn btn-white btn-lg">Get in Touch Today</a>
+        </div>
+    </section>
+
+    <!-- WhatsApp Floating Button -->
+    <a href="#" id="whatsappBtn" class="whatsapp-float" target="_blank" rel="noopener noreferrer" aria-label="Chat on WhatsApp">
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+        </svg>
+        <span class="whatsapp-tooltip">Chat with us</span>
+    </a>
+
+    <!-- Back to Top Button -->
+    <button id="backToTop" class="back-to-top" aria-label="Back to top">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 15l-6-6-6 6"/>
+        </svg>
+    </button>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <h3>KJ & Associates</h3>
+                    <p>Quantity Surveyors & Construction Project Managers serving Tanzania with excellence for 17+ years.</p>
+                    <p class="footer-location">📍 KIJITONYAMA, MABATINI ROAD<br>DAR ES SALAAM, TANZANIA</p>
+                </div>
+                <div class="footer-col">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="../about.html">About Us</a></li>
+                        <li><a href="../services/index.html">Services</a></li>
+                        <li><a href="../projects/index.html">Projects</a></li>
+                        <li><a href="../clients.html">Clients</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Resources</h4>
+                    <ul>
+                        <li><a href="index.html">Blog</a></li>
+                        <li><a href="../certifications.html">Certifications</a></li>
+                        <li><a href="../contact.html">Contact Us</a></li>
+                        <li><a href="../privacy.html">Privacy Policy</a></li>
+                        <li><a href="../terms.html">Terms of Service</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Contact</h4>
+                    <p>📧 <a href="mailto:md@kjconsultancy.co.tz">md@kjconsultancy.co.tz</a></p>
+                    <p>📧 <a href="mailto:info@kjconsultancy.co.tz">info@kjconsultancy.co.tz</a></p>
+                    <p>📞 <a href="tel:+255768757779">+255 768 757 779</a></p>
+                    <div class="social-links">
+                        <a href="#" aria-label="LinkedIn">in</a>
+                        <a href="#" aria-label="Facebook">f</a>
+                        <a href="#" aria-label="Twitter">𝕏</a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 KJ & Associates Consultancy Ltd. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../js/main.js"></script>
+    <script>
+        // Blog Post Page JavaScript
+        let currentPost = null;
+        let allPosts = [];
+
+        // Get slug from URL
+        function getSlugFromUrl() {
+            const params = new URLSearchParams(window.location.search);
+            return params.get('slug');
+        }
+
+        // Load blog posts from CMS
+        function loadBlogData() {
+            const stored = localStorage.getItem('kj_cms_data');
+            if (stored) {
+                try {
+                    const data = JSON.parse(stored);
+                    allPosts = data.blog || [];
+                } catch (e) {
+                    allPosts = getDefaultPosts();
+                }
+            } else {
+                allPosts = getDefaultPosts();
+            }
+        }
+
+        // Default sample posts
+        function getDefaultPosts() {
+            return [
+                {
+                    id: 1,
+                    title: "Understanding Cost Escalation in Tanzanian Construction Projects",
+                    slug: "cost-escalation-tanzania",
+                    excerpt: "Learn about the key factors driving cost escalation in construction projects and strategies to mitigate financial risks during project execution.",
+                    content: `<p>Cost escalation is one of the most significant challenges facing construction projects in Tanzania. Understanding the factors that contribute to cost increases is essential for effective project management and budget control.</p>
+
+<h2>Key Factors Driving Cost Escalation</h2>
+
+<p>Several factors contribute to cost escalation in Tanzanian construction projects:</p>
+
+<ul>
+<li><strong>Currency Fluctuations:</strong> The Tanzanian Shilling's volatility against major currencies impacts the cost of imported materials and equipment.</li>
+<li><strong>Material Price Increases:</strong> Global supply chain disruptions and local demand pressures can significantly affect construction material prices.</li>
+<li><strong>Labor Cost Changes:</strong> Skilled labor shortages often lead to wage increases during project execution.</li>
+<li><strong>Regulatory Changes:</strong> New building codes, environmental regulations, and tax policies can add unexpected costs.</li>
+</ul>
+
+<h2>Strategies for Mitigation</h2>
+
+<p>Effective cost management requires proactive strategies:</p>
+
+<blockquote>
+"The key to managing cost escalation is early identification of risks and building appropriate contingencies into your project budget." - QS Kashebo J. Rwezaula
+</blockquote>
+
+<h3>1. Comprehensive Cost Planning</h3>
+<p>Develop detailed cost estimates at the earliest stages of the project, including realistic contingencies based on historical data and market analysis.</p>
+
+<h3>2. Contract Provisions</h3>
+<p>Include appropriate escalation clauses in contracts that fairly distribute risk between parties while protecting against excessive cost increases.</p>
+
+<h3>3. Regular Monitoring</h3>
+<p>Implement robust cost monitoring systems to identify variances early and take corrective action before costs spiral out of control.</p>
+
+<h2>Conclusion</h2>
+
+<p>Cost escalation is an inherent risk in construction projects, but with proper planning, monitoring, and professional quantity surveying services, these risks can be effectively managed. Our team at KJ & Associates has extensive experience helping clients navigate these challenges and deliver projects within budget.</p>`,
+                    category: "cost-management",
+                    image: "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=1200&q=80",
+                    author: "QS Kashebo J. Rwezaula",
+                    authorPhoto: "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=200&q=80",
+                    authorRole: "Managing Director",
+                    authorBio: "With over 37 years of experience in quantity surveying and construction project management, QS Kashebo leads KJ & Associates with a commitment to excellence and client satisfaction.",
+                    date: "2024-12-15",
+                    tags: ["Cost Management", "Construction", "Tanzania", "Budget Control"],
+                    featured: true,
+                    published: true
+                },
+                {
+                    id: 2,
+                    title: "New AQRB Regulations: What Contractors Need to Know",
+                    slug: "aqrb-regulations-2024",
+                    excerpt: "A comprehensive guide to the latest regulations from the Architects and Quantity Surveyors Registration Board and their impact on construction projects.",
+                    content: `<p>The Architects and Quantity Surveyors Registration Board (AQRB) has introduced several new regulations that will significantly impact how construction projects are managed in Tanzania. This article provides a comprehensive overview of these changes and their implications.</p>
+
+<h2>Overview of New Regulations</h2>
+
+<p>The AQRB has updated its regulatory framework to enhance professional standards and protect public interest in the construction industry. Key changes include:</p>
+
+<ul>
+<li>Enhanced qualification requirements for registration</li>
+<li>Mandatory continuing professional development (CPD) requirements</li>
+<li>Updated fee structures for professional services</li>
+<li>Stricter compliance and enforcement measures</li>
+</ul>
+
+<h2>Impact on Contractors</h2>
+
+<p>These regulations have several implications for contractors working in Tanzania:</p>
+
+<h3>Engagement of Registered Professionals</h3>
+<p>Contractors must ensure that all quantity surveying and architectural services are provided by AQRB-registered professionals. This includes verification of current registration status before engagement.</p>
+
+<h3>Documentation Requirements</h3>
+<p>Projects now require more comprehensive documentation, including detailed cost reports and professional certifications at various stages.</p>
+
+<h2>Compliance Tips</h2>
+
+<blockquote>
+"Compliance with AQRB regulations is not just a legal requirement—it's a mark of quality and professionalism that builds client trust." - QS John Mwakasege
+</blockquote>
+
+<p>To ensure compliance, contractors should:</p>
+
+<ol>
+<li>Verify the registration status of all engaged professionals</li>
+<li>Maintain proper documentation throughout the project</li>
+<li>Stay updated on regulatory changes through AQRB communications</li>
+<li>Engage with registered quantity surveyors early in the project planning phase</li>
+</ol>
+
+<h2>Conclusion</h2>
+
+<p>Understanding and complying with AQRB regulations is essential for successful project delivery in Tanzania. KJ & Associates, as a registered firm, is committed to helping clients navigate these requirements while delivering exceptional quantity surveying services.</p>`,
+                    category: "regulations",
+                    image: "https://images.unsplash.com/photo-1589829545856-d10d557cf95f?w=1200&q=80",
+                    author: "QS John Mwakasege",
+                    authorPhoto: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&q=80",
+                    authorRole: "Director",
+                    authorBio: "QS John Mwakasege brings 25 years of experience in cost planning, tender documentation, and contract administration to KJ & Associates.",
+                    date: "2024-12-10",
+                    tags: ["Regulations", "AQRB", "Compliance", "Professional Standards"],
+                    featured: false,
+                    published: true
+                },
+                {
+                    id: 3,
+                    title: "Project Spotlight: Morogoro Central Market Development",
+                    slug: "morogoro-market-spotlight",
+                    excerpt: "An in-depth look at our role in the World Bank-funded Morogoro Central Market project, showcasing our cost management expertise.",
+                    content: `<p>The Morogoro Central Market Development project stands as one of our most significant achievements, demonstrating KJ & Associates' capability in managing large-scale, donor-funded construction projects.</p>
+
+<h2>Project Overview</h2>
+
+<p>The Morogoro Central Market project involved the development of modern market facilities to serve the growing commercial needs of Morogoro Municipality. Key project details include:</p>
+
+<ul>
+<li><strong>Client:</strong> Morogoro Municipal Council</li>
+<li><strong>Funding:</strong> World Bank</li>
+<li><strong>Contract Value:</strong> TZS 17 Billion</li>
+<li><strong>Duration:</strong> 24 months</li>
+</ul>
+
+<h2>Our Role</h2>
+
+<p>KJ & Associates provided comprehensive quantity surveying services throughout the project lifecycle:</p>
+
+<h3>Pre-Contract Services</h3>
+<p>We developed detailed cost estimates, prepared bills of quantities, and assisted in the tender evaluation process to ensure competitive and fair contractor selection.</p>
+
+<h3>Post-Contract Services</h3>
+<p>Our team managed interim valuations, variation assessments, and cost monitoring to ensure the project remained within budget while meeting quality standards.</p>
+
+<h3>Final Account</h3>
+<p>We prepared and negotiated the final account, ensuring all parties received fair compensation for work completed.</p>
+
+<h2>Challenges and Solutions</h2>
+
+<blockquote>
+"This project required careful coordination between multiple stakeholders and strict adherence to World Bank procurement guidelines. Our experience with donor-funded projects was crucial to its success." - QS Sarah Kimaro
+</blockquote>
+
+<p>Key challenges included managing scope changes while maintaining budget discipline and coordinating with multiple stakeholders including the World Bank, municipal authorities, and contractors.</p>
+
+<h2>Results</h2>
+
+<p>The project was completed successfully, delivering modern market facilities that have transformed commercial activity in Morogoro. Key achievements include:</p>
+
+<ul>
+<li>Project completed within budget</li>
+<li>High-quality construction meeting international standards</li>
+<li>Successful coordination with World Bank requirements</li>
+<li>Enhanced market facilities serving thousands of traders</li>
+</ul>
+
+<h2>Conclusion</h2>
+
+<p>The Morogoro Central Market project exemplifies our commitment to excellence in quantity surveying and our capability to manage complex, donor-funded projects. Contact us to learn how we can support your next construction project.</p>`,
+                    category: "project-spotlight",
+                    image: "https://images.unsplash.com/photo-1541888946425-d81bb19240f5?w=1200&q=80",
+                    author: "QS Sarah Kimaro",
+                    authorPhoto: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=200&q=80",
+                    authorRole: "Director of Operations",
+                    authorBio: "QS Sarah Kimaro is an expert in project coordination, interim valuations, and final accounts with 20 years of experience in the construction industry.",
+                    date: "2024-12-05",
+                    tags: ["Project Spotlight", "World Bank", "Morogoro", "Market Development"],
+                    featured: false,
+                    published: true
+                },
+                {
+                    id: 4,
+                    title: "Construction Industry Outlook for Tanzania 2025",
+                    slug: "construction-outlook-2025",
+                    excerpt: "Analysis of emerging trends, opportunities, and challenges facing the Tanzanian construction industry in the coming year.",
+                    content: `<p>As we approach 2025, the Tanzanian construction industry stands at a pivotal moment. This analysis examines the key trends, opportunities, and challenges that will shape the sector in the coming year.</p>
+
+<h2>Market Overview</h2>
+
+<p>The construction industry in Tanzania continues to grow, driven by government infrastructure investments, private sector development, and donor-funded projects. Key indicators suggest continued expansion in 2025.</p>
+
+<h2>Emerging Trends</h2>
+
+<h3>1. Digital Transformation</h3>
+<p>Building Information Modeling (BIM) and digital project management tools are becoming increasingly prevalent, improving efficiency and reducing errors in construction projects.</p>
+
+<h3>2. Sustainable Construction</h3>
+<p>Green building practices and sustainable construction methods are gaining traction, driven by environmental concerns and client demands for energy-efficient buildings.</p>
+
+<h3>3. Infrastructure Development</h3>
+<p>Major infrastructure projects, including roads, railways, and ports, continue to drive construction activity across the country.</p>
+
+<h2>Opportunities</h2>
+
+<ul>
+<li>Growing urban population creating demand for housing and commercial developments</li>
+<li>Government commitment to infrastructure development</li>
+<li>Increasing foreign investment in the construction sector</li>
+<li>Expansion of donor-funded development projects</li>
+</ul>
+
+<h2>Challenges</h2>
+
+<blockquote>
+"While opportunities abound, the industry must address challenges including skills shortages, material costs, and regulatory compliance to achieve sustainable growth." - QS Kashebo J. Rwezaula
+</blockquote>
+
+<p>Key challenges include:</p>
+
+<ul>
+<li>Skilled labor shortages</li>
+<li>Volatile material prices</li>
+<li>Access to financing for contractors</li>
+<li>Regulatory compliance requirements</li>
+</ul>
+
+<h2>Recommendations</h2>
+
+<p>For stakeholders looking to succeed in the 2025 construction market, we recommend:</p>
+
+<ol>
+<li>Invest in digital tools and training</li>
+<li>Build strong relationships with professional service providers</li>
+<li>Focus on sustainable construction practices</li>
+<li>Maintain robust cost management systems</li>
+</ol>
+
+<h2>Conclusion</h2>
+
+<p>The outlook for Tanzania's construction industry in 2025 is positive, with significant opportunities for growth. Success will depend on effective planning, professional project management, and adaptation to emerging trends. KJ & Associates is ready to support your construction projects with expert quantity surveying services.</p>`,
+                    category: "industry-insights",
+                    image: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=1200&q=80",
+                    author: "QS Kashebo J. Rwezaula",
+                    authorPhoto: "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=200&q=80",
+                    authorRole: "Managing Director",
+                    authorBio: "With over 37 years of experience in quantity surveying and construction project management, QS Kashebo leads KJ & Associates with a commitment to excellence and client satisfaction.",
+                    date: "2024-11-28",
+                    tags: ["Industry Insights", "Market Analysis", "Tanzania", "2025 Outlook"],
+                    featured: false,
+                    published: true
+                },
+                {
+                    id: 5,
+                    title: "KJ & Associates Celebrates 17 Years of Excellence",
+                    slug: "17-years-anniversary",
+                    excerpt: "Reflecting on our journey, achievements, and commitment to delivering quality quantity surveying services in Tanzania.",
+                    content: `<p>KJ & Associates Consultancy Ltd proudly celebrates 17 years of delivering exceptional quantity surveying and construction project management services in Tanzania. This milestone reflects our unwavering commitment to excellence and client satisfaction.</p>
+
+<h2>Our Journey</h2>
+
+<p>Founded in 2007, KJ & Associates has grown from a small consultancy to one of Tanzania's leading quantity surveying firms. Our journey has been marked by continuous growth, professional development, and successful project delivery.</p>
+
+<h2>Key Achievements</h2>
+
+<ul>
+<li>Successfully completed over 50 major construction projects</li>
+<li>Managed projects worth billions of Tanzanian Shillings</li>
+<li>Built lasting relationships with government agencies, international organizations, and private sector clients</li>
+<li>Developed a team of highly qualified and experienced professionals</li>
+</ul>
+
+<h2>Our Values</h2>
+
+<blockquote>
+"Our success is built on a foundation of integrity, professionalism, and dedication to our clients' success. These values have guided us for 17 years and will continue to shape our future." - QS Kashebo J. Rwezaula
+</blockquote>
+
+<p>The core values that have driven our success include:</p>
+
+<h3>Integrity</h3>
+<p>We maintain the highest ethical standards in all our professional dealings.</p>
+
+<h3>Excellence</h3>
+<p>We strive for excellence in every project, regardless of size or complexity.</p>
+
+<h3>Client Focus</h3>
+<p>Our clients' success is our success. We work closely with clients to understand and meet their needs.</p>
+
+<h2>Looking Forward</h2>
+
+<p>As we celebrate this milestone, we look forward to continued growth and service excellence. Our goals for the coming years include:</p>
+
+<ul>
+<li>Expanding our service offerings</li>
+<li>Investing in digital technologies</li>
+<li>Developing the next generation of quantity surveying professionals</li>
+<li>Strengthening our position as a trusted partner for construction projects</li>
+</ul>
+
+<h2>Thank You</h2>
+
+<p>We extend our heartfelt thanks to our clients, partners, and team members who have contributed to our success over the past 17 years. Your trust and support have made this journey possible.</p>
+
+<p>Here's to many more years of excellence in quantity surveying!</p>`,
+                    category: "company-news",
+                    image: "https://images.unsplash.com/photo-1521737711867-e3b97375f902?w=1200&q=80",
+                    author: "KJ & Associates Team",
+                    authorPhoto: "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=200&q=80",
+                    authorRole: "KJ & Associates",
+                    authorBio: "KJ & Associates Consultancy Ltd is a leading quantity surveying firm in Tanzania with over 17 years of experience serving public, private, and donor-funded projects.",
+                    date: "2024-11-20",
+                    tags: ["Company News", "Anniversary", "Milestone"],
+                    featured: false,
+                    published: true
+                },
+                {
+                    id: 6,
+                    title: "5 Tips for Effective Construction Budget Management",
+                    slug: "budget-management-tips",
+                    excerpt: "Practical advice from our experts on maintaining budget control throughout your construction project lifecycle.",
+                    content: `<p>Effective budget management is crucial for construction project success. Based on our 17+ years of experience, here are five essential tips for maintaining budget control throughout your project lifecycle.</p>
+
+<h2>1. Start with Accurate Cost Estimates</h2>
+
+<p>The foundation of effective budget management is accurate cost estimation at the project outset. Key considerations include:</p>
+
+<ul>
+<li>Engage professional quantity surveyors early in the planning process</li>
+<li>Use historical data from similar projects</li>
+<li>Account for local market conditions and material availability</li>
+<li>Include realistic contingencies based on project risk assessment</li>
+</ul>
+
+<h2>2. Implement Robust Cost Monitoring Systems</h2>
+
+<p>Regular monitoring allows early identification of budget variances:</p>
+
+<blockquote>
+"The key to budget control is not just setting a budget, but continuously monitoring actual costs against planned expenditure and taking corrective action when variances occur." - QS John Mwakasege
+</blockquote>
+
+<p>Effective monitoring includes monthly cost reports, variance analysis, and trend forecasting.</p>
+
+<h2>3. Manage Scope Changes Carefully</h2>
+
+<p>Scope changes are a leading cause of budget overruns. To manage them effectively:</p>
+
+<ul>
+<li>Establish a formal change control process</li>
+<li>Evaluate the cost impact of all proposed changes before approval</li>
+<li>Document all changes and their financial implications</li>
+<li>Communicate changes to all stakeholders promptly</li>
+</ul>
+
+<h2>4. Build Strong Contractor Relationships</h2>
+
+<p>Good contractor relationships contribute to budget success:</p>
+
+<ul>
+<li>Select contractors based on capability, not just price</li>
+<li>Maintain open communication throughout the project</li>
+<li>Address issues promptly before they escalate</li>
+<li>Ensure fair and timely payment for completed work</li>
+</ul>
+
+<h2>5. Plan for Contingencies</h2>
+
+<p>Every construction project faces unexpected challenges. Proper contingency planning includes:</p>
+
+<ul>
+<li>Setting aside appropriate contingency funds (typically 5-15% depending on project risk)</li>
+<li>Defining clear criteria for contingency use</li>
+<li>Monitoring contingency drawdown throughout the project</li>
+<li>Avoiding the temptation to use contingency for scope additions</li>
+</ul>
+
+<h2>Conclusion</h2>
+
+<p>Effective budget management requires planning, monitoring, and disciplined execution. By following these five tips and engaging professional quantity surveying services, you can significantly improve your chances of delivering projects within budget.</p>
+
+<p>Contact KJ & Associates to learn how our cost management expertise can support your next construction project.</p>`,
+                    category: "cost-management",
+                    image: "https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=1200&q=80",
+                    author: "QS John Mwakasege",
+                    authorPhoto: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&q=80",
+                    authorRole: "Director",
+                    authorBio: "QS John Mwakasege brings 25 years of experience in cost planning, tender documentation, and contract administration to KJ & Associates.",
+                    date: "2024-11-15",
+                    tags: ["Cost Management", "Budget Tips", "Construction", "Best Practices"],
+                    featured: false,
+                    published: true
+                }
+            ];
+        }
+
+        // Load and display post
+        function loadPost() {
+            const slug = getSlugFromUrl();
+            
+            if (!slug) {
+                showNotFound();
+                return;
+            }
+            
+            loadBlogData();
+            currentPost = allPosts.find(p => p.slug === slug && p.published);
+            
+            if (!currentPost) {
+                showNotFound();
+                return;
+            }
+            
+            displayPost();
+            loadRelatedPosts();
+        }
+
+        // Display post content
+        function displayPost() {
+            // Update page title and meta
+            document.getElementById('pageTitle').textContent = `${currentPost.title} | KJ & Associates Blog`;
+            document.getElementById('metaDescription').content = currentPost.excerpt;
+            
+            // Update hero section
+            document.getElementById('postHeroBg').style.backgroundImage = `url(${currentPost.image})`;
+            document.getElementById('postCategory').textContent = formatCategory(currentPost.category);
+            document.getElementById('postTitle').textContent = currentPost.title;
+            document.getElementById('postAuthor').textContent = currentPost.author;
+            document.getElementById('postAuthorImg').src = currentPost.authorPhoto;
+            document.getElementById('postAuthorImg').alt = currentPost.author;
+            document.getElementById('postDate').textContent = formatDate(currentPost.date);
+            
+            // Calculate read time (rough estimate: 200 words per minute)
+            const wordCount = currentPost.content.replace(/<[^>]*>/g, '').split(/\s+/).length;
+            const readTime = Math.max(1, Math.ceil(wordCount / 200));
+            document.getElementById('postReadTime').textContent = `${readTime} min read`;
+            
+            // Hide loading, show content
+            document.getElementById('loadingState').style.display = 'none';
+            document.getElementById('postContent').style.display = 'block';
+            document.getElementById('postContent').innerHTML = currentPost.content;
+            
+            // Display tags
+            if (currentPost.tags && currentPost.tags.length > 0) {
+                const tagsContainer = document.getElementById('postTags');
+                tagsContainer.style.display = 'flex';
+                tagsContainer.innerHTML = '<span style="font-weight: 600; margin-right: 0.5rem;">Tags:</span>' + 
+                    currentPost.tags.map(tag => `<a href="index.html?search=${encodeURIComponent(tag)}" class="post-tag">${tag}</a>`).join('');
+            }
+            
+            // Setup share buttons
+            setupShareButtons();
+            document.getElementById('shareSection').style.display = 'flex';
+            
+            // Display author box
+            document.getElementById('authorBox').style.display = 'flex';
+            document.getElementById('authorBoxImg').src = currentPost.authorPhoto;
+            document.getElementById('authorBoxImg').alt = currentPost.author;
+            document.getElementById('authorBoxName').textContent = currentPost.author;
+            document.getElementById('authorBoxRole').textContent = currentPost.authorRole || 'Quantity Surveyor';
+            document.getElementById('authorBoxBio').textContent = currentPost.authorBio || '';
+        }
+
+        // Setup share buttons
+        function setupShareButtons() {
+            const url = encodeURIComponent(window.location.href);
+            const title = encodeURIComponent(currentPost.title);
+            
+            document.getElementById('shareLinkedin').href = `https://www.linkedin.com/shareArticle?mini=true&url=${url}&title=${title}`;
+            document.getElementById('shareTwitter').href = `https://twitter.com/intent/tweet?url=${url}&text=${title}`;
+            document.getElementById('shareFacebook').href = `https://www.facebook.com/sharer/sharer.php?u=${url}`;
+            document.getElementById('shareWhatsapp').href = `https://wa.me/?text=${title}%20${url}`;
+        }
+
+        // Load related posts
+        function loadRelatedPosts() {
+            const related = allPosts
+                .filter(p => p.id !== currentPost.id && p.published && p.category === currentPost.category)
+                .slice(0, 3);
+            
+            if (related.length === 0) {
+                // If no posts in same category, show recent posts
+                const recent = allPosts
+                    .filter(p => p.id !== currentPost.id && p.published)
+                    .sort((a, b) => new Date(b.date) - new Date(a.date))
+                    .slice(0, 3);
+                
+                if (recent.length > 0) {
+                    displayRelatedPosts(recent);
+                }
+                return;
+            }
+            
+            displayRelatedPosts(related);
+        }
+
+        // Display related posts
+        function displayRelatedPosts(posts) {
+            const container = document.getElementById('relatedPosts');
+            const grid = document.getElementById('relatedGrid');
+            
+            container.style.display = 'block';
+            grid.innerHTML = posts.map(post => `
+                <a href="post.html?slug=${post.slug}" class="related-card">
+                    <img src="${post.image}" alt="${post.title}" onerror="this.src='https://via.placeholder.com/400x180?text=No+Image'">
+                    <div class="related-card-content">
+                        <h3>${post.title}</h3>
+                        <span class="post-date">📅 ${formatDate(post.date)}</span>
+                    </div>
+                </a>
+            `).join('');
+        }
+
+        // Show 404 state
+        function showNotFound() {
+            document.getElementById('postHero').style.display = 'none';
+            document.getElementById('postContainer').style.display = 'none';
+            document.getElementById('notFound').style.display = 'block';
+        }
+
+        // Format category name
+        function formatCategory(category) {
+            const categories = {
+                'industry-insights': 'Industry Insights',
+                'project-spotlight': 'Project Spotlight',
+                'cost-management': 'Cost Management',
+                'regulations': 'Regulations',
+                'company-news': 'Company News'
+            };
+            return categories[category] || category;
+        }
+
+        // Format date
+        function formatDate(dateString) {
+            const options = { year: 'numeric', month: 'long', day: 'numeric' };
+            return new Date(dateString).toLocaleDateString('en-US', options);
+        }
+
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', loadPost);
+    </script>
+</body>
+</html>
+

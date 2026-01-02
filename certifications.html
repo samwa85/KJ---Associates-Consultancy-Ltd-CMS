@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="View our certifications and legal documents including AQRB practicing certificate, TIN, VAT, business license, and insurance.">
+    <title>Certifications & Legal | KJ & Associates Consultancy Ltd</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: { DEFAULT: '#0d4d2c', light: '#1a7a47', dark: '#083d22' },
+                        accent: { DEFAULT: '#d4a855', light: '#e8c882', dark: '#b8923e' },
+                    },
+                },
+            },
+        }
+    </script>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/themes.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-wrapper">
+                <a href="index.html" class="logo">
+                    <span class="logo-text">KJ & Associates</span>
+                    <span class="logo-subtitle">Consultancy Ltd</span>
+                </a>
+                <button class="mobile-menu-toggle" aria-label="Toggle menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                <ul class="nav-menu">
+                    <li><a href="index.html">Home</a></li>
+                    <li class="dropdown">
+                        <a href="about.html">About Us <span class="dropdown-arrow">▼</span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="about.html#profile">Company Profile</a></li>
+                            <li><a href="about.html#team">Leadership & Team</a></li>
+                            <li><a href="about.html#structure">Organization Structure</a></li>
+                            <li><a href="about.html#technology">Technology & Tools</a></li>
+                        </ul>
+                    </li>
+                    <li class="dropdown">
+                        <a href="services/index.html">Services <span class="dropdown-arrow">▼</span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="services/index.html#pre-contract">Pre-Contract Services</a></li>
+                            <li><a href="services/index.html#post-contract">Post-Contract Services</a></li>
+                            <li><a href="services/index.html#tendering">Tendering & Contract Documentation</a></li>
+                            <li><a href="services/index.html#dispute">Dispute / Claims Support</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="projects/index.html">Projects</a></li>
+                    <li><a href="clients.html">Clients</a></li>
+                    <li><a href="certifications.html" class="active">Certifications</a></li>
+                    <li><a href="contact.html" class="btn-primary">Contact Us</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <section class="page-header">
+        <div class="container">
+            <h1>Certifications & Legal</h1>
+            <p>Our professional credentials and legal documentation</p>
+        </div>
+    </section>
+
+    <!-- Certificates Gallery -->
+    <section class="content-section">
+        <div class="container">
+            <div class="content-text" style="max-width: 800px; margin: 0 auto 3rem; text-align: center;">
+                <p>KJ & Associates Consultancy Ltd maintains all necessary certifications and legal documentation required to operate as a professional quantity surveying firm in Tanzania. Click on any certificate to view in detail.</p>
+            </div>
+            <div class="certificates-grid" id="certificatesGrid">
+                <!-- Certificates will be loaded dynamically -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Certificate Modal for viewing full image -->
+    <div id="certificateModal" class="certificate-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1000; padding: 2rem; overflow: auto;">
+        <button onclick="closeCertificateModal()" style="position: absolute; top: 1rem; right: 1rem; background: white; border: none; font-size: 2rem; cursor: pointer; padding: 0.5rem 1rem; border-radius: 8px;">&times;</button>
+        <img id="certificateModalImg" src="" alt="Certificate" style="max-width: 100%; max-height: 90vh; display: block; margin: 2rem auto; border-radius: 8px;">
+    </div>
+
+    <script>
+        // Image path normalization helper
+        function normalizeImagePath(path) {
+            if (!path || path.trim() === '') return '';
+            if (path.startsWith('http://') || path.startsWith('https://') || path.startsWith('data:image')) return path;
+            if (path.startsWith('/')) {
+                if (window.location.protocol === 'file:') {
+                    return path.substring(1);
+                }
+            }
+            return path;
+        }
+
+        // Load certificates from CMS
+        function loadCertificates() {
+            const savedData = localStorage.getItem('kj_cms_data');
+            let certifications = [];
+
+            if (savedData) {
+                try {
+                    const cmsData = JSON.parse(savedData);
+                    certifications = cmsData.certifications || [];
+                } catch (e) {
+                    console.error('Error parsing CMS data:', e);
+                }
+            }
+
+            // Fallback to defaults if none found
+            if (certifications.length === 0) {
+                certifications = [
+                    { id: 1, title: "AQRB Practising Certificate", issuer: "Architects and Quantity Surveyors Registration Board (AQRB)", description: "Registered Quantity Surveyor practicing certificate", image: "", category: "professional" },
+                    { id: 2, title: "TIN Certificate", issuer: "Tanzania Revenue Authority", description: "Tax Identification Number certificate", image: "", category: "tax" },
+                    { id: 3, title: "VAT Registration", issuer: "Tanzania Revenue Authority", description: "Value Added Tax registration certificate", image: "", category: "tax" },
+                    { id: 4, title: "Business License", issuer: "BRELA", description: "Business Registration and Licensing Agency certificate", image: "", category: "legal" },
+                    { id: 5, title: "Professional Indemnity Insurance", issuer: "Insurance Provider", description: "Professional indemnity insurance coverage", image: "", category: "insurance" }
+                ];
+            }
+
+            renderCertificates(certifications);
+        }
+
+        function renderCertificates(certifications) {
+            const container = document.getElementById('certificatesGrid');
+            if (!container) return;
+
+            if (certifications.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: var(--text-secondary);">No certifications to display.</p>';
+                return;
+            }
+
+            container.innerHTML = certifications.map(cert => {
+                let imagePath = cert.image || '';
+                if (imagePath && !imagePath.startsWith('data:image') && !imagePath.startsWith('http')) {
+                    imagePath = normalizeImagePath(imagePath);
+                }
+                const hasImage = imagePath && imagePath.trim() !== '';
+                
+                return `
+                    <div class="certificate-item" ${hasImage ? `onclick="openCertificateModal('${imagePath.replace(/'/g, "\\'")}')" style="cursor: pointer;"` : ''}>
+                        ${hasImage 
+                            ? `<img src="${imagePath}" alt="${cert.title}" class="certificate-image" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" />`
+                            : ''
+                        }
+                        <div class="certificate-image-placeholder" style="display: ${hasImage ? 'none' : 'flex'};">
+                            <span>📜</span>
+                        </div>
+                        <h3>${cert.title}</h3>
+                        <p>${cert.issuer || ''}</p>
+                        ${cert.description ? `<p class="certificate-note">${cert.description}</p>` : ''}
+                        ${cert.validUntil ? `<p class="certificate-valid">Valid until: ${cert.validUntil}</p>` : ''}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function openCertificateModal(imageSrc) {
+            const modal = document.getElementById('certificateModal');
+            const modalImg = document.getElementById('certificateModalImg');
+            modalImg.src = imageSrc;
+            modal.style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeCertificateModal() {
+            const modal = document.getElementById('certificateModal');
+            modal.style.display = 'none';
+            document.body.style.overflow = '';
+        }
+
+        // Close modal on escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeCertificateModal();
+            }
+        });
+
+        // Load certificates when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            loadCertificates();
+        });
+    </script>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <h3>KJ & Associates</h3>
+                    <p>Quantity Surveyors & Construction Project Managers</p>
+                    <p class="footer-location">📍 KIJITONYAMA, MABATINI ROAD<br>DAR ES SALAAM, TANZANIA</p>
+                </div>
+                <div class="footer-col">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="about.html">About Us</a></li>
+                        <li><a href="services/index.html">Services</a></li>
+                        <li><a href="projects/index.html">Projects</a></li>
+                        <li><a href="clients.html">Clients</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Resources</h4>
+                    <ul>
+                        <li><a href="certifications.html">Certifications</a></li>
+                        <li><a href="contact.html">Contact Us</a></li>
+                        <li><a href="privacy.html">Privacy Policy</a></li>
+                        <li><a href="terms.html">Terms of Service</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Contact</h4>
+                    <p>Email: <a href="mailto:md@kjconsultancy.co.tz">md@kjconsultancy.co.tz</a></p>
+                    <p>Email: <a href="mailto:info@kjconsultancy.co.tz">info@kjconsultancy.co.tz</a></p>
+                    <p>Phone: <a href="tel:+255768757779">+255 768 757 779</a></p>
+                    <div class="social-links">
+                        <a href="#" aria-label="LinkedIn">LinkedIn</a>
+                        <a href="#" aria-label="Facebook">Facebook</a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 KJ & Associates Consultancy Ltd. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/main.js"></script>
+</body>
+</html>
+

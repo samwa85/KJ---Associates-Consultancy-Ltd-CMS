@@ -1,0 +1,904 @@
+/* ==================== THEME SYSTEM ==================== */
+/* KJ & Associates - Multi-Theme CSS */
+/* Themes: Classic Green (default), Professional Dark, Earth Warm */
+
+/* ==================== THEME TRANSITIONS ==================== */
+html {
+    transition: background-color 0.4s ease, color 0.4s ease;
+}
+
+html * {
+    transition: background-color 0.3s ease, 
+                border-color 0.3s ease, 
+                box-shadow 0.3s ease,
+                color 0.2s ease;
+}
+
+/* Disable transitions on page load */
+html.no-transition,
+html.no-transition * {
+    transition: none !important;
+}
+
+/* ==================== CLASSIC GREEN THEME (Default) ==================== */
+/* This is the base theme - variables defined in style.css :root */
+html[data-theme="classic-green"],
+html:not([data-theme]) {
+    --theme-name: "Classic Green";
+}
+
+/* ==================== PROFESSIONAL DARK THEME ==================== */
+html[data-theme="professional-dark"] {
+    --theme-name: "Professional Dark";
+    
+    /* Primary Colors - Deep Charcoal with Emerald */
+    --primary: #10b981;
+    --primary-light: #34d399;
+    --primary-dark: #059669;
+    --primary-gradient: linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%);
+    
+    /* Accent - Gold */
+    --accent: #f59e0b;
+    --accent-light: #fbbf24;
+    --accent-dark: #d97706;
+    
+    /* Dark Mode Neutrals */
+    --white: #0f0f1a;
+    --off-white: #121220;
+    --gray-50: #1a1a2e;
+    --gray-100: #1e1e32;
+    --gray-200: #2a2a40;
+    --gray-300: #3a3a52;
+    --gray-400: #5a5a72;
+    --gray-500: #8a8aa2;
+    --gray-600: #a0a0b8;
+    --gray-700: #c0c0d2;
+    --gray-800: #e0e0ea;
+    --gray-900: #f0f0f5;
+    --text-primary: #f0f0f5;
+    --text-secondary: #a0a0b8;
+    
+    /* Dark Mode Shadows */
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.5);
+    --shadow-xl: 0 20px 60px rgba(0, 0, 0, 0.6);
+    --shadow-glow: 0 0 40px rgba(16, 185, 129, 0.2);
+    
+    /* Background */
+    color-scheme: dark;
+}
+
+/* Professional Dark - Component Overrides */
+html[data-theme="professional-dark"] body {
+    background-color: #0f0f1a;
+    background-image: 
+        radial-gradient(circle at 20% 50%, rgba(16, 185, 129, 0.03) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(245, 158, 11, 0.02) 0%, transparent 50%);
+}
+
+html[data-theme="professional-dark"] .navbar {
+    background: rgba(15, 15, 26, 0.95);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+html[data-theme="professional-dark"] .navbar.scrolled {
+    background: rgba(15, 15, 26, 0.98);
+    backdrop-filter: blur(20px);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+}
+
+html[data-theme="professional-dark"] .navbar:not(.scrolled) .logo-text {
+    color: #10b981;
+    background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+html[data-theme="professional-dark"] .navbar:not(.scrolled) .logo-subtitle {
+    color: rgba(255, 255, 255, 0.6);
+}
+
+html[data-theme="professional-dark"] .navbar:not(.scrolled) .nav-menu > li > a {
+    color: rgba(255, 255, 255, 0.8);
+}
+
+html[data-theme="professional-dark"] .logo-text {
+    background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+html[data-theme="professional-dark"] .dropdown-menu {
+    background: #1a1a2e;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+html[data-theme="professional-dark"] .dropdown-menu::before {
+    border-bottom-color: #1a1a2e;
+}
+
+html[data-theme="professional-dark"] .dropdown-menu a:hover {
+    background: rgba(16, 185, 129, 0.1);
+}
+
+/* Hero Slideshow - Dark Theme */
+html[data-theme="professional-dark"] .slide-left {
+    background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 100%);
+}
+
+html[data-theme="professional-dark"] .slide-circle {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    box-shadow: 0 0 60px rgba(16, 185, 129, 0.3);
+}
+
+html[data-theme="professional-dark"] .slide-circle::before {
+    border-color: rgba(16, 185, 129, 0.2);
+}
+
+html[data-theme="professional-dark"] .slide-title span {
+    color: #0f0f1a;
+}
+
+html[data-theme="professional-dark"] .slide-btn {
+    background: #0f0f1a;
+    color: #10b981;
+}
+
+html[data-theme="professional-dark"] .slide-btn:hover {
+    background: #1a1a2e;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+/* Stats Bar - Dark Theme */
+html[data-theme="professional-dark"] .stats-bar {
+    background: linear-gradient(135deg, #0a0a12 0%, #0f0f1a 50%, #0a0a12 100%);
+}
+
+html[data-theme="professional-dark"] .stats-bar::before {
+    background: linear-gradient(90deg, #10b981 0%, #34d399 50%, #10b981 100%);
+}
+
+html[data-theme="professional-dark"] .stat-number {
+    background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+html[data-theme="professional-dark"] .stat-plus {
+    background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* Services Section - Dark Theme */
+html[data-theme="professional-dark"] .services-section {
+    background: #121220;
+}
+
+html[data-theme="professional-dark"] .services-section::before {
+    background: #0f0f1a;
+}
+
+html[data-theme="professional-dark"] .service-card {
+    background: #1a1a2e;
+    border-color: rgba(255, 255, 255, 0.05);
+}
+
+html[data-theme="professional-dark"] .service-card:hover {
+    border-color: rgba(16, 185, 129, 0.3);
+    box-shadow: 0 8px 40px rgba(16, 185, 129, 0.1);
+}
+
+html[data-theme="professional-dark"] .service-icon {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+}
+
+html[data-theme="professional-dark"] .section-badge {
+    background: rgba(16, 185, 129, 0.15);
+    color: #10b981;
+}
+
+/* Cards & Items - Dark Theme */
+html[data-theme="professional-dark"] .card,
+html[data-theme="professional-dark"] .project-card,
+html[data-theme="professional-dark"] .feature-item:hover,
+html[data-theme="professional-dark"] .team-member,
+html[data-theme="professional-dark"] .client-item,
+html[data-theme="professional-dark"] .certificate-item,
+html[data-theme="professional-dark"] .testimonial-card,
+html[data-theme="professional-dark"] .philosophy-item,
+html[data-theme="professional-dark"] .tech-item,
+html[data-theme="professional-dark"] .org-box {
+    background: #1a1a2e;
+    border-color: rgba(255, 255, 255, 0.05);
+}
+
+html[data-theme="professional-dark"] .project-card:hover,
+html[data-theme="professional-dark"] .team-member:hover,
+html[data-theme="professional-dark"] .client-item:hover,
+html[data-theme="professional-dark"] .certificate-item:hover,
+html[data-theme="professional-dark"] .philosophy-item:hover,
+html[data-theme="professional-dark"] .tech-item:hover,
+html[data-theme="professional-dark"] .org-box:hover {
+    border-color: rgba(16, 185, 129, 0.3);
+    box-shadow: 0 8px 40px rgba(16, 185, 129, 0.1);
+}
+
+html[data-theme="professional-dark"] .project-image {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+
+/* Why Choose Us - Dark Theme */
+html[data-theme="professional-dark"] .why-choose-us {
+    background: #0f0f1a;
+}
+
+html[data-theme="professional-dark"] .feature-icon {
+    background: rgba(16, 185, 129, 0.15);
+}
+
+html[data-theme="professional-dark"] .feature-item:hover .feature-icon {
+    background: #10b981;
+}
+
+/* Featured Projects - Dark Theme */
+html[data-theme="professional-dark"] .featured-projects {
+    background: linear-gradient(180deg, #121220 0%, #0f0f1a 100%);
+}
+
+/* Trusted By - Dark Theme */
+html[data-theme="professional-dark"] .trusted-by {
+    background: #0f0f1a;
+    border-color: rgba(255, 255, 255, 0.05);
+}
+
+html[data-theme="professional-dark"] .client-logo {
+    background: #1a1a2e;
+    color: #8a8aa2;
+}
+
+html[data-theme="professional-dark"] .client-logo:hover {
+    background: rgba(16, 185, 129, 0.15);
+    color: #10b981;
+}
+
+/* Testimonials - Dark Theme */
+html[data-theme="professional-dark"] .testimonials-section {
+    background: linear-gradient(135deg, #121220 0%, #0f0f1a 100%);
+}
+
+html[data-theme="professional-dark"] .testimonials-section::before {
+    color: #10b981;
+    opacity: 0.05;
+}
+
+html[data-theme="professional-dark"] .testimonial-avatar-placeholder {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+
+html[data-theme="professional-dark"] .testimonial-arrow {
+    background: #1a1a2e;
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+html[data-theme="professional-dark"] .testimonial-arrow:hover {
+    background: #10b981;
+    border-color: #10b981;
+}
+
+html[data-theme="professional-dark"] .testimonial-dot {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+html[data-theme="professional-dark"] .testimonial-dot.active {
+    background: #10b981;
+}
+
+/* CTA Section - Dark Theme */
+html[data-theme="professional-dark"] .cta-section {
+    background: linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%);
+}
+
+/* Hero Section - Dark Theme */
+html[data-theme="professional-dark"] .hero {
+    background: linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%);
+}
+
+html[data-theme="professional-dark"] .hero::after {
+    background: #0f0f1a;
+}
+
+/* Page Header - Dark Theme */
+html[data-theme="professional-dark"] .page-header {
+    background: linear-gradient(135deg, #10b981 0%, #059669 50%, #047857 100%);
+}
+
+html[data-theme="professional-dark"] .page-header::after {
+    background: #0f0f1a;
+}
+
+/* Footer - Dark Theme */
+html[data-theme="professional-dark"] .footer {
+    background: #0a0a12;
+}
+
+html[data-theme="professional-dark"] .footer::before {
+    background: linear-gradient(90deg, #10b981 0%, #34d399 50%, #10b981 100%);
+}
+
+html[data-theme="professional-dark"] .social-links a {
+    background: rgba(16, 185, 129, 0.15);
+}
+
+html[data-theme="professional-dark"] .social-links a:hover {
+    background: #10b981;
+}
+
+/* Buttons - Dark Theme */
+html[data-theme="professional-dark"] .btn-primary {
+    background: #10b981;
+    box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+}
+
+html[data-theme="professional-dark"] .btn-primary:hover {
+    background: #34d399;
+    box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+}
+
+html[data-theme="professional-dark"] .btn-secondary {
+    border-color: #10b981;
+    color: #10b981;
+}
+
+html[data-theme="professional-dark"] .btn-secondary:hover {
+    background: #10b981;
+    color: #0f0f1a;
+}
+
+html[data-theme="professional-dark"] .btn-outline {
+    border-color: rgba(255, 255, 255, 0.2);
+    color: #f0f0f5;
+}
+
+html[data-theme="professional-dark"] .btn-outline:hover {
+    border-color: #10b981;
+    color: #10b981;
+}
+
+html[data-theme="professional-dark"] .btn-white {
+    background: #1a1a2e;
+    color: #10b981;
+}
+
+/* Filter Buttons - Dark Theme */
+html[data-theme="professional-dark"] .filter-btn {
+    background: #1a1a2e;
+    border-color: rgba(255, 255, 255, 0.1);
+    color: #a0a0b8;
+}
+
+html[data-theme="professional-dark"] .filter-btn:hover,
+html[data-theme="professional-dark"] .filter-btn.active {
+    background: #10b981;
+    border-color: #10b981;
+    color: #0f0f1a;
+}
+
+/* Forms - Dark Theme */
+html[data-theme="professional-dark"] .contact-form {
+    background: #1a1a2e;
+    border-color: rgba(255, 255, 255, 0.05);
+}
+
+html[data-theme="professional-dark"] .form-group input,
+html[data-theme="professional-dark"] .form-group select,
+html[data-theme="professional-dark"] .form-group textarea {
+    background: #0f0f1a;
+    border-color: rgba(255, 255, 255, 0.1);
+    color: #f0f0f5;
+}
+
+html[data-theme="professional-dark"] .form-group input:focus,
+html[data-theme="professional-dark"] .form-group select:focus,
+html[data-theme="professional-dark"] .form-group textarea:focus {
+    border-color: #10b981;
+    box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.15);
+}
+
+html[data-theme="professional-dark"] .contact-info {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+
+/* Mobile Menu - Dark Theme */
+html[data-theme="professional-dark"] .nav-menu {
+    background: #0f0f1a;
+}
+
+html[data-theme="professional-dark"] .mobile-menu-toggle span {
+    background: #f0f0f5;
+}
+
+/* Back to Top & WhatsApp - Dark Theme */
+html[data-theme="professional-dark"] .back-to-top {
+    background: #10b981;
+}
+
+html[data-theme="professional-dark"] .back-to-top:hover {
+    background: #34d399;
+}
+
+/* Lightbox - Dark Theme */
+html[data-theme="professional-dark"] .lightbox {
+    background: rgba(10, 10, 18, 0.95);
+}
+
+/* Service Bullets - Dark Theme */
+html[data-theme="professional-dark"] .service-bullets li {
+    border-color: rgba(255, 255, 255, 0.05);
+}
+
+html[data-theme="professional-dark"] .service-bullets li:before {
+    color: #10b981;
+}
+
+/* ==================== EARTH WARM THEME ==================== */
+html[data-theme="earth-warm"] {
+    --theme-name: "Earth Warm";
+    
+    /* Primary Colors - Terracotta */
+    --primary: #a0522d;
+    --primary-light: #cd853f;
+    --primary-dark: #8b4513;
+    --primary-gradient: linear-gradient(135deg, #a0522d 0%, #cd853f 50%, #a0522d 100%);
+    
+    /* Accent - Warm Cream */
+    --accent: #daa520;
+    --accent-light: #f4d03f;
+    --accent-dark: #b8860b;
+    
+    /* Warm Neutrals */
+    --white: #fffef9;
+    --off-white: #faf6f1;
+    --gray-50: #f5efe6;
+    --gray-100: #ebe3d7;
+    --gray-200: #ddd2c2;
+    --gray-300: #c9baa6;
+    --gray-400: #b5a08a;
+    --gray-500: #9a8570;
+    --gray-600: #7a6a58;
+    --gray-700: #5a4f42;
+    --gray-800: #3d352c;
+    --gray-900: #2a241e;
+    --text-primary: #2a241e;
+    --text-secondary: #5a4f42;
+    
+    /* Warm Shadows */
+    --shadow-sm: 0 2px 8px rgba(139, 69, 19, 0.08);
+    --shadow-md: 0 4px 20px rgba(139, 69, 19, 0.1);
+    --shadow-lg: 0 8px 40px rgba(139, 69, 19, 0.12);
+    --shadow-xl: 0 20px 60px rgba(139, 69, 19, 0.15);
+    --shadow-glow: 0 0 40px rgba(160, 82, 45, 0.15);
+}
+
+/* Earth Warm - Component Overrides */
+html[data-theme="earth-warm"] body {
+    background-color: #faf6f1;
+    background-image: 
+        radial-gradient(circle at 10% 20%, rgba(160, 82, 45, 0.03) 0%, transparent 50%),
+        radial-gradient(circle at 90% 80%, rgba(218, 165, 32, 0.03) 0%, transparent 50%);
+}
+
+html[data-theme="earth-warm"] .navbar.scrolled {
+    background: rgba(250, 246, 241, 0.98);
+}
+
+html[data-theme="earth-warm"] .logo-text {
+    background: linear-gradient(135deg, #a0522d 0%, #cd853f 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+html[data-theme="earth-warm"] .dropdown-menu {
+    background: #fffef9;
+    border-color: #ddd2c2;
+}
+
+html[data-theme="earth-warm"] .dropdown-menu::before {
+    border-bottom-color: #fffef9;
+}
+
+/* Hero Slideshow - Warm Theme */
+html[data-theme="earth-warm"] .slide-left {
+    background: linear-gradient(135deg, #cd853f 0%, #a0522d 100%);
+}
+
+html[data-theme="earth-warm"] .slide-circle {
+    background: #2a241e;
+    box-shadow: 0 0 0 15px rgba(160, 82, 45, 0.3);
+}
+
+html[data-theme="earth-warm"] .slide-circle::before {
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+html[data-theme="earth-warm"] .slide-title span {
+    color: #cd853f;
+}
+
+html[data-theme="earth-warm"] .slide-btn {
+    background: #cd853f;
+}
+
+html[data-theme="earth-warm"] .slide-btn:hover {
+    background: #a0522d;
+}
+
+html[data-theme="earth-warm"] .slide-arrow:hover {
+    background: #a0522d;
+}
+
+/* Stats Bar - Warm Theme */
+html[data-theme="earth-warm"] .stats-bar {
+    background: linear-gradient(135deg, #2a241e 0%, #3d352c 50%, #2a241e 100%);
+}
+
+html[data-theme="earth-warm"] .stats-bar::before {
+    background: linear-gradient(90deg, #a0522d 0%, #cd853f 50%, #a0522d 100%);
+}
+
+html[data-theme="earth-warm"] .stat-number {
+    background: linear-gradient(135deg, #cd853f 0%, #daa520 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+html[data-theme="earth-warm"] .stat-plus {
+    background: linear-gradient(135deg, #cd853f 0%, #daa520 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* Services Section - Warm Theme */
+html[data-theme="earth-warm"] .services-section {
+    background: #f5efe6;
+}
+
+html[data-theme="earth-warm"] .services-section::before {
+    background: #faf6f1;
+}
+
+html[data-theme="earth-warm"] .service-card {
+    background: #fffef9;
+    border-color: #ddd2c2;
+    border-radius: 16px;
+}
+
+html[data-theme="earth-warm"] .service-card:hover {
+    border-color: #a0522d;
+}
+
+html[data-theme="earth-warm"] .service-icon {
+    background: linear-gradient(135deg, #a0522d 0%, #cd853f 100%);
+    border-radius: 16px;
+}
+
+html[data-theme="earth-warm"] .section-badge {
+    background: rgba(160, 82, 45, 0.1);
+    color: #a0522d;
+    border-radius: 8px;
+}
+
+/* Cards & Items - Warm Theme */
+html[data-theme="earth-warm"] .card,
+html[data-theme="earth-warm"] .project-card,
+html[data-theme="earth-warm"] .team-member,
+html[data-theme="earth-warm"] .client-item,
+html[data-theme="earth-warm"] .certificate-item,
+html[data-theme="earth-warm"] .testimonial-card,
+html[data-theme="earth-warm"] .philosophy-item,
+html[data-theme="earth-warm"] .tech-item,
+html[data-theme="earth-warm"] .org-box {
+    background: #fffef9;
+    border-color: #ddd2c2;
+    border-radius: 16px;
+}
+
+html[data-theme="earth-warm"] .project-card:hover,
+html[data-theme="earth-warm"] .team-member:hover,
+html[data-theme="earth-warm"] .client-item:hover,
+html[data-theme="earth-warm"] .certificate-item:hover,
+html[data-theme="earth-warm"] .philosophy-item:hover,
+html[data-theme="earth-warm"] .tech-item:hover,
+html[data-theme="earth-warm"] .org-box:hover {
+    border-color: #a0522d;
+}
+
+html[data-theme="earth-warm"] .project-image {
+    background: linear-gradient(135deg, #a0522d 0%, #cd853f 100%);
+}
+
+/* Why Choose Us - Warm Theme */
+html[data-theme="earth-warm"] .why-choose-us {
+    background: #faf6f1;
+}
+
+html[data-theme="earth-warm"] .feature-item:hover {
+    background: #f5efe6;
+    border-radius: 16px;
+}
+
+html[data-theme="earth-warm"] .feature-icon {
+    background: #f5efe6;
+    border-radius: 16px;
+}
+
+html[data-theme="earth-warm"] .feature-item:hover .feature-icon {
+    background: #a0522d;
+}
+
+/* Featured Projects - Warm Theme */
+html[data-theme="earth-warm"] .featured-projects {
+    background: linear-gradient(180deg, #f5efe6 0%, #faf6f1 100%);
+}
+
+/* Trusted By - Warm Theme */
+html[data-theme="earth-warm"] .trusted-by {
+    background: #fffef9;
+    border-color: #ddd2c2;
+}
+
+html[data-theme="earth-warm"] .client-logo {
+    background: #f5efe6;
+    color: #7a6a58;
+    border-radius: 12px;
+}
+
+html[data-theme="earth-warm"] .client-logo:hover {
+    background: #ebe3d7;
+    color: #a0522d;
+}
+
+/* Testimonials - Warm Theme */
+html[data-theme="earth-warm"] .testimonials-section {
+    background: linear-gradient(135deg, #f5efe6 0%, #faf6f1 100%);
+}
+
+html[data-theme="earth-warm"] .testimonials-section::before {
+    color: #a0522d;
+}
+
+html[data-theme="earth-warm"] .testimonial-avatar {
+    border-color: #a0522d;
+}
+
+html[data-theme="earth-warm"] .testimonial-avatar-placeholder {
+    background: linear-gradient(135deg, #a0522d 0%, #cd853f 100%);
+}
+
+html[data-theme="earth-warm"] .testimonial-arrow {
+    background: #fffef9;
+    border-color: #ddd2c2;
+}
+
+html[data-theme="earth-warm"] .testimonial-arrow:hover {
+    background: #a0522d;
+    border-color: #a0522d;
+}
+
+html[data-theme="earth-warm"] .testimonial-dot {
+    background: #c9baa6;
+}
+
+html[data-theme="earth-warm"] .testimonial-dot.active {
+    background: #a0522d;
+}
+
+html[data-theme="earth-warm"] .testimonial-position {
+    color: #a0522d;
+}
+
+/* CTA Section - Warm Theme */
+html[data-theme="earth-warm"] .cta-section {
+    background: linear-gradient(135deg, #a0522d 0%, #cd853f 50%, #a0522d 100%);
+}
+
+/* Hero Section - Warm Theme */
+html[data-theme="earth-warm"] .hero {
+    background: linear-gradient(135deg, #a0522d 0%, #cd853f 50%, #a0522d 100%);
+}
+
+html[data-theme="earth-warm"] .hero::after {
+    background: #faf6f1;
+}
+
+html[data-theme="earth-warm"] .hero-title span {
+    color: #daa520;
+}
+
+/* Page Header - Warm Theme */
+html[data-theme="earth-warm"] .page-header {
+    background: linear-gradient(135deg, #a0522d 0%, #cd853f 50%, #a0522d 100%);
+}
+
+html[data-theme="earth-warm"] .page-header::after {
+    background: #faf6f1;
+}
+
+/* Footer - Warm Theme */
+html[data-theme="earth-warm"] .footer {
+    background: #2a241e;
+}
+
+html[data-theme="earth-warm"] .footer::before {
+    background: linear-gradient(90deg, #a0522d 0%, #cd853f 50%, #a0522d 100%);
+}
+
+html[data-theme="earth-warm"] .social-links a {
+    background: rgba(160, 82, 45, 0.2);
+}
+
+html[data-theme="earth-warm"] .social-links a:hover {
+    background: #a0522d;
+}
+
+/* Buttons - Warm Theme */
+html[data-theme="earth-warm"] .btn-primary {
+    background: #a0522d;
+    box-shadow: 0 4px 15px rgba(160, 82, 45, 0.3);
+}
+
+html[data-theme="earth-warm"] .btn-primary:hover {
+    background: #cd853f;
+    box-shadow: 0 8px 25px rgba(160, 82, 45, 0.4);
+}
+
+html[data-theme="earth-warm"] .btn-secondary {
+    border-color: #a0522d;
+    color: #a0522d;
+}
+
+html[data-theme="earth-warm"] .btn-secondary:hover {
+    background: #a0522d;
+    color: #fffef9;
+}
+
+html[data-theme="earth-warm"] .btn-outline {
+    border-color: #c9baa6;
+    color: #5a4f42;
+}
+
+html[data-theme="earth-warm"] .btn-outline:hover {
+    border-color: #a0522d;
+    color: #a0522d;
+}
+
+/* Filter Buttons - Warm Theme */
+html[data-theme="earth-warm"] .filter-btn {
+    background: #fffef9;
+    border-color: #ddd2c2;
+    color: #7a6a58;
+    border-radius: 12px;
+}
+
+html[data-theme="earth-warm"] .filter-btn:hover,
+html[data-theme="earth-warm"] .filter-btn.active {
+    background: #a0522d;
+    border-color: #a0522d;
+    color: #fffef9;
+}
+
+/* Forms - Warm Theme */
+html[data-theme="earth-warm"] .contact-form {
+    background: #fffef9;
+    border-color: #ddd2c2;
+    border-radius: 20px;
+}
+
+html[data-theme="earth-warm"] .form-group input,
+html[data-theme="earth-warm"] .form-group select,
+html[data-theme="earth-warm"] .form-group textarea {
+    background: #faf6f1;
+    border-color: #ddd2c2;
+    border-radius: 12px;
+}
+
+html[data-theme="earth-warm"] .form-group input:focus,
+html[data-theme="earth-warm"] .form-group select:focus,
+html[data-theme="earth-warm"] .form-group textarea:focus {
+    border-color: #a0522d;
+    box-shadow: 0 0 0 4px rgba(160, 82, 45, 0.1);
+}
+
+html[data-theme="earth-warm"] .contact-info {
+    background: linear-gradient(135deg, #a0522d 0%, #cd853f 100%);
+    border-radius: 20px;
+}
+
+html[data-theme="earth-warm"] .contact-info-item h3 {
+    color: #daa520;
+}
+
+/* Back to Top - Warm Theme */
+html[data-theme="earth-warm"] .back-to-top {
+    background: #a0522d;
+}
+
+html[data-theme="earth-warm"] .back-to-top:hover {
+    background: #cd853f;
+}
+
+/* Service Bullets - Warm Theme */
+html[data-theme="earth-warm"] .service-bullets li {
+    border-color: #ebe3d7;
+}
+
+html[data-theme="earth-warm"] .service-bullets li:before {
+    color: #a0522d;
+}
+
+/* Project Badge - Warm Theme */
+html[data-theme="earth-warm"] .project-badge {
+    background: #daa520;
+}
+
+html[data-theme="earth-warm"] .project-badge.ongoing {
+    background: #a0522d;
+}
+
+/* Team Photo Placeholder - Warm Theme */
+html[data-theme="earth-warm"] .team-photo-placeholder {
+    background: linear-gradient(135deg, #ebe3d7 0%, #ddd2c2 100%);
+}
+
+/* Org Connector - Warm Theme */
+html[data-theme="earth-warm"] .org-connector {
+    background: linear-gradient(180deg, #a0522d 0%, #cd853f 100%);
+}
+
+/* ==================== LAYOUT VARIATIONS ==================== */
+
+/* Professional Dark - Layout Modifiers */
+html[data-theme="professional-dark"] .service-card,
+html[data-theme="professional-dark"] .project-card,
+html[data-theme="professional-dark"] .testimonial-card {
+    border-radius: 8px;
+}
+
+html[data-theme="professional-dark"] .btn {
+    border-radius: 8px;
+}
+
+html[data-theme="professional-dark"] .section-badge {
+    border-radius: 6px;
+}
+
+/* Earth Warm - Layout Modifiers (More Organic/Rounded) */
+html[data-theme="earth-warm"] .service-card,
+html[data-theme="earth-warm"] .project-card,
+html[data-theme="earth-warm"] .testimonial-card {
+    border-radius: 20px;
+}
+
+html[data-theme="earth-warm"] .btn {
+    border-radius: 30px;
+}
+
+html[data-theme="earth-warm"] .nav-menu .btn-primary {
+    border-radius: 30px;
+}
+
+html[data-theme="earth-warm"] .slide-btn {
+    border-radius: 30px;
+}
+
+/* ==================== PRINT STYLES ==================== */
+@media print {
+    html[data-theme="professional-dark"] {
+        --white: #ffffff;
+        --text-primary: #000000;
+        --text-secondary: #333333;
+    }
+}
+
