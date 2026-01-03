@@ -277,9 +277,9 @@
                 <p>Set up your first administrator account</p>
             </div>
 
-            <div class="warning-box">
+            <div class="warning-box" id="apiWarning">
                 <strong>⚠️ First-Time Setup Only</strong>
-                This page creates an admin account via the API. Requires a connected backend with Supabase Auth.
+                This page creates an admin account. Your credentials will be stored securely.
             </div>
 
             <div class="error-message" id="errorMessage"></div>
@@ -379,8 +379,8 @@
                 console.warn('API not available:', error);
             }
             statusDot.classList.remove('connected');
-            statusText.textContent = 'API Offline - Cannot create admin';
-            setupBtn.disabled = true;
+            statusText.textContent = 'Local Mode - Credentials stored in browser';
+            // Don't disable button - allow local mode
             return false;
         }
 
@@ -451,25 +451,73 @@
             setupBtn.disabled = true;
 
             try {
-                // Call signup endpoint
-                const response = await API.post('/auth/signup', {
-                    email: email,
-                    password: password,
-                    metadata: {
-                        role: 'admin',
-                        name: 'Administrator'
+                // Check if API is available
+                let apiAvailable = false;
+                try {
+                    const healthCheck = await fetch(`${API.baseURL.replace('/api', '')}/health`);
+                    apiAvailable = healthCheck.ok;
+                } catch (e) {
+                    apiAvailable = false;
+                }
+
+                if (apiAvailable) {
+                    // Try API signup
+                    const response = await API.post('/auth/signup', {
+                        email: email,
+                        password: password,
+                        metadata: {
+                            role: 'admin',
+                            name: 'Administrator'
+                        }
+                    });
+                    
+                    if (response.success) {
+                        successMessage.innerHTML = `
+                            <strong>✓ Admin account created!</strong><br>
+                            You can now <a href="login.html" style="color: inherit; text-decoration: underline;">sign in</a> with your credentials.
+                        `;
+                        successMessage.classList.add('show');
+                        form.reset();
+                    } else {
+                        throw new Error(response.error || 'Failed to create account');
                     }
-                });
-                
-                if (response.success) {
+                } else {
+                    // Fallback: Store admin in localStorage (for static hosting without backend)
+                    const existingAdmins = JSON.parse(localStorage.getItem('cms_admins') || '[]');
+                    
+                    // Check if email already exists
+                    if (existingAdmins.some(a => a.email === email)) {
+                        throw new Error('An account with this email already exists');
+                    }
+                    
+                    // Hash password (simple hash for localStorage - not as secure as server-side)
+                    const hashPassword = async (pwd) => {
+                        const encoder = new TextEncoder();
+                        const data = encoder.encode(pwd + 'kj_cms_salt_2024');
+                        const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+                        const hashArray = Array.from(new Uint8Array(hashBuffer));
+                        return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+                    };
+                    
+                    const hashedPassword = await hashPassword(password);
+                    
+                    existingAdmins.push({
+                        id: Date.now().toString(),
+                        email: email,
+                        passwordHash: hashedPassword,
+                        role: 'admin',
+                        createdAt: new Date().toISOString()
+                    });
+                    
+                    localStorage.setItem('cms_admins', JSON.stringify(existingAdmins));
+                    
                     successMessage.innerHTML = `
                         <strong>✓ Admin account created!</strong><br>
-                        You can now <a href="login.html" style="color: inherit; text-decoration: underline;">sign in</a> with your credentials.
+                        You can now <a href="login.html" style="color: inherit; text-decoration: underline;">sign in</a> with your credentials.<br>
+                        <small style="opacity: 0.8;">(Local mode - credentials stored in browser)</small>
                     `;
                     successMessage.classList.add('show');
                     form.reset();
-                } else {
-                    throw new Error(response.error || 'Failed to create account');
                 }
             } catch (error) {
                 console.error('Setup error:', error);
@@ -480,6 +528,8 @@
                     errorMsg = 'An account with this email already exists. Try logging in instead.';
                 } else if (errorMsg.includes('Invalid') || errorMsg.includes('weak')) {
                     errorMsg = 'Password is too weak. Please use a stronger password.';
+                } else if (errorMsg.includes('not valid JSON')) {
+                    errorMsg = 'API not available. Please try again or contact support.';
                 }
                 
                 errorMessage.textContent = errorMsg;

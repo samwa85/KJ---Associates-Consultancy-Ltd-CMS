@@ -344,25 +344,85 @@
             loginBtn.disabled = true;
 
             try {
-                const response = await API.auth.signIn(email, password);
-                
-                if (response.success) {
-                    successMessage.textContent = 'Login successful! Redirecting...';
-                    successMessage.classList.add('show');
+                // Check if API is available
+                let apiAvailable = false;
+                try {
+                    const healthCheck = await fetch(`${API.baseURL.replace('/api', '')}/health`);
+                    apiAvailable = healthCheck.ok;
+                } catch (e) {
+                    apiAvailable = false;
+                }
+
+                if (apiAvailable) {
+                    // Try API login
+                    const response = await API.auth.signIn(email, password);
                     
-                    // Store user info
-                    localStorage.setItem('cms_user', JSON.stringify(response.data.user));
-                    
-                    // Redirect to admin panel
-                    setTimeout(() => {
-                        window.location.href = 'index.html';
-                    }, 500);
+                    if (response.success) {
+                        successMessage.textContent = 'Login successful! Redirecting...';
+                        successMessage.classList.add('show');
+                        
+                        // Store user info
+                        localStorage.setItem('cms_user', JSON.stringify(response.data.user));
+                        
+                        // Redirect to admin panel
+                        setTimeout(() => {
+                            window.location.href = 'index.html';
+                        }, 500);
+                    } else {
+                        throw new Error(response.error || 'Login failed');
+                    }
                 } else {
-                    throw new Error(response.error || 'Login failed');
+                    // Fallback: Check localStorage admins
+                    const admins = JSON.parse(localStorage.getItem('cms_admins') || '[]');
+                    
+                    if (admins.length === 0) {
+                        throw new Error('No admin accounts found. Please create one first.');
+                    }
+                    
+                    // Hash the entered password
+                    const hashPassword = async (pwd) => {
+                        const encoder = new TextEncoder();
+                        const data = encoder.encode(pwd + 'kj_cms_salt_2024');
+                        const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+                        const hashArray = Array.from(new Uint8Array(hashBuffer));
+                        return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+                    };
+                    
+                    const hashedPassword = await hashPassword(password);
+                    const admin = admins.find(a => a.email === email && a.passwordHash === hashedPassword);
+                    
+                    if (admin) {
+                        successMessage.textContent = 'Login successful! Redirecting...';
+                        successMessage.classList.add('show');
+                        
+                        // Store user info
+                        localStorage.setItem('cms_user', JSON.stringify({
+                            id: admin.id,
+                            email: admin.email,
+                            role: admin.role
+                        }));
+                        localStorage.setItem('cms_token', 'local_' + admin.id);
+                        
+                        // Redirect to admin panel
+                        setTimeout(() => {
+                            window.location.href = 'index.html';
+                        }, 500);
+                    } else {
+                        throw new Error('Invalid email or password');
+                    }
                 }
             } catch (error) {
                 console.error('Login error:', error);
-                errorMessage.textContent = error.message || 'Invalid email or password';
+                let errorMsg = error.message || 'Invalid email or password';
+                if (errorMsg.includes('not valid JSON')) {
+                    errorMsg = 'API not available. Using local authentication.';
+                    // Retry with local auth
+                    const admins = JSON.parse(localStorage.getItem('cms_admins') || '[]');
+                    if (admins.length === 0) {
+                        errorMsg = 'No admin accounts found. Please <a href="setup.html">create one first</a>.';
+                    }
+                }
+                errorMessage.innerHTML = errorMsg;
                 errorMessage.classList.add('show');
             } finally {
                 loginBtn.classList.remove('loading');
