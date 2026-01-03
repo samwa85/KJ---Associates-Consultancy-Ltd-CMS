@@ -17,6 +17,9 @@
     <!-- Supabase Config (loads credentials) -->
     <script src="../js/supabase-config.js"></script>
     
+    <!-- Error Formatting Utilities -->
+    <script src="../js/error-utils.js"></script>
+    
     <!-- Supabase JS -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
@@ -1851,6 +1854,14 @@
                 
             } catch (error) {
                 console.error('[Auth] Error checking session:', error);
+                // Format error to ensure it has formattedError property
+                if (typeof window !== 'undefined' && window.formatError) {
+                    const formattedError = window.formatError(error);
+                    // Ensure error object has formattedError before any validation
+                    error.formattedError = formattedError.formattedError;
+                } else if (error && !error.formattedError) {
+                    error.formattedError = error?.message || String(error) || 'Authentication error';
+                }
                 // Allow local mode on error
             }
             
