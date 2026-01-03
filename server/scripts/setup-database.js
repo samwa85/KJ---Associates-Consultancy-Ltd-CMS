@@ -1,12 +1,23 @@
 /**
  * Database Setup Script
  * Creates all required tables in PostgreSQL
+ * 
+ * Usage: node scripts/setup-database.js
+ * Requires DATABASE_URL environment variable or SUPABASE_URL + credentials in .env
  */
 
+require('dotenv').config();
 const { Client } = require('pg');
 
-// PostgreSQL connection string
-const connectionString = 'postgresql://postgres:i71SyHRVkgknNsWfjwEGfj5EST5dGTcO@supabasekong-j8k8sksckccs4ccogsscccww.31.97.79.197.sslip.io:5432/postgres';
+// Get connection string from environment variables
+const connectionString = process.env.DATABASE_URL || 
+  `postgresql://postgres:${process.env.POSTGRES_PASSWORD}@${process.env.SUPABASE_DB_HOST || 'localhost'}:5432/postgres`;
+
+if (!process.env.DATABASE_URL && !process.env.POSTGRES_PASSWORD) {
+  console.error('❌ Error: DATABASE_URL or POSTGRES_PASSWORD environment variable is required');
+  console.error('   Set DATABASE_URL in your .env file or provide POSTGRES_PASSWORD and SUPABASE_DB_HOST');
+  process.exit(1);
+}
 
 // SQL to create tables
 const createTablesSQL = `
