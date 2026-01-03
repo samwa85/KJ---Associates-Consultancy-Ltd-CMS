@@ -430,6 +430,23 @@
                 console.log('[Setup] Supabase URL:', SUPABASE_URL);
                 console.log('[Setup] Supabase client initialized:', !!supabaseClient);
                 
+                // Test connection before attempting signup
+                try {
+                    const healthCheck = await fetch(`${SUPABASE_URL}/auth/v1/health`, {
+                        method: 'GET',
+                        headers: {
+                            'apikey': SUPABASE_ANON_KEY
+                        }
+                    });
+                    console.log('[Setup] Health check status:', healthCheck.status);
+                    if (!healthCheck.ok) {
+                        throw new Error(`Supabase Auth API not responding (Status: ${healthCheck.status})`);
+                    }
+                } catch (healthError) {
+                    console.error('[Setup] Connection test failed:', healthError);
+                    throw new Error(`Cannot connect to Supabase Auth API. Please check your Supabase URL and network connection. Error: ${healthError.message}`);
+                }
+                
                 // Create user with Supabase Auth
                 // Note: For self-hosted Supabase, email confirmation might be disabled
                 const signUpOptions = {
@@ -477,11 +494,48 @@
 
                 // Check if user was created or needs email confirmation
                 if (data.user && !data.session) {
+                    // User created but needs email confirmation
+                    // Also create admin role entry
+                    try {
+                        const { error: roleError } = await supabaseClient
+                            .from('user_roles')
+                            .insert({
+                                user_id: data.user.id,
+                                role: 'admin'
+                            })
+                            .select();
+                        
+                        if (roleError) {
+                            console.warn('[Setup] Could not create user role entry:', roleError);
+                            // Don't fail - the trigger should handle it, but log the warning
+                        }
+                    } catch (roleErr) {
+                        console.warn('[Setup] Role creation error (may be handled by trigger):', roleErr);
+                    }
+                    
                     successMessage.innerHTML = `
                         <strong>✓ Admin account created!</strong><br>
                         Check your email to confirm your account, then <a href="login.html" style="color: inherit; text-decoration: underline;">sign in</a>.
                     `;
                 } else if (data.session) {
+                    // User created and session active
+                    // Create admin role entry
+                    try {
+                        const { error: roleError } = await supabaseClient
+                            .from('user_roles')
+                            .insert({
+                                user_id: data.user.id,
+                                role: 'admin'
+                            })
+                            .select();
+                        
+                        if (roleError) {
+                            console.warn('[Setup] Could not create user role entry:', roleError);
+                        }
+                    } catch (roleErr) {
+                        console.warn('[Setup] Role creation error (may be handled by trigger):', roleErr);
+                    }
+                    
                     successMessage.innerHTML = `
                         <strong>✓ Admin account created!</strong><br>
                         You can now <a href="login.html" style="color: inherit; text-decoration: underline;">sign in</a> with your credentials.
