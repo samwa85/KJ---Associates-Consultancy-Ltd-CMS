@@ -1,0 +1,33 @@
+{
+  "name": "kj-associates-cms",
+  "version": "1.0.0",
+  "description": "KJ & Associates Consultancy Ltd - Website and CMS",
+  "main": "server/src/index.js",
+  "scripts": {
+    "start": "cd server && npm start",
+    "dev": "cd server && npm run dev",
+    "server": "cd server && npm run dev",
+    "install:server": "cd server && npm install",
+    "build": "echo 'Static site - no build required'",
+    "serve": "npx serve . -l 8080",
+    "serve:python": "python3 -m http.server 8080"
+  },
+  "keywords": [
+    "cms",
+    "quantity-surveying",
+    "construction",
+    "tanzania",
+    "supabase",
+    "express"
+  ],
+  "author": "KJ & Associates Consultancy Ltd",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/samwa85/KJ---Associates-Consultancy-Ltd-CMS.git"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
+

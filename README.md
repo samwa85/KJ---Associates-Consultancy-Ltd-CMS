@@ -1,63 +1,228 @@
-# KJ & Associates Consultancy Ltd - Website Schema & Antigravity Prompt
+# KJ & Associates Consultancy Ltd - CMS Website
 
-This repository contains the website schema and Antigravity prompt for building the KJ & Associates Consultancy Ltd website.
+A professional website and content management system for KJ & Associates Consultancy Ltd, a quantity surveying firm based in Tanzania.
 
-## Files
+## 🏗️ Project Overview
 
-### 1. `website-schema.json`
-Complete content model and site structure in JSON format. Includes:
-- Global site settings (brand, CTAs, contacts, social links)
-- Sitemap structure (main navigation and utility pages)
-- Content models for:
-  - Services (8 service types)
-  - Projects/Experience
-  - Team Members
-  - Certificates/Legal Documents
-  - Clients
-- SEO settings and schema markup
+This project consists of:
+- **Frontend**: Static HTML/CSS/JS website with dynamic content loading
+- **Backend**: Node.js + Express API server
+- **Database**: Supabase (PostgreSQL)
+- **CMS Admin**: Web-based admin panel for content management
 
-### 2. `antigravity-prompt.txt`
-Ready-to-paste prompt for Antigravity AI website generator. Contains:
-- Brand guidelines
-- Complete page specifications
-- Technical requirements
-- SEO requirements
-- CMS structure requirements
+## 📁 Project Structure
 
-## Usage
+```
+├── index.html              # Homepage
+├── about.html              # About Us page
+├── contact.html            # Contact page
+├── team.html               # Team page
+├── clients.html            # Clients page
+├── certifications.html     # Certifications page
+├── privacy.html            # Privacy Policy
+├── terms.html              # Terms of Service
+├── projects/               # Projects section
+├── services/               # Services section
+├── blog/                   # Blog section
+├── admin/                  # CMS Admin Panel
+│   ├── index.html          # Admin dashboard
+│   └── cms-data.js         # CMS data management
+├── css/                    # Stylesheets
+│   ├── style.css           # Main styles
+│   └── themes.css          # Theme variations
+├── js/                     # JavaScript
+│   ├── main.js             # Main frontend JS
+│   ├── api-client.js       # API client for backend
+│   └── config.js           # Configuration
+├── uploads/                # Uploaded files
+├── server/                 # Node.js Backend
+│   ├── src/                # Server source code
+│   ├── database/           # SQL schemas
+│   └── README.md           # Backend documentation
+└── README.md               # This file
+```
 
-1. **For Antigravity**: Copy the entire contents of `antigravity-prompt.txt` and paste it into Antigravity's prompt field.
+## 🚀 Getting Started
 
-2. **For Manual Development**: Use `website-schema.json` as a reference for:
-   - Content structure
-   - Data models
-   - Navigation hierarchy
-   - SEO configuration
+### Option 1: Static Site (No Backend)
 
-## Next Steps
+For development or simple hosting, the site works with localStorage:
 
-After generating the website:
-1. Update contact information in site settings (phone, email, address)
-2. Add actual project data from the PDF
-3. Upload certificate images
-4. Add client logos
-5. Populate team member photos and bios
-6. Configure social media links
-7. Add actual project images
+```bash
+# Using Python
+python3 -m http.server 8080
 
-## Content to Add
+# Using Node.js
+npx serve .
 
-The schema includes placeholder structures. You'll need to populate:
-- **Projects**: Add all projects from the PDF with full details
-- **Team**: Complete team member information with photos
-- **Clients**: Add all clients from the client list
-- **Certificates**: Upload certificate images and dates
-- **Contact Info**: Add phone numbers, email, and physical address
+# Using PHP
+php -S localhost:8080
+```
 
-## Notes
+Visit `http://localhost:8080` to view the site.
 
-- The schema follows a CMS-ready structure that can be used with headless CMS systems
-- All service categories match the PDF document structure
-- The sitemap reflects the logical flow of information for a professional consultancy website
-- SEO settings include schema.org markup for better search engine visibility
+### Option 2: Full Stack with Supabase Backend
 
+1. **Set up Supabase:**
+   - Create a Supabase project at [supabase.com](https://supabase.com)
+   - Run `server/database/schema.sql` in SQL Editor
+   - Get your project URL and service role key
+
+2. **Configure the backend:**
+   ```bash
+   cd server
+   cp .env.example .env
+   # Edit .env with your Supabase credentials
+   ```
+
+3. **Install and run:**
+   ```bash
+   npm install
+   npm run dev
+   ```
+
+4. **Update frontend config:**
+   Edit `js/config.js` to point to your API:
+   ```javascript
+   window.API_BASE_URL = 'http://localhost:3001/api';
+   ```
+
+See `server/README.md` for detailed backend documentation.
+
+## 🔧 Configuration
+
+### Environment Variables (Backend)
+
+```env
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
+PORT=3001
+NODE_ENV=development
+ALLOWED_ORIGINS=http://localhost:8080
+```
+
+### Frontend Configuration
+
+Edit `js/config.js`:
+```javascript
+window.API_BASE_URL = 'http://localhost:3001/api';
+window.USE_API = true;  // false to use localStorage
+```
+
+## 📊 CMS Features
+
+Access the admin panel at `/admin/index.html`:
+
+- **Hero Slides**: Manage homepage slideshow
+- **Projects**: Add/edit portfolio projects
+- **Team**: Manage team members and board
+- **Clients**: Client organizations
+- **Testimonials**: Client testimonials
+- **Services**: Service offerings
+- **Blog**: Blog posts
+- **Certifications**: Company certifications
+- **Settings**: Branding, contact info, SEO
+
+## 🔌 API Endpoints
+
+| Endpoint | Description |
+|----------|-------------|
+| `GET /api/projects` | List all projects |
+| `GET /api/projects/featured` | Featured projects |
+| `GET /api/team` | Team members |
+| `GET /api/clients` | Client organizations |
+| `GET /api/testimonials` | Testimonials |
+| `GET /api/settings/branding` | Branding settings |
+
+See `server/README.md` for complete API documentation.
+
+## 🚢 Deployment
+
+### Frontend Only (Static Hosting)
+
+Deploy to any static host:
+- GitHub Pages
+- Netlify
+- Vercel
+- Cloudflare Pages
+
+### Full Stack
+
+1. Deploy backend to:
+   - Railway
+   - Render
+   - Vercel (Serverless)
+   - DigitalOcean App Platform
+
+2. Update `js/config.js` with production API URL
+
+3. Deploy frontend to static host
+
+### Docker
+
+```dockerfile
+# Backend
+FROM node:18-alpine
+WORKDIR /app
+COPY server/package*.json ./
+RUN npm ci --only=production
+COPY server/ .
+EXPOSE 3001
+CMD ["npm", "start"]
+```
+
+## 🔐 Security
+
+- Service role keys are never exposed to frontend
+- JWT authentication for protected routes
+- Row Level Security (RLS) on all tables
+- Rate limiting on API endpoints
+- CORS configuration
+- Helmet security headers
+
+## 📝 Migration from localStorage
+
+If you have existing data in localStorage:
+
+```bash
+# Export from browser console:
+# copy(JSON.stringify(localStorage.getItem('kj_cms_data')))
+
+# Run migration:
+cd server
+node scripts/migrate-from-localstorage.js ./cms-export.json
+```
+
+## 🛠️ Development
+
+### Frontend Development
+
+```bash
+# Start local server
+python3 -m http.server 8080
+
+# Edit files and refresh browser
+```
+
+### Backend Development
+
+```bash
+cd server
+npm run dev  # Starts with nodemon
+```
+
+### Database Changes
+
+1. Edit `server/database/schema.sql`
+2. Run changes in Supabase SQL Editor
+3. Update services/controllers as needed
+
+## 📄 License
+
+MIT License - See LICENSE file for details.
+
+## 🤝 Support
+
+For support, contact KJ & Associates Consultancy Ltd:
+- Email: md@kjconsultancy.co.tz
+- Phone: +255 768 757 779
