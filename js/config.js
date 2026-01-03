@@ -21,7 +21,7 @@
   // 1) Explicit override (window.API_BASE_URL_OVERRIDE)
   // 2) <meta name="api-base-url" content="https://api.example.com/api">
   // 3) Localhost default
-  // 4) Demo path: /demo/api (Nginx proxies this to backend)
+  // 4) Production: Coolify server API
   // 5) Same-origin default (/api)
   let apiUrl;
   if (globalApiOverride) {
@@ -30,10 +30,9 @@
     apiUrl = metaApiBase;
   } else if (isLocalhost) {
     apiUrl = 'http://localhost:3001/api';
-  } else if (isDemoPath) {
-    apiUrl = '/demo/api';
   } else {
-    apiUrl = '/api';
+    // Production: Use Coolify server API
+    apiUrl = 'http://31.97.79.197:3001/api';
   }
   
   window.API_BASE_URL = apiUrl;
@@ -45,7 +44,6 @@
   window.DEBUG = isLocalhost;
 
   console.log(`[Config] Environment: ${isLocalhost ? 'Development' : 'Production'}`);
-  console.log(`[Config] Demo Path: ${isDemoPath}`);
   console.log(`[Config] API URL: ${window.API_BASE_URL}`);
 })();
 
