@@ -20,6 +20,7 @@ router.post('/signup', async (req, res, next) => {
       });
     }
 
+    // Create user via service-role (admin) API
     const { data, error } = await supabase.auth.admin.createUser({
       email,
       password,
@@ -28,6 +29,20 @@ router.post('/signup', async (req, res, next) => {
     });
 
     if (error) throw error;
+
+    // Ensure user_roles entry exists (admin role by default for this endpoint)
+    try {
+      const { error: roleError } = await supabase
+        .from('user_roles')
+        .upsert({ user_id: data.user.id, role: metadata?.role || 'admin' }, { onConflict: 'user_id' });
+
+      if (roleError) {
+        // Log but don't fail signup; RLS/trigger may also handle this
+        console.warn('user_roles upsert warning:', roleError.message || roleError);
+      }
+    } catch (roleUpsertErr) {
+      console.warn('user_roles upsert error:', roleUpsertErr);
+    }
 
     res.status(201).json({
       success: true,
