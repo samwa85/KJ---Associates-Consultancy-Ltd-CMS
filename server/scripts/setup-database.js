@@ -3,24 +3,30 @@
  * Creates all required tables in PostgreSQL
  * 
  * Usage: node scripts/setup-database.js
- * Requires DATABASE_URL environment variable or SUPABASE_URL + credentials in .env
+ * Requires DATABASE_URL environment variable or POSTGRES_PASSWORD + SUPABASE_DB_HOST in .env
  */
 
 require('dotenv').config();
 const { Client } = require('pg');
 
-// Get connection string from environment variables
+// Get connection string from environment variables (NEVER hardcode credentials!)
 const connectionString = process.env.DATABASE_URL || 
   `postgresql://postgres:${process.env.POSTGRES_PASSWORD}@${process.env.SUPABASE_DB_HOST || 'localhost'}:5432/postgres`;
 
 if (!process.env.DATABASE_URL && !process.env.POSTGRES_PASSWORD) {
   console.error('❌ Error: DATABASE_URL or POSTGRES_PASSWORD environment variable is required');
   console.error('   Set DATABASE_URL in your .env file or provide POSTGRES_PASSWORD and SUPABASE_DB_HOST');
+  console.error('');
+  console.error('   Example .env configuration:');
+  console.error('   DATABASE_URL=postgresql://postgres:yourpassword@yourhost:5432/postgres');
+  console.error('   OR');
+  console.error('   POSTGRES_PASSWORD=yourpassword');
+  console.error('   SUPABASE_DB_HOST=yourhost');
   process.exit(1);
 }
 
 // SQL to create tables
-const createTablesSQL = `
+const createTablesSQL = \`
 -- SLIDES TABLE
 CREATE TABLE IF NOT EXISTS slides (
     id SERIAL PRIMARY KEY,
@@ -181,7 +187,7 @@ INSERT INTO settings (key, value) VALUES
 ('seo', '{"title": "KJ & Associates Consultancy Ltd", "description": "Professional quantity surveying and construction project management services in Tanzania."}'),
 ('theme', '"classic-green"')
 ON CONFLICT (key) DO NOTHING;
-`;
+\`;
 
 async function setupDatabase() {
   console.log('🚀 Connecting to PostgreSQL...');
@@ -200,20 +206,20 @@ async function setupDatabase() {
     console.log('✅ Tables created successfully!');
 
     // Verify tables
-    const result = await client.query(`
+    const result = await client.query(\`
       SELECT table_name 
       FROM information_schema.tables 
       WHERE table_schema = 'public' 
       AND table_type = 'BASE TABLE'
       ORDER BY table_name;
-    `);
+    \`);
 
-    console.log('\n📋 Tables in database:');
+    console.log('\\n📋 Tables in database:');
     result.rows.forEach(row => {
-      console.log(`   - ${row.table_name}`);
+      console.log(\`   - \${row.table_name}\`);
     });
 
-    console.log('\n✨ Database setup complete!');
+    console.log('\\n✨ Database setup complete!');
 
   } catch (error) {
     console.error('❌ Error:', error.message);
@@ -223,4 +229,3 @@ async function setupDatabase() {
 }
 
 setupDatabase();
-
