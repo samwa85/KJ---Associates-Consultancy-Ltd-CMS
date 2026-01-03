@@ -7,6 +7,16 @@ This guide helps you set up a new project using this CMS template in **15-20 min
 - **Backend API**: Coolify Server
 - **Database**: Supabase on Coolify
 
+## Multi-Project Support
+Each project gets:
+- ✅ Unique project slug (e.g., `acme-corp`)
+- ✅ Unique API port (3001, 3002, 3003...)
+- ✅ Unique PM2 process name (e.g., `acme-corp-api`)
+- ✅ Separate Supabase database
+- ✅ PROJECT-INFO.md with all credentials
+
+**No conflicts between projects!**
+
 ---
 
 ## Option A: Automated Setup (Recommended)
@@ -26,12 +36,16 @@ chmod +x setup.sh
 ```
 
 The script will ask for:
-- Supabase URL and keys
-- Backend API URL
-- Admin password
-- Company name
+- **Project Name** (e.g., "Acme Corp") → generates unique slug
+- **Supabase URL and keys**
+- **Server IP and Port** (use different ports for each project!)
+- **Frontend domain**
+- **Admin password** (auto-generated based on project name)
 
-It automatically updates all config files!
+It automatically:
+- Updates all config files
+- Creates `PROJECT-INFO.md` with all credentials and commands
+- Generates unique PM2 process name
 
 ### 3. Setup Database
 1. Open your Supabase SQL Editor
@@ -40,11 +54,17 @@ It automatically updates all config files!
 
 ### 4. Deploy Backend to Coolify
 ```bash
-# On your Coolify server:
-cd /var/www/your-project/server
+# On your Coolify server (replace PROJECT_SLUG with your project slug):
+mkdir -p /var/www/PROJECT_SLUG
+cd /var/www/PROJECT_SLUG
+git clone YOUR_GITHUB_REPO_URL .
+cd server
 npm install --production
-pm2 start src/index.js --name your-api
+pm2 start src/index.js --name PROJECT_SLUG-api
 pm2 save
+
+# Open firewall for your port
+ufw allow YOUR_PORT/tcp
 ```
 
 ### 5. Seed Initial Data (Optional)
@@ -226,10 +246,25 @@ node scripts/seed-from-cms-defaults.js
 ├── server/             # Backend API (deploy to Coolify)
 │   ├── src/
 │   ├── scripts/
-│   └── .env            # Server credentials (create this)
+│   └── .env            # Server credentials (created by setup.sh)
 ├── database/
 │   └── supabase-schema.sql  # Run in Supabase SQL Editor
 ├── setup.sh            # Automated setup script
-└── QUICK-SETUP.md      # This file
+├── QUICK-SETUP.md      # This file
+├── PROJECTS-REGISTRY.md # Track all your deployed projects
+└── PROJECT-INFO.md     # Generated: Contains this project's credentials
 ```
+
+---
+
+## 🔢 Port Allocation for Multiple Projects
+
+| Project | Port | PM2 Name |
+|---------|------|----------|
+| Project 1 | 3001 | project1-api |
+| Project 2 | 3002 | project2-api |
+| Project 3 | 3003 | project3-api |
+| ... | ... | ... |
+
+**Always use sequential ports to avoid conflicts!**
 

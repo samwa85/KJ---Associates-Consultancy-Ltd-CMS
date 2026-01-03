@@ -1,10 +1,11 @@
 #!/bin/bash
 
 # ============================================
-# KJ & Associates CMS - Quick Setup Script
+# CMS Template - Quick Setup Script
 # ============================================
 # This script helps you configure a new project
 # by updating all necessary configuration files.
+# Supports multiple projects without conflicts.
 # ============================================
 
 set -e
@@ -14,11 +15,13 @@ RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
+CYAN='\033[0;36m'
 NC='\033[0m' # No Color
 
 echo ""
 echo -e "${GREEN}╔═══════════════════════════════════════════════════════╗${NC}"
-echo -e "${GREEN}║       KJ & Associates CMS - Quick Setup Script        ║${NC}"
+echo -e "${GREEN}║         CMS Template - Quick Setup Script             ║${NC}"
+echo -e "${GREEN}║     Supports Multiple Projects Without Conflicts      ║${NC}"
 echo -e "${GREEN}╚═══════════════════════════════════════════════════════╝${NC}"
 echo ""
 
@@ -38,47 +41,66 @@ prompt_with_default() {
     eval "$var_name='$value'"
 }
 
-# Function to prompt for password (hidden input)
-prompt_password() {
-    local prompt="$1"
-    local var_name="$2"
-    
-    read -s -p "$prompt: " value
-    echo ""
-    eval "$var_name='$value'"
+# Function to generate a slug from project name
+generate_slug() {
+    echo "$1" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/-/g' | sed 's/--*/-/g' | sed 's/^-//' | sed 's/-$//'
+}
+
+# Function to generate random password
+generate_password() {
+    cat /dev/urandom | LC_ALL=C tr -dc 'a-zA-Z0-9!@#$%' | fold -w 16 | head -n 1
 }
 
 echo -e "${BLUE}This script will configure your CMS project.${NC}"
-echo -e "${BLUE}You'll need your Supabase and API server details.${NC}"
+echo -e "${BLUE}Each project gets unique identifiers to avoid conflicts.${NC}"
 echo ""
 
 # ============================================
-# Gather Information
+# Project Identification
 # ============================================
 
-echo -e "${YELLOW}=== Supabase Configuration ===${NC}"
+echo -e "${CYAN}=== Project Identification ===${NC}"
+prompt_with_default "Project/Client Name (e.g., Acme Corp)" "" PROJECT_NAME
+PROJECT_SLUG=$(generate_slug "$PROJECT_NAME")
+echo -e "  ${GREEN}→ Project Slug: ${PROJECT_SLUG}${NC}"
+
+prompt_with_default "Project Slug (for URLs/IDs)" "$PROJECT_SLUG" PROJECT_SLUG
+DEFAULT_PASSWORD="${PROJECT_SLUG}Admin2024!"
+
+echo ""
+echo -e "${CYAN}=== Supabase Configuration ===${NC}"
 prompt_with_default "Supabase URL (e.g., https://xxx.supabase.co)" "" SUPABASE_URL
 prompt_with_default "Supabase Anon Key" "" SUPABASE_ANON_KEY
 prompt_with_default "Supabase Service Role Key" "" SUPABASE_SERVICE_ROLE_KEY
 
 echo ""
-echo -e "${YELLOW}=== Backend API Configuration ===${NC}"
-prompt_with_default "Backend API URL (e.g., http://31.97.79.197:3001/api)" "" API_URL
+echo -e "${CYAN}=== Backend API Configuration ===${NC}"
+echo -e "${YELLOW}  Tip: Use different ports for different projects (3001, 3002, 3003...)${NC}"
+prompt_with_default "Backend Server IP" "31.97.79.197" SERVER_IP
 prompt_with_default "Backend Server Port" "3001" API_PORT
+API_URL="http://${SERVER_IP}:${API_PORT}/api"
+echo -e "  ${GREEN}→ API URL: ${API_URL}${NC}"
 
 echo ""
-echo -e "${YELLOW}=== Frontend Configuration ===${NC}"
-prompt_with_default "Frontend URL (e.g., https://example.com/demo)" "" FRONTEND_URL
-prompt_with_default "Allowed Origins (comma-separated, e.g., https://example.com)" "$FRONTEND_URL" ALLOWED_ORIGINS
+echo -e "${CYAN}=== Frontend Configuration ===${NC}"
+prompt_with_default "Frontend Domain (e.g., example.com)" "" FRONTEND_DOMAIN
+prompt_with_default "Frontend Path (e.g., /demo or leave empty)" "" FRONTEND_PATH
+if [ -n "$FRONTEND_PATH" ]; then
+    FRONTEND_URL="https://${FRONTEND_DOMAIN}${FRONTEND_PATH}"
+else
+    FRONTEND_URL="https://${FRONTEND_DOMAIN}"
+fi
+echo -e "  ${GREEN}→ Frontend URL: ${FRONTEND_URL}${NC}"
+ALLOWED_ORIGINS="https://${FRONTEND_DOMAIN}"
 
 echo ""
-echo -e "${YELLOW}=== CMS Admin Configuration ===${NC}"
-prompt_with_default "Admin Password" "KJAdmin2024!" ADMIN_PASSWORD
+echo -e "${CYAN}=== CMS Admin Configuration ===${NC}"
+prompt_with_default "Admin Password" "$DEFAULT_PASSWORD" ADMIN_PASSWORD
 
 echo ""
-echo -e "${YELLOW}=== Site Branding ===${NC}"
-prompt_with_default "Company Name" "KJ & Associates" COMPANY_NAME
-prompt_with_default "Company Subtitle" "Consultancy Ltd" COMPANY_SUBTITLE
+echo -e "${CYAN}=== Site Branding ===${NC}"
+prompt_with_default "Company Name" "$PROJECT_NAME" COMPANY_NAME
+prompt_with_default "Company Subtitle" "" COMPANY_SUBTITLE
 
 # ============================================
 # Update Configuration Files
@@ -171,6 +193,60 @@ else
 fi
 
 # ============================================
+# Create Project Info File
+# ============================================
+
+echo -e "  ${GREEN}✓${NC} Creating PROJECT-INFO.md..."
+cat > PROJECT-INFO.md << EOF
+# Project: ${PROJECT_NAME}
+
+## Project Details
+- **Project Name**: ${PROJECT_NAME}
+- **Project Slug**: ${PROJECT_SLUG}
+- **Created**: $(date '+%Y-%m-%d %H:%M:%S')
+
+## URLs
+- **Frontend**: ${FRONTEND_URL}
+- **CMS Admin**: ${FRONTEND_URL}/admin/
+- **Backend API**: ${API_URL}
+
+## Credentials
+- **Admin Password**: ${ADMIN_PASSWORD}
+- **API Port**: ${API_PORT}
+
+## Supabase
+- **URL**: ${SUPABASE_URL}
+
+## Deployment Commands
+
+### Backend (on Coolify server):
+\`\`\`bash
+cd /var/www/${PROJECT_SLUG}/server
+npm install --production
+pm2 start src/index.js --name ${PROJECT_SLUG}-api
+pm2 save
+\`\`\`
+
+### Open Firewall:
+\`\`\`bash
+ufw allow ${API_PORT}/tcp
+\`\`\`
+
+### Seed Database:
+\`\`\`bash
+cd /var/www/${PROJECT_SLUG}/server
+node scripts/seed-from-cms-defaults.js
+\`\`\`
+
+## PM2 Commands
+\`\`\`bash
+pm2 status                    # Check status
+pm2 logs ${PROJECT_SLUG}-api  # View logs
+pm2 restart ${PROJECT_SLUG}-api  # Restart
+\`\`\`
+EOF
+
+# ============================================
 # Summary
 # ============================================
 
@@ -179,11 +255,14 @@ echo -e "${GREEN}╔════════════════════
 echo -e "${GREEN}║              Configuration Complete!                   ║${NC}"
 echo -e "${GREEN}╚═══════════════════════════════════════════════════════╝${NC}"
 echo ""
+echo -e "${CYAN}Project: ${PROJECT_NAME} (${PROJECT_SLUG})${NC}"
+echo ""
 echo -e "${BLUE}Files updated:${NC}"
 echo "  • js/config.js"
 echo "  • js/supabase-config.js"
 echo "  • server/.env"
 echo "  • admin/index.html (password)"
+echo "  • PROJECT-INFO.md (project reference)"
 echo ""
 echo -e "${YELLOW}Next Steps:${NC}"
 echo ""
@@ -193,18 +272,31 @@ echo "     - Run: database/supabase-schema.sql"
 echo ""
 echo "  2. ${BLUE}Deploy Backend (Coolify):${NC}"
 echo "     - Push to GitHub"
-echo "     - Deploy /server folder from Coolify"
-echo "     - Or run on server:"
-echo "       cd server && npm install && pm2 start src/index.js --name cms-api"
+echo "     - On server run:"
+echo -e "       ${CYAN}mkdir -p /var/www/${PROJECT_SLUG}${NC}"
+echo -e "       ${CYAN}cd /var/www/${PROJECT_SLUG}${NC}"
+echo -e "       ${CYAN}git clone YOUR_REPO_URL .${NC}"
+echo -e "       ${CYAN}cd server && npm install${NC}"
+echo -e "       ${CYAN}pm2 start src/index.js --name ${PROJECT_SLUG}-api${NC}"
+echo -e "       ${CYAN}pm2 save${NC}"
 echo ""
-echo "  3. ${BLUE}Seed Database (Optional):${NC}"
-echo "     cd server && node scripts/seed-from-cms-defaults.js"
+echo "  3. ${BLUE}Open Firewall:${NC}"
+echo -e "       ${CYAN}ufw allow ${API_PORT}/tcp${NC}"
 echo ""
-echo "  4. ${BLUE}Deploy Frontend (20i):${NC}"
+echo "  4. ${BLUE}Seed Database (Optional):${NC}"
+echo -e "       ${CYAN}cd server && node scripts/seed-from-cms-defaults.js${NC}"
+echo ""
+echo "  5. ${BLUE}Deploy Frontend (20i):${NC}"
 echo "     - Upload all files (except /server) to 20i"
-echo "     - Or deploy from GitHub"
+echo "     - Domain: ${FRONTEND_DOMAIN}"
 echo ""
-echo -e "${GREEN}Your CMS admin will be at: ${FRONTEND_URL}/admin/${NC}"
-echo -e "${GREEN}Password: ${ADMIN_PASSWORD}${NC}"
+echo -e "${GREEN}═══════════════════════════════════════════════════════${NC}"
+echo -e "${GREEN}CMS Admin: ${FRONTEND_URL}/admin/${NC}"
+echo -e "${GREEN}Password:  ${ADMIN_PASSWORD}${NC}"
+echo -e "${GREEN}API:       ${API_URL}${NC}"
+echo -e "${GREEN}PM2 Name:  ${PROJECT_SLUG}-api${NC}"
+echo -e "${GREEN}═══════════════════════════════════════════════════════${NC}"
+echo ""
+echo -e "${YELLOW}See PROJECT-INFO.md for all project details and commands.${NC}"
 echo ""
 
