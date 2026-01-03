@@ -421,8 +421,27 @@
                 return;
             }
 
+            // Validate password requirements
             if (password.length < 8) {
                 errorMessage.textContent = 'Password must be at least 8 characters';
+                errorMessage.classList.add('show');
+                return;
+            }
+
+            if (!/[A-Z]/.test(password)) {
+                errorMessage.textContent = 'Password must contain at least one uppercase letter';
+                errorMessage.classList.add('show');
+                return;
+            }
+
+            if (!/[a-z]/.test(password)) {
+                errorMessage.textContent = 'Password must contain at least one lowercase letter';
+                errorMessage.classList.add('show');
+                return;
+            }
+
+            if (!/[0-9]/.test(password)) {
+                errorMessage.textContent = 'Password must contain at least one number';
                 errorMessage.classList.add('show');
                 return;
             }
