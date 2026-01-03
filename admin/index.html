@@ -558,10 +558,14 @@
                 </button>
             </nav>
             <div class="p-4 border-t border-white/10 mt-auto">
-                <a href="../index.html" target="_blank" class="flex items-center justify-center gap-2 w-full px-3 py-3 bg-primary text-white rounded-lg font-semibold transition-all hover:bg-primary-dark no-underline">
+                <a href="../index.html" target="_blank" class="flex items-center justify-center gap-2 w-full px-3 py-3 bg-primary text-white rounded-lg font-semibold transition-all hover:bg-primary-dark no-underline mb-2">
                     <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/></svg>
                     View Website
                 </a>
+                <button onclick="logout()" class="flex items-center justify-center gap-2 w-full px-3 py-2 bg-transparent border border-gray-600 text-gray-400 rounded-lg text-sm transition-all hover:bg-red-500/10 hover:border-red-500 hover:text-red-400">
+                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+                    Sign Out
+                </button>
             </div>
         </aside>
 
@@ -1777,6 +1781,40 @@
     <script src="../js/config.js"></script>
     <script src="../js/api-client.js"></script>
     <script src="cms-api-sync.js"></script>
+    
+    <!-- Auth Check -->
+    <script>
+        // Check authentication status
+        (function() {
+            const token = localStorage.getItem('cms_token');
+            const apiAvailable = window.USE_API !== false;
+            
+            // If API is enabled and no token, redirect to login
+            if (apiAvailable && !token) {
+                // Check if API is actually available before requiring login
+                fetch(`${window.API_BASE_URL.replace('/api', '')}/health`)
+                    .then(r => r.ok)
+                    .then(apiUp => {
+                        if (apiUp) {
+                            window.location.href = 'login.html';
+                        }
+                        // If API is down, allow local mode
+                    })
+                    .catch(() => {
+                        // API unreachable, allow local mode
+                        console.log('[Auth] API unreachable, using local mode');
+                    });
+            }
+            
+            // Add logout function
+            window.logout = function() {
+                localStorage.removeItem('cms_token');
+                localStorage.removeItem('cms_user');
+                window.location.href = 'login.html';
+            };
+        })();
+    </script>
+    
     <script src="cms-data.js"></script>
 </body>
 </html>

@@ -13,15 +13,30 @@
                       window.location.hostname === '127.0.0.1' ||
                       window.location.protocol === 'file:';
 
+  // Detect if we're running under /demo path
+  const isDemoPath = window.location.pathname.startsWith('/demo');
+  
   // API Configuration
   // Priority:
   // 1) Explicit override (window.API_BASE_URL_OVERRIDE)
   // 2) <meta name="api-base-url" content="https://api.example.com/api">
   // 3) Localhost default
-  // 4) Same-origin default (/api) – works for staging under /demo if proxied
-  window.API_BASE_URL = globalApiOverride
-    || metaApiBase
-    || (isLocalhost ? 'http://localhost:3001/api' : '/api');
+  // 4) Demo path: /demo/api (Nginx proxies this to backend)
+  // 5) Same-origin default (/api)
+  let apiUrl;
+  if (globalApiOverride) {
+    apiUrl = globalApiOverride;
+  } else if (metaApiBase) {
+    apiUrl = metaApiBase;
+  } else if (isLocalhost) {
+    apiUrl = 'http://localhost:3001/api';
+  } else if (isDemoPath) {
+    apiUrl = '/demo/api';
+  } else {
+    apiUrl = '/api';
+  }
+  
+  window.API_BASE_URL = apiUrl;
 
   // Feature flags
   window.USE_API = true;  // Set to false to use localStorage fallback
@@ -30,6 +45,7 @@
   window.DEBUG = isLocalhost;
 
   console.log(`[Config] Environment: ${isLocalhost ? 'Development' : 'Production'}`);
+  console.log(`[Config] Demo Path: ${isDemoPath}`);
   console.log(`[Config] API URL: ${window.API_BASE_URL}`);
 })();
 
