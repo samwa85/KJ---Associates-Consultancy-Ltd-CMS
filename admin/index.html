@@ -1797,84 +1797,14 @@
     <!-- Supabase Client -->
     <script src="../js/supabase-client.js"></script>
     
-    <!-- Auth Check with Supabase -->
+    <!-- Auth removed: local CMS mode -->
     <script>
-        // Get Supabase config from config file
-        const SUPABASE_URL = window.SUPABASE_CONFIG?.url;
-        const SUPABASE_ANON_KEY = window.SUPABASE_CONFIG?.anonKey;
-        
-        // Initialize Supabase client globally
         window.supabaseClient = null;
-        
-        // Check authentication status
-        (async function() {
-            if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-                console.warn('[Auth] Missing Supabase configuration, using local mode');
-                return;
-            }
-            
-            try {
-                // Initialize Supabase client with custom headers for Kong compatibility
-                // The Supabase JS client automatically sends 'apikey' header, but we ensure it's explicit
-                window.supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-                    auth: {
-                        persistSession: true,
-                        autoRefreshToken: true,
-                        detectSessionInUrl: true
-                    },
-                    global: {
-                        headers: {
-                            'apikey': SUPABASE_ANON_KEY,
-                            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-                            'x-api-key': SUPABASE_ANON_KEY  // Some Kong configs use this header
-                        }
-                    },
-                    db: {
-                        schema: 'public'
-                    }
-                });
-                
-                // Check if user is logged in
-                const { data: { session } } = await window.supabaseClient.auth.getSession();
-                
-                if (!session) {
-                    // Not logged in, redirect to site home
-                    window.location.href = '../index.html';
-                    return;
-                }
-                
-                // Store user info
-                localStorage.setItem('cms_user', JSON.stringify({
-                    id: session.user.id,
-                    email: session.user.email,
-                    role: session.user.user_metadata?.role || 'admin'
-                }));
-                
-                console.log('[Auth] User authenticated:', session.user.email);
-                
-            } catch (error) {
-                console.error('[Auth] Error checking session:', error);
-                // Format error to ensure it has formattedError property
-                if (typeof window !== 'undefined' && window.formatError) {
-                    const formattedError = window.formatError(error);
-                    // Ensure error object has formattedError before any validation
-                    error.formattedError = formattedError.formattedError;
-                } else if (error && !error.formattedError) {
-                    error.formattedError = error?.message || String(error) || 'Authentication error';
-                }
-                // Allow local mode on error
-            }
-            
-            // Add logout function
-            window.logout = async function() {
-                if (window.supabaseClient) {
-                    await window.supabaseClient.auth.signOut();
-                }
-                localStorage.removeItem('cms_token');
-                localStorage.removeItem('cms_user');
-                window.location.href = '../index.html';
-            };
-        })();
+        window.logout = function() {
+            localStorage.removeItem('cms_token');
+            localStorage.removeItem('cms_user');
+            window.location.reload();
+        };
     </script>
     
     <script src="cms-data.js"></script>

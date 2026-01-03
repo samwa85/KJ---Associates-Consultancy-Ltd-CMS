@@ -32,7 +32,7 @@ After running the script, you should see:
 
 ### Step 3: Test User Creation
 
-1. (Auth pages removed) Use server-side/admin API to create users
+1. Auth pages removed: use server-side admin scripts or API to create users
 2. User roles are created automatically via database trigger
 
 ## What the Fix Does
