@@ -5,13 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CMS Admin | KJ & Associates</title>
     
-    <!-- Supabase Configuration - UPDATE THESE VALUES -->
-    <meta name="supabase-url" content="http://supabasekong-j8k8sksckccs4ccogsscccww.31.97.79.197.sslip.io">
-    <meta name="supabase-anon-key" content="eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJzdXBhYmFzZSIsImlhdCI6MTc2NzQyNjU0MCwiZXhwIjo0OTIzMTAwMTQwLCJyb2xlIjoiYW5vbiJ9.SjKT3nG6cTid7fSuOvdy5Mxy8SsGsYPUW1XVZCNR7WY">
+    <!-- Supabase Configuration can be overridden via meta tags or server-side injection -->
+    <!-- For production, inject these server-side from environment variables -->
+    <meta name="supabase-url" content="" data-placeholder="Override Supabase URL here if needed">
+    <meta name="supabase-anon-key" content="" data-placeholder="Override Supabase anon key here if needed">
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Supabase Config (loads credentials) -->
+    <script src="../js/supabase-config.js"></script>
     
     <!-- Supabase JS -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -1792,9 +1796,9 @@
     
     <!-- Auth Check with Supabase -->
     <script>
-        // Get Supabase config from meta tags
-        const SUPABASE_URL = document.querySelector('meta[name="supabase-url"]')?.content;
-        const SUPABASE_ANON_KEY = document.querySelector('meta[name="supabase-anon-key"]')?.content;
+        // Get Supabase config from config file
+        const SUPABASE_URL = window.SUPABASE_CONFIG?.url;
+        const SUPABASE_ANON_KEY = window.SUPABASE_CONFIG?.anonKey;
         
         // Initialize Supabase client globally
         window.supabaseClient = null;
@@ -1807,7 +1811,20 @@
             }
             
             try {
-                window.supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                // Initialize Supabase client with custom headers for Kong compatibility
+                window.supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+                    auth: {
+                        persistSession: true,
+                        autoRefreshToken: true,
+                        detectSessionInUrl: true
+                    },
+                    global: {
+                        headers: {
+                            'apikey': SUPABASE_ANON_KEY,
+                            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                        }
+                    }
+                });
                 
                 // Check if user is logged in
                 const { data: { session } } = await window.supabaseClient.auth.getSession();

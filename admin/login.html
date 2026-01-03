@@ -5,13 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Login | KJ & Associates CMS</title>
     
-    <!-- Supabase Configuration - UPDATE THESE VALUES -->
-    <meta name="supabase-url" content="http://supabasekong-j8k8sksckccs4ccogsscccww.31.97.79.197.sslip.io">
-    <meta name="supabase-anon-key" content="eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJzdXBhYmFzZSIsImlhdCI6MTc2NzQyNjU0MCwiZXhwIjo0OTIzMTAwMTQwLCJyb2xlIjoiYW5vbiJ9.SjKT3nG6cTid7fSuOvdy5Mxy8SsGsYPUW1XVZCNR7WY">
+    <!-- Supabase Configuration can be overridden via meta tags or server-side injection -->
+    <!-- For production, inject these server-side from environment variables -->
+    <meta name="supabase-url" content="" data-placeholder="Override Supabase URL here if needed">
+    <meta name="supabase-anon-key" content="" data-placeholder="Override Supabase anon key here if needed">
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Supabase Config (loads credentials) -->
+    <script src="../js/supabase-config.js"></script>
     
     <!-- Supabase JS -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -216,12 +220,13 @@
     </div>
 
     <script>
-        // Get Supabase config from meta tags
-        const SUPABASE_URL = document.querySelector('meta[name="supabase-url"]')?.content;
-        const SUPABASE_ANON_KEY = document.querySelector('meta[name="supabase-anon-key"]')?.content;
+        // Get Supabase config from config file
+        const SUPABASE_URL = window.SUPABASE_CONFIG?.url;
+        const SUPABASE_ANON_KEY = window.SUPABASE_CONFIG?.anonKey;
         
         // Initialize Supabase client
         let supabaseClient = null;
+        let supabaseInitialized = false;
         
         const form = document.getElementById('loginForm');
         const loginBtn = document.getElementById('loginBtn');
@@ -230,7 +235,7 @@
         const statusDot = document.getElementById('statusDot');
         const statusText = document.getElementById('statusText');
 
-        // Initialize Supabase
+        // Initialize Supabase - returns promise
         async function initSupabase() {
             if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
                 statusText.textContent = 'Missing Supabase configuration';
@@ -262,23 +267,44 @@
                     return true;
                 }
                 
+                supabaseInitialized = true;
                 statusDot.classList.add('connected');
                 statusText.textContent = 'Connected to Supabase';
+                loginBtn.disabled = false; // Enable login button
                 return true;
             } catch (error) {
                 console.error('Supabase init error:', error);
                 // Even if session check fails, client might still work
+                supabaseInitialized = true;
                 statusDot.classList.add('connected');
                 statusText.textContent = 'Supabase client initialized';
+                loginBtn.disabled = false; // Enable login button
                 return true;
             }
         }
 
-        initSupabase();
+        // Initialize and wait for it to complete
+        (async function() {
+            loginBtn.disabled = true; // Disable until initialized
+            await initSupabase();
+        })();
 
         // Handle form submission
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
+            
+            // Check if Supabase client is initialized
+            if (!supabaseClient || !supabaseInitialized) {
+                errorMessage.textContent = 'Please wait, connecting to Supabase...';
+                errorMessage.classList.add('show');
+                // Wait a bit and try again
+                setTimeout(() => {
+                    if (supabaseClient && supabaseInitialized) {
+                        form.dispatchEvent(new Event('submit'));
+                    }
+                }, 1000);
+                return;
+            }
             
             const email = document.getElementById('email').value.trim();
             const password = document.getElementById('password').value;
