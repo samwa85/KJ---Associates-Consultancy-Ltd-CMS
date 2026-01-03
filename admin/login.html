@@ -4,9 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Login | KJ & Associates CMS</title>
+    
+    <!-- Supabase Configuration - UPDATE THESE VALUES -->
+    <meta name="supabase-url" content="http://supabasekong-j8k8sksckccs4ccogsscccww.31.97.79.197.sslip.io">
+    <meta name="supabase-anon-key" content="eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJzdXBhYmFzZSIsImlhdCI6MTc2NzQyNjU0MCwiZXhwIjo0OTIzMTAwMTQwLCJyb2xlIjoiYW5vbiJ9.SjKT3nG6cTid7fSuOvdy5Mxy8SsGsYPUW1XVZCNR7WY">
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Supabase JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
     <style>
         :root {
             --primary: #1a7a47;
@@ -21,11 +30,7 @@
             --success: #22c55e;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
@@ -37,10 +42,7 @@
             padding: 20px;
         }
 
-        .login-container {
-            width: 100%;
-            max-width: 420px;
-        }
+        .login-container { width: 100%; max-width: 420px; }
 
         .login-card {
             background: var(--bg-card);
@@ -50,32 +52,12 @@
             border: 1px solid var(--border);
         }
 
-        .logo {
-            text-align: center;
-            margin-bottom: 32px;
-        }
+        .logo { text-align: center; margin-bottom: 32px; }
+        .logo img { height: 60px; margin-bottom: 16px; }
+        .logo h1 { color: var(--text-primary); font-size: 1.5rem; font-weight: 700; }
+        .logo p { color: var(--text-secondary); font-size: 0.875rem; margin-top: 4px; }
 
-        .logo img {
-            height: 60px;
-            margin-bottom: 16px;
-        }
-
-        .logo h1 {
-            color: var(--text-primary);
-            font-size: 1.5rem;
-            font-weight: 700;
-        }
-
-        .logo p {
-            color: var(--text-secondary);
-            font-size: 0.875rem;
-            margin-top: 4px;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
+        .form-group { margin-bottom: 20px; }
         .form-group label {
             display: block;
             color: var(--text-secondary);
@@ -101,40 +83,29 @@
             box-shadow: 0 0 0 3px rgba(26, 122, 71, 0.2);
         }
 
-        .form-group input::placeholder {
-            color: var(--text-secondary);
-            opacity: 0.5;
+        .form-group input::placeholder { color: var(--text-secondary); opacity: 0.5; }
+
+        .error-message, .success-message {
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            margin-bottom: 20px;
+            display: none;
         }
 
         .error-message {
             background: rgba(239, 68, 68, 0.1);
             border: 1px solid var(--error);
             color: var(--error);
-            padding: 12px 16px;
-            border-radius: 8px;
-            font-size: 0.875rem;
-            margin-bottom: 20px;
-            display: none;
-        }
-
-        .error-message.show {
-            display: block;
         }
 
         .success-message {
             background: rgba(34, 197, 94, 0.1);
             border: 1px solid var(--success);
             color: var(--success);
-            padding: 12px 16px;
-            border-radius: 8px;
-            font-size: 0.875rem;
-            margin-bottom: 20px;
-            display: none;
         }
 
-        .success-message.show {
-            display: block;
-        }
+        .error-message.show, .success-message.show { display: block; }
 
         .btn-login {
             width: 100%;
@@ -154,11 +125,7 @@
             transform: translateY(-1px);
         }
 
-        .btn-login:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-        }
+        .btn-login:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 
         .btn-login .spinner {
             display: none;
@@ -171,17 +138,10 @@
             margin-right: 8px;
         }
 
-        .btn-login.loading .spinner {
-            display: inline-block;
-        }
+        .btn-login.loading .spinner { display: inline-block; }
+        .btn-login.loading .btn-text { opacity: 0.7; }
 
-        .btn-login.loading .btn-text {
-            opacity: 0.7;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
+        @keyframes spin { to { transform: rotate(360deg); } }
 
         .footer-text {
             text-align: center;
@@ -190,16 +150,10 @@
             font-size: 0.75rem;
         }
 
-        .footer-text a {
-            color: var(--primary-light);
-            text-decoration: none;
-        }
+        .footer-text a { color: var(--primary-light); text-decoration: none; }
+        .footer-text a:hover { text-decoration: underline; }
 
-        .footer-text a:hover {
-            text-decoration: underline;
-        }
-
-        .api-status {
+        .status {
             display: flex;
             align-items: center;
             justify-content: center;
@@ -216,9 +170,7 @@
             background: var(--error);
         }
 
-        .status-dot.connected {
-            background: var(--success);
-        }
+        .status-dot.connected { background: var(--success); }
     </style>
 </head>
 <body>
@@ -236,26 +188,12 @@
             <form id="loginForm">
                 <div class="form-group">
                     <label for="email">Email Address</label>
-                    <input 
-                        type="email" 
-                        id="email" 
-                        name="email" 
-                        placeholder="admin@example.com"
-                        autocomplete="email"
-                        required
-                    >
+                    <input type="email" id="email" placeholder="admin@kjconsultancy.co.tz" autocomplete="email" required>
                 </div>
 
                 <div class="form-group">
                     <label for="password">Password</label>
-                    <input 
-                        type="password" 
-                        id="password" 
-                        name="password" 
-                        placeholder="••••••••"
-                        autocomplete="current-password"
-                        required
-                    >
+                    <input type="password" id="password" placeholder="••••••••" autocomplete="current-password" required>
                 </div>
 
                 <button type="submit" class="btn-login" id="loginBtn">
@@ -264,9 +202,9 @@
                 </button>
             </form>
 
-            <div class="api-status">
+            <div class="status">
                 <span class="status-dot" id="statusDot"></span>
-                <span id="statusText">Checking API...</span>
+                <span id="statusText">Connecting to Supabase...</span>
             </div>
 
             <p class="footer-text">
@@ -277,9 +215,14 @@
         </div>
     </div>
 
-    <script src="../js/config.js"></script>
-    <script src="../js/api-client.js"></script>
     <script>
+        // Get Supabase config from meta tags
+        const SUPABASE_URL = document.querySelector('meta[name="supabase-url"]')?.content;
+        const SUPABASE_ANON_KEY = document.querySelector('meta[name="supabase-anon-key"]')?.content;
+        
+        // Initialize Supabase client
+        let supabaseClient = null;
+        
         const form = document.getElementById('loginForm');
         const loginBtn = document.getElementById('loginBtn');
         const errorMessage = document.getElementById('errorMessage');
@@ -287,39 +230,36 @@
         const statusDot = document.getElementById('statusDot');
         const statusText = document.getElementById('statusText');
 
-        // Check if already logged in
-        const token = localStorage.getItem('cms_token');
-        if (token) {
-            // Verify token is still valid
-            API.auth.getCurrentUser()
-                .then(response => {
-                    if (response.success) {
-                        window.location.href = 'index.html';
-                    }
-                })
-                .catch(() => {
-                    localStorage.removeItem('cms_token');
-                });
-        }
+        // Initialize Supabase
+        async function initSupabase() {
+            if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+                statusText.textContent = 'Missing Supabase configuration';
+                return false;
+            }
 
-        // Check API status
-        async function checkApiStatus() {
             try {
-                const response = await fetch(`${API.baseURL.replace('/api', '')}/health`);
-                if (response.ok) {
-                    statusDot.classList.add('connected');
-                    statusText.textContent = 'API Connected';
+                supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                
+                // Check if already logged in
+                const { data: { session } } = await supabaseClient.auth.getSession();
+                
+                if (session) {
+                    // Already logged in, redirect to admin
+                    window.location.href = 'index.html';
                     return true;
                 }
+                
+                statusDot.classList.add('connected');
+                statusText.textContent = 'Connected to Supabase';
+                return true;
             } catch (error) {
-                console.warn('API not available:', error);
+                console.error('Supabase init error:', error);
+                statusText.textContent = 'Failed to connect to Supabase';
+                return false;
             }
-            statusDot.classList.remove('connected');
-            statusText.textContent = 'API Offline - Using local mode';
-            return false;
         }
 
-        checkApiStatus();
+        initSupabase();
 
         // Handle form submission
         form.addEventListener('submit', async (e) => {
@@ -332,7 +272,6 @@
             errorMessage.classList.remove('show');
             successMessage.classList.remove('show');
 
-            // Validate
             if (!email || !password) {
                 errorMessage.textContent = 'Please enter email and password';
                 errorMessage.classList.add('show');
@@ -344,85 +283,38 @@
             loginBtn.disabled = true;
 
             try {
-                // Check if API is available
-                let apiAvailable = false;
-                try {
-                    const healthCheck = await fetch(`${API.baseURL.replace('/api', '')}/health`);
-                    apiAvailable = healthCheck.ok;
-                } catch (e) {
-                    apiAvailable = false;
-                }
+                // Sign in with Supabase Auth
+                const { data, error } = await supabaseClient.auth.signInWithPassword({
+                    email: email,
+                    password: password
+                });
 
-                if (apiAvailable) {
-                    // Try API login
-                    const response = await API.auth.signIn(email, password);
-                    
-                    if (response.success) {
-                        successMessage.textContent = 'Login successful! Redirecting...';
-                        successMessage.classList.add('show');
-                        
-                        // Store user info
-                        localStorage.setItem('cms_user', JSON.stringify(response.data.user));
-                        
-                        // Redirect to admin panel
-                        setTimeout(() => {
-                            window.location.href = 'index.html';
-                        }, 500);
-                    } else {
-                        throw new Error(response.error || 'Login failed');
-                    }
-                } else {
-                    // Fallback: Check localStorage admins
-                    const admins = JSON.parse(localStorage.getItem('cms_admins') || '[]');
-                    
-                    if (admins.length === 0) {
-                        throw new Error('No admin accounts found. Please create one first.');
-                    }
-                    
-                    // Hash the entered password
-                    const hashPassword = async (pwd) => {
-                        const encoder = new TextEncoder();
-                        const data = encoder.encode(pwd + 'kj_cms_salt_2024');
-                        const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-                        const hashArray = Array.from(new Uint8Array(hashBuffer));
-                        return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-                    };
-                    
-                    const hashedPassword = await hashPassword(password);
-                    const admin = admins.find(a => a.email === email && a.passwordHash === hashedPassword);
-                    
-                    if (admin) {
-                        successMessage.textContent = 'Login successful! Redirecting...';
-                        successMessage.classList.add('show');
-                        
-                        // Store user info
-                        localStorage.setItem('cms_user', JSON.stringify({
-                            id: admin.id,
-                            email: admin.email,
-                            role: admin.role
-                        }));
-                        localStorage.setItem('cms_token', 'local_' + admin.id);
-                        
-                        // Redirect to admin panel
-                        setTimeout(() => {
-                            window.location.href = 'index.html';
-                        }, 500);
-                    } else {
-                        throw new Error('Invalid email or password');
-                    }
-                }
+                if (error) throw error;
+
+                // Store user info
+                localStorage.setItem('cms_user', JSON.stringify({
+                    id: data.user.id,
+                    email: data.user.email,
+                    role: data.user.user_metadata?.role || 'admin'
+                }));
+
+                successMessage.textContent = 'Login successful! Redirecting...';
+                successMessage.classList.add('show');
+
+                // Redirect to admin panel
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 500);
+
             } catch (error) {
                 console.error('Login error:', error);
                 let errorMsg = error.message || 'Invalid email or password';
-                if (errorMsg.includes('not valid JSON')) {
-                    errorMsg = 'API not available. Using local authentication.';
-                    // Retry with local auth
-                    const admins = JSON.parse(localStorage.getItem('cms_admins') || '[]');
-                    if (admins.length === 0) {
-                        errorMsg = 'No admin accounts found. Please <a href="setup.html">create one first</a>.';
-                    }
+                
+                if (errorMsg.includes('Invalid login credentials')) {
+                    errorMsg = 'Invalid email or password';
                 }
-                errorMessage.innerHTML = errorMsg;
+                
+                errorMessage.textContent = errorMsg;
                 errorMessage.classList.add('show');
             } finally {
                 loginBtn.classList.remove('loading');
@@ -432,4 +324,3 @@
     </script>
 </body>
 </html>
-
