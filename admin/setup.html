@@ -367,6 +367,9 @@
             setupBtn.disabled = true;
 
             try {
+                console.log('[Setup] Attempting to create user with email:', email);
+                console.log('[Setup] Supabase URL:', SUPABASE_URL);
+                
                 // Create user with Supabase Auth
                 const { data, error } = await supabaseClient.auth.signUp({
                     email: email,
@@ -379,24 +382,48 @@
                     }
                 });
 
-                if (error) throw error;
+                console.log('[Setup] Response:', { data, error });
 
-                successMessage.innerHTML = `
-                    <strong>✓ Admin account created!</strong><br>
-                    You can now <a href="login.html" style="color: inherit; text-decoration: underline;">sign in</a> with your credentials.
-                `;
+                if (error) {
+                    console.error('[Setup] Supabase error:', error);
+                    throw error;
+                }
+
+                // Check if user was created or needs email confirmation
+                if (data.user && !data.session) {
+                    successMessage.innerHTML = `
+                        <strong>✓ Admin account created!</strong><br>
+                        Check your email to confirm your account, then <a href="login.html" style="color: inherit; text-decoration: underline;">sign in</a>.
+                    `;
+                } else if (data.session) {
+                    successMessage.innerHTML = `
+                        <strong>✓ Admin account created!</strong><br>
+                        You can now <a href="login.html" style="color: inherit; text-decoration: underline;">sign in</a> with your credentials.
+                    `;
+                } else {
+                    successMessage.innerHTML = `
+                        <strong>✓ Request sent!</strong><br>
+                        Please check your email or try <a href="login.html" style="color: inherit; text-decoration: underline;">signing in</a>.
+                    `;
+                }
+                
                 successMessage.classList.add('show');
                 form.reset();
 
             } catch (error) {
-                console.error('Setup error:', error);
-                let errorMsg = error.message || 'Failed to create admin account';
+                console.error('[Setup] Error details:', error);
+                let errorMsg = error.message || JSON.stringify(error) || 'Failed to create admin account';
                 
+                // Handle specific errors
                 if (errorMsg.includes('already registered') || errorMsg.includes('already exists')) {
                     errorMsg = 'An account with this email already exists. Try logging in instead.';
+                } else if (errorMsg.includes('invalid_type') || errorMsg.includes('undefined')) {
+                    errorMsg = 'Supabase Auth service error. Please check your Supabase configuration.';
+                } else if (errorMsg.includes('fetch')) {
+                    errorMsg = 'Cannot connect to Supabase. Check if the URL is correct.';
                 }
                 
-                errorMessage.textContent = errorMsg;
+                errorMessage.innerHTML = errorMsg + '<br><small style="opacity:0.7">Check browser console for details.</small>';
                 errorMessage.classList.add('show');
             } finally {
                 setupBtn.classList.remove('loading');
