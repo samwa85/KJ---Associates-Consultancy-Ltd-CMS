@@ -625,18 +625,36 @@
             return params.get('slug');
         }
 
-        // Load blog posts from CMS
-        function loadBlogData() {
-            const stored = localStorage.getItem('kj_cms_data');
-            if (stored) {
-                try {
-                    const data = JSON.parse(stored);
-                    allPosts = data.blog || [];
-                } catch (e) {
-                    allPosts = getDefaultPosts();
+        // Load blog posts from CMS (prefers API data from main.js)
+        async function loadBlogData() {
+            allPosts = [];
+
+            // Prefer API-loaded data
+            try {
+                const cmsData = await (window.cmsDataReady || Promise.resolve(null));
+                if (cmsData && Array.isArray(cmsData.blog)) {
+                    allPosts = cmsData.blog;
+                    console.log('[Blog Post] Using API-backed posts', allPosts.length);
                 }
-            } else {
+            } catch (e) {
+                console.warn('[Blog Post] Failed to read cmsDataReady', e);
+            }
+
+            // Fallback to cached localStorage only if API data unavailable
+            if ((!allPosts || allPosts.length === 0) && localStorage.getItem('kj_cms_data')) {
+                try {
+                    const cached = JSON.parse(localStorage.getItem('kj_cms_data'));
+                    allPosts = cached.blog || [];
+                    console.log('[Blog Post] Using cached posts', allPosts.length);
+                } catch (e) {
+                    console.error('[Blog Post] Error parsing cached CMS data:', e);
+                }
+            }
+
+            // Final fallback to defaults
+            if (!allPosts || allPosts.length === 0) {
                 allPosts = getDefaultPosts();
+                console.log('[Blog Post] Using default sample posts');
             }
         }
 

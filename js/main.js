@@ -1,5 +1,15 @@
 // KJ & Associates - Main JavaScript
 
+// Expose a global promise so page scripts can wait for CMS data loaded by main.js
+if (!window.cmsDataReady) {
+    window.cmsDataReady = new Promise(resolve => {
+        window.__resolveCmsData = resolve;
+    });
+}
+if (typeof window.cmsData === 'undefined') {
+    window.cmsData = null;
+}
+
 document.addEventListener('DOMContentLoaded', async function() {
     
     // ==================== CMS DATA LOADER ====================
@@ -83,6 +93,14 @@ document.addEventListener('DOMContentLoaded', async function() {
         }
     } else {
         console.log('[Main] Using API data');
+    }
+
+    // Make CMS data globally available and resolve the readiness promise
+    window.cmsData = cmsData;
+    if (typeof window.__resolveCmsData === 'function') {
+        window.__resolveCmsData(cmsData);
+    } else {
+        window.cmsDataReady = Promise.resolve(cmsData);
     }
 
     // ==================== THEME SYSTEM ====================

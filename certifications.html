@@ -112,17 +112,29 @@
             return path;
         }
 
-        // Load certificates from CMS
-        function loadCertificates() {
-            const savedData = localStorage.getItem('kj_cms_data');
+        // Load certificates from CMS (prefers API data from main.js)
+        async function loadCertificates() {
             let certifications = [];
 
-            if (savedData) {
+            // Prefer API-loaded data
+            try {
+                const cmsData = await (window.cmsDataReady || Promise.resolve(null));
+                if (cmsData && Array.isArray(cmsData.certifications)) {
+                    certifications = cmsData.certifications;
+                    console.log('[Certifications] Using API-backed data', certifications.length);
+                }
+            } catch (e) {
+                console.warn('[Certifications] Failed to read cmsDataReady', e);
+            }
+
+            // Fallback to cached localStorage only if API data unavailable
+            if ((!certifications || certifications.length === 0) && localStorage.getItem('kj_cms_data')) {
                 try {
-                    const cmsData = JSON.parse(savedData);
-                    certifications = cmsData.certifications || [];
+                    const cached = JSON.parse(localStorage.getItem('kj_cms_data'));
+                    certifications = cached.certifications || [];
+                    console.log('[Certifications] Using cached data', certifications.length);
                 } catch (e) {
-                    console.error('Error parsing CMS data:', e);
+                    console.error('[Certifications] Error parsing cached CMS data:', e);
                 }
             }
 

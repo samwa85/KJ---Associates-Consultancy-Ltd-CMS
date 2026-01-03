@@ -128,19 +128,32 @@
     </section>
 
     <script>
-        // Load clients from CMS
-        function loadClientsPage() {
-            const savedData = localStorage.getItem('kj_cms_data');
+        // Load clients from CMS (prefers API data from main.js)
+        async function loadClientsPage() {
             let clients = [];
             let imageData = {};
 
-            if (savedData) {
-                try {
-                    const cmsData = JSON.parse(savedData);
-                    clients = cmsData.clients || [];
+            // Prefer API-loaded data
+            try {
+                const cmsData = await (window.cmsDataReady || Promise.resolve(null));
+                if (cmsData && Array.isArray(cmsData.clients)) {
+                    clients = cmsData.clients;
                     imageData = cmsData._imageData || {};
+                    console.log('[Clients] Using API-backed data', clients.length);
+                }
+            } catch (e) {
+                console.warn('[Clients] Failed to read cmsDataReady', e);
+            }
+
+            // Fallback to cached localStorage only if API data unavailable
+            if ((!clients || clients.length === 0) && localStorage.getItem('kj_cms_data')) {
+                try {
+                    const cached = JSON.parse(localStorage.getItem('kj_cms_data'));
+                    clients = cached.clients || [];
+                    imageData = cached._imageData || {};
+                    console.log('[Clients] Using cached data', clients.length);
                 } catch (e) {
-                    console.error('Error parsing CMS data:', e);
+                    console.error('[Clients] Error parsing cached CMS data:', e);
                 }
             }
 

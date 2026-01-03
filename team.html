@@ -179,17 +179,29 @@
             return path;
         }
         
-        // Load and render team data
-        function loadTeam() {
-            const savedData = localStorage.getItem('kj_cms_data');
+        // Load and render team data (prefers API data from main.js)
+        async function loadTeam() {
             let teamData = [];
 
-            if (savedData) {
+            // Prefer API-loaded data
+            try {
+                const cmsData = await (window.cmsDataReady || Promise.resolve(null));
+                if (cmsData && Array.isArray(cmsData.team)) {
+                    teamData = cmsData.team;
+                    console.log('[Team] Using API-backed data', teamData.length);
+                }
+            } catch (e) {
+                console.warn('[Team] Failed to read cmsDataReady', e);
+            }
+
+            // Fallback to cached localStorage only if API data unavailable
+            if ((!teamData || teamData.length === 0) && localStorage.getItem('kj_cms_data')) {
                 try {
-                    const cmsData = JSON.parse(savedData);
-                    teamData = cmsData.team || [];
+                    const cached = JSON.parse(localStorage.getItem('kj_cms_data'));
+                    teamData = cached.team || [];
+                    console.log('[Team] Using cached data', teamData.length);
                 } catch (e) {
-                    console.error('Error parsing CMS data:', e);
+                    console.error('[Team] Error parsing cached CMS data:', e);
                 }
             }
 

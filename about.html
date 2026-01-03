@@ -377,17 +377,29 @@
             return path;
         }
         
-        // Load and render team data for Leadership & Team section
-        function loadTeamForAbout() {
-            const savedData = localStorage.getItem('kj_cms_data');
+        // Load and render team data for Leadership & Team section (prefers API data from main.js)
+        async function loadTeamForAbout() {
             let teamData = [];
 
-            if (savedData) {
+            // Prefer API-loaded data from main.js
+            try {
+                const cmsData = await (window.cmsDataReady || Promise.resolve(null));
+                if (cmsData && Array.isArray(cmsData.team)) {
+                    teamData = cmsData.team;
+                    console.log('[About] Using API-backed team data', teamData.length);
+                }
+            } catch (e) {
+                console.warn('[About] Failed to read cmsDataReady for team', e);
+            }
+
+            // Fallback to cached localStorage only if API data unavailable
+            if ((!teamData || teamData.length === 0) && localStorage.getItem('kj_cms_data')) {
                 try {
-                    const cmsData = JSON.parse(savedData);
-                    teamData = cmsData.team || [];
+                    const cached = JSON.parse(localStorage.getItem('kj_cms_data'));
+                    teamData = cached.team || [];
+                    console.log('[About] Using cached team data', teamData.length);
                 } catch (e) {
-                    console.error('Error parsing CMS data:', e);
+                    console.error('[About] Error parsing cached CMS data for team:', e);
                 }
             }
 
@@ -455,22 +467,34 @@
         }
 
         // Load team when page loads
-        document.addEventListener('DOMContentLoaded', function() {
-            loadTeamForAbout();
-            loadBoardMembers();
+        document.addEventListener('DOMContentLoaded', async function() {
+            await loadTeamForAbout();
+            await loadBoardMembers();
         });
 
         // Load and render board members
-        function loadBoardMembers() {
-            const savedData = localStorage.getItem('kj_cms_data');
+        async function loadBoardMembers() {
             let boardData = [];
 
-            if (savedData) {
+            // Prefer API-loaded data from main.js
+            try {
+                const cmsData = await (window.cmsDataReady || Promise.resolve(null));
+                if (cmsData && Array.isArray(cmsData.board)) {
+                    boardData = cmsData.board;
+                    console.log('[About] Using API-backed board data', boardData.length);
+                }
+            } catch (e) {
+                console.warn('[About] Failed to read cmsDataReady for board', e);
+            }
+
+            // Fallback to cached localStorage only if API data unavailable
+            if ((!boardData || boardData.length === 0) && localStorage.getItem('kj_cms_data')) {
                 try {
-                    const cmsData = JSON.parse(savedData);
-                    boardData = cmsData.board || [];
+                    const cached = JSON.parse(localStorage.getItem('kj_cms_data'));
+                    boardData = cached.board || [];
+                    console.log('[About] Using cached board data', boardData.length);
                 } catch (e) {
-                    console.error('Error parsing CMS data:', e);
+                    console.error('[About] Error parsing cached CMS data for board:', e);
                 }
             }
 

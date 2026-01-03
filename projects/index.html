@@ -440,22 +440,35 @@
     <script src="../js/config.js"></script>
     <script src="../js/main.js"></script>
     <script>
-        // Load and render projects from CMS data
-        function loadProjects() {
-            const savedData = localStorage.getItem('kj_cms_data');
+        // Load and render projects from CMS data (prefers API data from main.js)
+        async function loadProjects() {
             let projects = [];
             let cmsData = null;
             
-            if (savedData) {
+            // Prefer data loaded by main.js (API-backed) to avoid stale per-browser caches
+            try {
+                cmsData = await (window.cmsDataReady || Promise.resolve(null));
+                if (cmsData && Array.isArray(cmsData.projects)) {
+                    projects = cmsData.projects;
+                    console.log('[Projects] Using API-backed CMS data', projects.length);
+                }
+            } catch (e) {
+                console.warn('[Projects] Failed to read cmsDataReady', e);
+            }
+            
+            // Fallback to existing localStorage cache only if API data unavailable
+            if ((!projects || projects.length === 0) && localStorage.getItem('kj_cms_data')) {
                 try {
-                    cmsData = JSON.parse(savedData);
-                    projects = cmsData.projects || [];
+                    const cached = JSON.parse(localStorage.getItem('kj_cms_data'));
+                    projects = cached.projects || [];
+                    cmsData = cached;
+                    console.log('[Projects] Using cached CMS data', projects.length);
                 } catch (e) {
-                    console.error('Error parsing CMS data:', e);
+                    console.error('[Projects] Error parsing cached CMS data:', e);
                 }
             }
             
-            // Default 15 projects
+            // Default 15 projects (only for true fallback)
             const defaultProjects = [
                 { id: 1, title: "Residential Complex Apartments – Oysterbay", client: "Private Developer", location: "Oysterbay, Dar es Salaam", value: "24,000,000,000", funding: "Private", sector: "Building", status: "Ongoing", year: 2024, image: "", services: ["Pre-contract QS", "Post-contract QS"] },
                 { id: 2, title: "Commercial & Residential Building – Mwai Kibaki Road", client: "Private Developer", location: "Dar es Salaam", value: "15,000,000,000", funding: "Private", sector: "Building", status: "Ongoing", year: 2024, image: "", services: ["Quantity Surveying Services"] },
@@ -474,14 +487,10 @@
                 { id: 15, title: "Mzumbe University Library Rehabilitation & Extension", client: "Mzumbe University", location: "Morogoro", value: "1,250,000", currency: "USD", funding: "Government", sector: "Building", status: "Completed", year: 2023, duration: 12, image: "", services: ["Pre-contract QS", "Post-contract QS"] }
             ];
             
-            // Use default projects if none found or if less than 15 projects
-            if (projects.length === 0 || projects.length < 15) {
+            // Use default projects only if nothing came from API or cache
+            if (!projects || projects.length === 0) {
                 projects = defaultProjects;
-                // Update localStorage if we're using defaults
-                if (cmsData) {
-                    cmsData.projects = defaultProjects;
-                    localStorage.setItem('kj_cms_data', JSON.stringify(cmsData));
-                }
+                console.log('[Projects] Using default fallback projects');
             }
             
             renderProjects(projects, cmsData);

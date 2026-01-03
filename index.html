@@ -284,28 +284,38 @@
         // Global variable to store image data
         let cmsImageData = {};
 
-        // Load Featured Projects from CMS
-        function loadFeaturedProjects() {
-            const savedData = localStorage.getItem('kj_cms_data');
+        // Load Featured Projects from CMS (prefers API data from main.js)
+        async function loadFeaturedProjects() {
             let projects = [];
+            let cmsData = null;
 
-            if (savedData) {
-                try {
-                    const cmsData = JSON.parse(savedData);
-                    projects = cmsData.projects || [];
-                    // Store the _imageData for resolving image paths
+            // Prefer data loaded by main.js (API-backed) to avoid per-browser differences
+            try {
+                cmsData = await (window.cmsDataReady || Promise.resolve(null));
+                if (cmsData && Array.isArray(cmsData.projects)) {
+                    projects = cmsData.projects;
                     cmsImageData = cmsData._imageData || {};
-                    console.log('Loaded', projects.length, 'projects from CMS');
-                    console.log('Image data keys:', Object.keys(cmsImageData).length);
+                    console.log('[Home] Using API-backed CMS data', projects.length);
+                }
+            } catch (e) {
+                console.warn('[Home] Failed to read cmsDataReady', e);
+            }
+
+            // Fallback to existing localStorage cache only if API data unavailable
+            if ((!projects || projects.length === 0) && localStorage.getItem('kj_cms_data')) {
+                try {
+                    const cached = JSON.parse(localStorage.getItem('kj_cms_data'));
+                    projects = cached.projects || [];
+                    cmsImageData = cached._imageData || {};
+                    console.log('[Home] Using cached CMS data', projects.length);
                 } catch (e) {
-                    console.error('Error parsing CMS data:', e);
-                    projects = defaultProjects;
+                    console.error('[Home] Error parsing cached CMS data:', e);
                 }
             }
 
-            // If no projects in CMS, use default projects
-            if (projects.length === 0) {
-                console.log('No projects in CMS, using defaults');
+            // Final fallback to defaults for brand-new visitors
+            if (!projects || projects.length === 0) {
+                console.log('[Home] No CMS data, using defaults');
                 projects = defaultProjects;
             }
 
