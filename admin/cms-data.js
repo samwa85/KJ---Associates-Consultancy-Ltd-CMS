@@ -163,12 +163,6 @@ const CMS = {
                         this.data[key] = this.defaults[key];
                     }
                 });
-                // If projects array exists but has fewer than 15 items, update with defaults
-                if (this.data.projects && Array.isArray(this.data.projects) && this.data.projects.length < 15) {
-                    this.data.projects = JSON.parse(JSON.stringify(this.defaults.projects));
-                    // Save updated projects back to localStorage silently
-                    this.saveData(true);
-                }
                 // Initialize board data if missing or empty
                 if (!this.data.board || !Array.isArray(this.data.board) || this.data.board.length === 0) {
                     this.data.board = JSON.parse(JSON.stringify(this.defaults.board));
@@ -1339,7 +1333,7 @@ function saveSlide() {
     CMS.renderSlides();
     CMS.updateStats();
     closeSlideModal();
-    CMS.showNotification('Slide saved successfully', 'success');
+    showNotification('Slide saved successfully', 'success');
 }
 
 function editSlide(id) {
@@ -1507,7 +1501,7 @@ function saveProject() {
     CMS.renderProjects();
     CMS.updateStats();
     closeProjectModal();
-    CMS.showNotification('Project saved successfully', 'success');
+    showNotification('Project saved successfully', 'success');
     
     // Clear project images for next use
     window.projectImages = [];
@@ -1595,7 +1589,7 @@ function saveTeamMember() {
     
     // Validation
     if (!name) {
-        CMS.showNotification('Please enter a name', 'error');
+        showNotification('Please enter a name', 'error');
         return;
     }
     
@@ -1637,7 +1631,7 @@ function saveTeamMember() {
     CMS.renderTeam();
     CMS.updateStats();
     closeTeamModal();
-    CMS.showNotification('Team member saved successfully', 'success');
+    showNotification('Team member saved successfully', 'success');
 }
 
 function editTeamMember(id) {
@@ -1718,7 +1712,7 @@ function saveBoardMember() {
     
     // Validation
     if (!name) {
-        CMS.showNotification('Please enter a name', 'error');
+        showNotification('Please enter a name', 'error');
         return;
     }
     
@@ -1759,7 +1753,7 @@ function saveBoardMember() {
     CMS.saveData();
     CMS.renderBoard();
     closeBoardModal();
-    CMS.showNotification('Board member saved successfully', 'success');
+    showNotification('Board member saved successfully', 'success');
 }
 
 function editBoardMember(id) {
@@ -1880,7 +1874,7 @@ function saveClient() {
     CMS.saveData();
     CMS.renderClients();
     closeClientModal();
-    CMS.showNotification('Client saved successfully', 'success');
+    showNotification('Client saved successfully', 'success');
 }
 
 function editClient(id) {
@@ -1973,7 +1967,7 @@ function saveTestimonial() {
     CMS.renderTestimonials();
     CMS.updateStats();
     closeTestimonialModal();
-    CMS.showNotification('Testimonial saved successfully', 'success');
+    showNotification('Testimonial saved successfully', 'success');
 }
 
 function editTestimonial(id) {
@@ -2275,7 +2269,7 @@ function saveCertification() {
     
     // Validation
     if (!title) {
-        CMS.showNotification('Please enter a title', 'error');
+        showNotification('Please enter a title', 'error');
         return;
     }
     
@@ -2315,7 +2309,7 @@ function saveCertification() {
     CMS.renderCertifications();
     CMS.updateStats();
     closeCertificationModal();
-    CMS.showNotification('Certification saved successfully', 'success');
+    showNotification('Certification saved successfully', 'success');
 }
 
 function editCertification(id) {

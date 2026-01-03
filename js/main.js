@@ -121,38 +121,57 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        logos.forEach(logo => {
-            // Calculate the correct logo path based on current page location
+        // Resolve logo path respecting subdirectories and remote/data URLs
+        const resolveLogoPath = (path) => {
+            if (!path) return null;
+            if (/^(https?:)?\\/\\//.test(path) || path.startsWith('data:')) return path;
+            
             const currentPath = window.location.pathname;
             const isInSubdir = currentPath.includes('/projects/') || 
                               currentPath.includes('/services/') || 
                               currentPath.includes('/blog/') ||
                               currentPath.includes('/admin/');
-            
-            const logoPath = isInSubdir ? '../uploads/logo_kj&.png' : 'uploads/logo_kj&.png';
+
+            // Root-relative path
+            if (path.startsWith('/')) return path;
+            // Already relative with ../
+            if (path.startsWith('../')) return path;
+            // Default relative handling
+            return isInSubdir ? `../${path}` : path;
+        };
+
+        logos.forEach(logo => {
+            const currentPath = window.location.pathname;
+            const isInSubdir = currentPath.includes('/projects/') || 
+                              currentPath.includes('/services/') || 
+                              currentPath.includes('/blog/') ||
+                              currentPath.includes('/admin/');
+
+            const fallbackPath = isInSubdir ? '../uploads/logo_kj&.png' : 'uploads/logo_kj&.png';
+            const primaryPath = resolveLogoPath(branding.logoImageUrl) || fallbackPath;
             
             // Create image element
             const img = document.createElement('img');
             img.className = 'logo-image';
-            img.src = logoPath;
-            img.alt = 'KJ & Associates';
+            img.src = primaryPath;
+            img.alt = branding.logoText || 'KJ & Associates';
             
-            // Handle load errors - try alternative path
+            // Handle load errors - try alternative path then fallback to text
             let hasRetried = false;
             img.onerror = function() {
                 if (!hasRetried) {
                     hasRetried = true;
-                    // Try the opposite path
-                    this.src = isInSubdir ? 'uploads/logo_kj&.png' : '../uploads/logo_kj&.png';
+                    // Try fallback path
+                    this.src = fallbackPath;
                 } else {
-                    // Fallback to text logo
+                    // Fallback to text logo using branding text
                     this.style.display = 'none';
                     const textEl = document.createElement('span');
                     textEl.className = 'logo-text';
-                    textEl.textContent = 'KJ & Associates';
+                    textEl.textContent = branding.logoText || 'KJ & Associates';
                     const subEl = document.createElement('span');
                     subEl.className = 'logo-subtitle';
-                    subEl.textContent = 'Consultancy Ltd';
+                    subEl.textContent = branding.logoSubtitle || 'Consultancy Ltd';
                     logo.appendChild(textEl);
                     logo.appendChild(subEl);
                 }
