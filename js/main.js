@@ -644,11 +644,25 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Create backdrop overlay for mobile menu
     let backdrop = null;
+    let mobileCloseBtn = null;
+    
     if (mobileMenuToggle && navMenu) {
+        // Create backdrop - must be LOWER z-index than nav-menu (1001)
         backdrop = document.createElement('div');
         backdrop.className = 'mobile-menu-backdrop';
-        backdrop.style.cssText = 'position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0.3s ease; pointer-events: none;';
+        backdrop.style.cssText = 'position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 999; opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0.3s ease;';
         document.body.appendChild(backdrop);
+        
+        // Ensure nav-menu has higher z-index
+        navMenu.style.zIndex = '1001';
+        
+        // Create close button inside nav menu
+        mobileCloseBtn = document.createElement('button');
+        mobileCloseBtn.className = 'mobile-menu-close';
+        mobileCloseBtn.setAttribute('aria-label', 'Close menu');
+        mobileCloseBtn.innerHTML = '×';
+        mobileCloseBtn.style.cssText = 'position: absolute; top: 20px; right: 20px; width: 44px; height: 44px; background: var(--gray-100, #f3f4f6); border: none; border-radius: 50%; font-size: 28px; line-height: 1; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--text-primary, #333); z-index: 1002; transition: all 0.2s ease;';
+        navMenu.insertBefore(mobileCloseBtn, navMenu.firstChild);
     }
 
     function closeMobileMenu() {
@@ -660,6 +674,8 @@ document.addEventListener('DOMContentLoaded', function() {
             backdrop.style.visibility = 'hidden';
             backdrop.style.pointerEvents = 'none';
         }
+        // Close all dropdowns
+        document.querySelectorAll('.dropdown').forEach(d => d.classList.remove('active'));
     }
 
     function openMobileMenu() {
@@ -672,9 +688,19 @@ document.addEventListener('DOMContentLoaded', function() {
             backdrop.style.pointerEvents = 'all';
         }
     }
+    
+    // Navigate to URL programmatically
+    function navigateTo(url) {
+        closeMobileMenu();
+        setTimeout(function() {
+            window.location.href = url;
+        }, 100);
+    }
 
     if (mobileMenuToggle && navMenu) {
+        // Toggle button click
         mobileMenuToggle.addEventListener('click', function(e) {
+            e.preventDefault();
             e.stopPropagation();
             if (navMenu.classList.contains('active')) {
                 closeMobileMenu();
@@ -683,49 +709,73 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
 
-        if (backdrop) {
-            backdrop.addEventListener('click', () => {
+        // Close button inside menu
+        if (mobileCloseBtn) {
+            mobileCloseBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
                 closeMobileMenu();
             });
         }
 
-        // Handle dropdown toggles in mobile menu
-        document.querySelectorAll('.dropdown > a').forEach(dropdownToggle => {
-            dropdownToggle.addEventListener('click', function(e) {
-                if (window.innerWidth <= 768) {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    const dropdown = this.parentElement;
-                    
-                    // Close all other dropdowns
-                    document.querySelectorAll('.dropdown').forEach(d => {
-                        if (d !== dropdown) {
-                            d.classList.remove('active');
-                        }
-                    });
-                    
-                    // Toggle current dropdown
-                    dropdown.classList.toggle('active');
-                }
+        // Backdrop click
+        if (backdrop) {
+            backdrop.addEventListener('click', function(e) {
+                e.preventDefault();
+                closeMobileMenu();
             });
-        });
+        }
 
-        // Close mobile menu when clicking on a non-dropdown link
-        document.querySelectorAll('.nav-menu > li > a:not(.dropdown > a)').forEach(link => {
-            link.addEventListener('click', () => {
-                if (navMenu.classList.contains('active') && !link.parentElement.classList.contains('dropdown')) {
-                    closeMobileMenu();
+        // Handle ALL clicks on nav menu links
+        navMenu.addEventListener('click', function(e) {
+            // Only handle on mobile
+            if (window.innerWidth > 768) return;
+            
+            const target = e.target;
+            const link = target.closest('a');
+            
+            if (!link) return;
+            
+            const href = link.getAttribute('href');
+            const parentLi = link.parentElement;
+            const isDropdownParent = parentLi && parentLi.classList.contains('dropdown');
+            const isInDropdownMenu = link.closest('.dropdown-menu');
+            
+            // If clicking a link inside dropdown menu - navigate
+            if (isInDropdownMenu && href) {
+                e.preventDefault();
+                e.stopPropagation();
+                navigateTo(href);
+                return;
+            }
+            
+            // If clicking a dropdown toggle (About Us, Services)
+            if (isDropdownParent && !isInDropdownMenu) {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                const dropdown = parentLi;
+                const isOpen = dropdown.classList.contains('active');
+                
+                if (!isOpen) {
+                    // Close other dropdowns and open this one
+                    document.querySelectorAll('.dropdown').forEach(d => d.classList.remove('active'));
+                    dropdown.classList.add('active');
+                } else {
+                    // Already open - navigate to the main page
+                    if (href) {
+                        navigateTo(href);
+                    }
                 }
-            });
-        });
-
-        // Close mobile menu when clicking on dropdown menu links
-        document.querySelectorAll('.dropdown-menu a').forEach(link => {
-            link.addEventListener('click', () => {
-                if (navMenu.classList.contains('active')) {
-                    closeMobileMenu();
-                }
-            });
+                return;
+            }
+            
+            // Regular link (Home, Projects, Clients, Blog, Contact)
+            if (href && !isDropdownParent) {
+                e.preventDefault();
+                e.stopPropagation();
+                navigateTo(href);
+            }
         });
 
         // Close mobile menu on window resize if it becomes desktop view

@@ -241,8 +241,9 @@ h1, h2, h3, h4, h5, h6 {
 
 .nav-menu > li > a:hover,
 .nav-menu > li > a.active {
-    color: var(--primary);
+    color: var(--primary-light);
     background: linear-gradient(135deg, rgba(13, 77, 44, 0.05) 0%, rgba(13, 77, 44, 0.02) 100%);
+    font-weight: 600;
 }
 
 .nav-menu > li > a:hover::before,
@@ -311,8 +312,10 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .dropdown-menu a:hover {
-    background: var(--gray-100);
-    color: var(--primary);
+    background: linear-gradient(135deg, rgba(13, 77, 44, 0.08) 0%, rgba(13, 77, 44, 0.04) 100%);
+    color: var(--primary-light);
+    font-weight: 600;
+    transform: translateX(4px);
 }
 
 /* Contact Button - Premium CTA Style */
@@ -972,8 +975,10 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .btn-outline:hover {
-    border-color: var(--primary);
-    color: var(--primary);
+    border-color: var(--primary-light);
+    color: var(--primary-light);
+    background: linear-gradient(135deg, rgba(13, 77, 44, 0.05) 0%, rgba(13, 77, 44, 0.02) 100%);
+    font-weight: 600;
 }
 
 .btn-lg {
@@ -1265,6 +1270,7 @@ section > .container > h3:first-of-type {
 .service-link:hover {
     gap: 0.75rem;
     color: var(--primary-light);
+    font-weight: 700;
 }
 
 /* ==================== WHY CHOOSE US ==================== */
@@ -1486,6 +1492,8 @@ section > .container > h3:first-of-type {
 
 .project-link:hover {
     gap: 0.75rem;
+    color: var(--primary-light);
+    font-weight: 700;
 }
 
 /* ==================== TRUSTED BY ==================== */
@@ -1516,9 +1524,10 @@ section > .container > h3:first-of-type {
 }
 
 .client-logo:hover {
-    color: var(--primary);
-    background: var(--gray-200);
+    color: var(--primary-light);
+    background: linear-gradient(135deg, rgba(13, 77, 44, 0.1) 0%, rgba(13, 77, 44, 0.05) 100%);
     transform: translateY(-2px);
+    font-weight: 700;
 }
 
 /* ==================== FOOTER ==================== */
@@ -1748,8 +1757,14 @@ section > .container > h3:first-of-type {
 }
 
 .org-box:hover {
-    border-color: var(--primary);
+    border-color: var(--primary-light);
     transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+}
+
+.org-box:hover h3 {
+    color: var(--primary-light);
+    font-weight: 700;
 }
 
 .org-box h3 {
@@ -1790,9 +1805,15 @@ section > .container > h3:first-of-type {
 
 .philosophy-item:hover,
 .tech-item:hover {
-    border-color: var(--primary);
-    box-shadow: var(--shadow-md);
+    border-color: var(--primary-light);
+    box-shadow: var(--shadow-lg);
     transform: translateY(-4px);
+}
+
+.philosophy-item:hover h3,
+.tech-item:hover h3 {
+    color: var(--primary-light);
+    font-weight: 700;
 }
 
 .philosophy-item h3,
@@ -1855,6 +1876,12 @@ section > .container > h3:first-of-type {
 .team-member:hover {
     transform: translateY(-8px);
     box-shadow: var(--shadow-lg);
+    border-color: var(--primary-light);
+}
+
+.team-member:hover h3 {
+    color: var(--primary-light);
+    font-weight: 700;
 }
 
 .team-photo {
@@ -2100,6 +2127,8 @@ section > .container > h3:first-of-type {
 
 .client-website:hover {
     color: var(--primary-light);
+    font-weight: 600;
+    text-decoration: underline;
 }
 
 .empty-client-state {
@@ -2132,7 +2161,12 @@ section > .container > h3:first-of-type {
 .certificate-item:hover {
     transform: translateY(-8px);
     box-shadow: var(--shadow-lg);
-    border-color: var(--primary);
+    border-color: var(--primary-light);
+}
+
+.certificate-item:hover h3 {
+    color: var(--primary-light);
+    font-weight: 700;
 }
 
 .certificate-image-placeholder {
@@ -2287,7 +2321,9 @@ section > .container > h3:first-of-type {
 }
 
 .contact-info-item a:hover {
-    color: var(--accent);
+    color: var(--accent-light);
+    font-weight: 600;
+    text-decoration: underline;
 }
 
 .whatsapp-btn {
@@ -2778,9 +2814,10 @@ section > .container > h3:first-of-type {
     }
 
     .nav-menu > li > a:hover {
-        background: var(--primary);
-        color: var(--white) !important;
-        border-color: var(--primary);
+        background: linear-gradient(135deg, rgba(13, 77, 44, 0.1) 0%, rgba(13, 77, 44, 0.05) 100%);
+        color: var(--primary-light) !important;
+        border-color: var(--primary-light);
+        font-weight: 600;
     }
 
     .nav-menu .btn-primary {
@@ -2828,8 +2865,9 @@ section > .container > h3:first-of-type {
     }
 
     .dropdown-menu a:hover {
-        background: var(--primary-light);
-        color: var(--white);
+        background: linear-gradient(135deg, rgba(13, 77, 44, 0.1) 0%, rgba(13, 77, 44, 0.05) 100%);
+        color: var(--primary-light);
+        font-weight: 600;
     }
 
     .hero {
