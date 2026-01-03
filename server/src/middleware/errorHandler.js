@@ -65,11 +65,19 @@ const errorHandler = (err, req, res, next) => {
 
   // Default server error
   const statusCode = err.status || err.statusCode || 500;
+  const safeMessage = (typeof err.message === 'string' && err.message) 
+    ? err.message 
+    : 'An unexpected error occurred.';
+
   res.status(statusCode).json({
     error: statusCode === 500 ? 'Internal Server Error' : 'Error',
     message: process.env.NODE_ENV === 'development' 
-      ? err.message 
+      ? safeMessage
       : 'An unexpected error occurred.',
+    formattedError: process.env.NODE_ENV === 'development' 
+      ? safeMessage 
+      : 'An unexpected error occurred.',
+    code: err.code || statusCode,
     ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
   });
 };
