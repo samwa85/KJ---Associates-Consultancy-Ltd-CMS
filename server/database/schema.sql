@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS slides (
     button_link VARCHAR(255),
     image TEXT,
     active BOOLEAN DEFAULT true,
-    order_index INTEGER DEFAULT 0,
+    display_order INTEGER DEFAULT 0,
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -42,7 +42,7 @@ CREATE TABLE IF NOT EXISTS projects (
     images TEXT[], -- Array of image URLs
     services TEXT[], -- Array of services
     featured BOOLEAN DEFAULT false,
-    order_index INTEGER DEFAULT 0,
+    display_order INTEGER DEFAULT 0,
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -61,7 +61,7 @@ CREATE TABLE IF NOT EXISTS team_members (
     email VARCHAR(255),
     linkedin VARCHAR(255),
     category VARCHAR(50) DEFAULT 'technical', -- leadership, technical
-    order_index INTEGER DEFAULT 0,
+    display_order INTEGER DEFAULT 0,
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -78,7 +78,7 @@ CREATE TABLE IF NOT EXISTS board_members (
     bio TEXT,
     photo TEXT,
     is_chairman BOOLEAN DEFAULT false,
-    order_index INTEGER DEFAULT 0,
+    display_order INTEGER DEFAULT 0,
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -93,7 +93,7 @@ CREATE TABLE IF NOT EXISTS clients (
     logo TEXT,
     website VARCHAR(255),
     description TEXT,
-    order_index INTEGER DEFAULT 0,
+    display_order INTEGER DEFAULT 0,
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -110,7 +110,7 @@ CREATE TABLE IF NOT EXISTS testimonials (
     photo TEXT,
     rating INTEGER DEFAULT 5 CHECK (rating >= 1 AND rating <= 5),
     published BOOLEAN DEFAULT true,
-    order_index INTEGER DEFAULT 0,
+    display_order INTEGER DEFAULT 0,
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -126,7 +126,7 @@ CREATE TABLE IF NOT EXISTS services (
     summary TEXT,
     description TEXT,
     features TEXT[], -- Array of feature strings
-    order_index INTEGER DEFAULT 0,
+    display_order INTEGER DEFAULT 0,
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -166,7 +166,7 @@ CREATE TABLE IF NOT EXISTS certifications (
     image TEXT,
     valid_until DATE,
     category VARCHAR(100), -- professional, tax, legal, insurance
-    order_index INTEGER DEFAULT 0,
+    display_order INTEGER DEFAULT 0,
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
