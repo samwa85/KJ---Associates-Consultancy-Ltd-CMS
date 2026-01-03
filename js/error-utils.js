@@ -56,6 +56,15 @@ function formatError(error) {
             formatted.message = formatted.formattedError;
         }
         
+        // Email not confirmed
+        else if (msg.includes('email not confirmed') || 
+                 msg.includes('email_not_confirmed') ||
+                 msg.includes('email confirmation')) {
+            formatted.formattedError = 'Email not confirmed. Please check your email and click the confirmation link, or request a new confirmation email.';
+            formatted.message = formatted.formattedError;
+            formatted.needsConfirmation = true; // Flag for UI handling
+        }
+        
         // Invalid credentials
         else if (msg.includes('invalid login credentials') || 
                  msg.includes('invalid email') || 

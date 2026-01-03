@@ -17,6 +17,9 @@
     <!-- Supabase Config (loads credentials) -->
     <script src="../js/supabase-config.js"></script>
     
+    <!-- Error Formatting Utilities -->
+    <script src="../js/error-utils.js"></script>
+    
     <!-- Supabase JS -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
@@ -354,22 +357,113 @@
 
             } catch (error) {
                 console.error('Login error:', error);
-                let errorMsg = error.message || 'Invalid email or password';
                 
-                if (errorMsg.includes('Invalid login credentials')) {
-                    errorMsg = 'Invalid email or password';
-                } else if (errorMsg.includes('fetch') || errorMsg.includes('Failed to fetch')) {
-                    // Check for SSL certificate errors
-                    if (errorMsg.includes('CERT') || errorMsg.includes('certificate') || 
-                        error.name === 'TypeError' && error.message.includes('fetch')) {
-                        errorMsg = 'SSL Certificate Error: Your Supabase instance needs a valid SSL certificate. Configure SSL/TLS on your Supabase Kong gateway in Coolify.';
-                    } else {
-                        errorMsg = 'Cannot connect to Supabase. Check if the service is running.';
+                // Format error to ensure it has formattedError property
+                const formattedError = (typeof window !== 'undefined' && window.formatError) 
+                    ? window.formatError(error) 
+                    : { formattedError: error?.message || String(error) || 'Invalid email or password' };
+                
+                // Use formattedError property (guaranteed to be a string)
+                let errorMsg = formattedError.formattedError || formattedError.message || 'Invalid email or password';
+                
+                // Handle email not confirmed error with resend option
+                if (formattedError.needsConfirmation || errorMsg.toLowerCase().includes('email not confirmed')) {
+                    const email = document.getElementById('email').value;
+                    errorMsg = `
+                        <strong>📧 Email Not Confirmed</strong><br><br>
+                        Please check your email and click the confirmation link to activate your account.<br><br>
+                        <button id="resendConfirmationBtn" style="
+                            background: var(--primary);
+                            color: white;
+                            border: none;
+                            padding: 8px 16px;
+                            border-radius: 6px;
+                            cursor: pointer;
+                            font-size: 0.875rem;
+                            margin-top: 8px;
+                        ">Resend Confirmation Email</button>
+                        <span id="resendStatus" style="margin-left: 8px; font-size: 0.875rem;"></span>
+                    `;
+                    
+                    errorMessage.innerHTML = errorMsg;
+                    errorMessage.classList.add('show');
+                    
+                    // Add resend confirmation email handler
+                    const resendBtn = document.getElementById('resendConfirmationBtn');
+                    const resendStatus = document.getElementById('resendStatus');
+                    
+                    if (resendBtn) {
+                        resendBtn.addEventListener('click', async () => {
+                            if (!email) {
+                                resendStatus.textContent = 'Please enter your email first';
+                                resendStatus.style.color = 'var(--error)';
+                                return;
+                            }
+                            
+                            resendBtn.disabled = true;
+                            resendBtn.textContent = 'Sending...';
+                            resendStatus.textContent = '';
+                            
+                            try {
+                                // Resend confirmation email using Supabase Auth
+                                // Note: The resend method may not be available in all Supabase versions
+                                // If not available, users will need to use admin panel or check email
+                                if (typeof supabaseClient.auth.resend === 'function') {
+                                    const { data: resendData, error: resendError } = await supabaseClient.auth.resend({
+                                        type: 'signup',
+                                        email: email,
+                                        options: {
+                                            emailRedirectTo: window.location.origin + '/admin/login.html'
+                                        }
+                                    });
+                                    
+                                    if (resendError) {
+                                        console.error('Resend error:', resendError);
+                                        // If resend fails, it might be because email is already confirmed or other issue
+                                        if (resendError.message && resendError.message.toLowerCase().includes('already confirmed')) {
+                                            resendStatus.textContent = 'Email already confirmed. Try logging in.';
+                                            resendStatus.style.color = 'var(--warning)';
+                                        } else {
+                                            throw resendError;
+                                        }
+                                    } else {
+                                        resendStatus.textContent = '✓ Confirmation email sent! Check your inbox.';
+                                        resendStatus.style.color = 'var(--success)';
+                                    }
+                                } else {
+                                    // Fallback: Use resetPasswordForEmail as alternative (sends email)
+                                    // Or provide instructions
+                                    resendStatus.textContent = 'Please check your email inbox (including spam folder) for the confirmation link.';
+                                    resendStatus.style.color = 'var(--text-secondary)';
+                                }
+                                
+                                resendBtn.textContent = 'Resend Confirmation Email';
+                                resendBtn.disabled = false;
+                            } catch (resendErr) {
+                                console.error('Resend error:', resendErr);
+                                const errMsg = resendErr?.message || 'Failed to send';
+                                resendStatus.textContent = `Error: ${errMsg}. Please check your email inbox or contact an administrator.`;
+                                resendStatus.style.color = 'var(--error)';
+                                resendBtn.textContent = 'Resend Confirmation Email';
+                                resendBtn.disabled = false;
+                            }
+                        });
                     }
+                } else {
+                    // Handle other errors
+                    if (errorMsg.includes('fetch') || errorMsg.includes('Failed to fetch')) {
+                        // Check for SSL certificate errors
+                        if (errorMsg.includes('CERT') || errorMsg.includes('certificate') || 
+                            error.name === 'TypeError' && error.message.includes('fetch')) {
+                            errorMsg = 'SSL Certificate Error: Your Supabase instance needs a valid SSL certificate. Configure SSL/TLS on your Supabase Kong gateway in Coolify.';
+                        } else {
+                            errorMsg = 'Cannot connect to Supabase. Check if the service is running.';
+                        }
+                    }
+                    
+                    errorMessage.innerHTML = errorMsg + '<br><small style="opacity:0.7">Check browser console (F12) for details.</small>';
+                    errorMessage.classList.add('show');
                 }
-                
-                errorMessage.innerHTML = errorMsg + '<br><small style="opacity:0.7">Check browser console (F12) for details.</small>';
-                errorMessage.classList.add('show');
             } finally {
                 loginBtn.classList.remove('loading');
                 loginBtn.disabled = false;
