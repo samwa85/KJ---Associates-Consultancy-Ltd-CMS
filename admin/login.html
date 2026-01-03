@@ -353,9 +353,17 @@
                 
                 if (errorMsg.includes('Invalid login credentials')) {
                     errorMsg = 'Invalid email or password';
+                } else if (errorMsg.includes('fetch') || errorMsg.includes('Failed to fetch')) {
+                    // Check for SSL certificate errors
+                    if (errorMsg.includes('CERT') || errorMsg.includes('certificate') || 
+                        error.name === 'TypeError' && error.message.includes('fetch')) {
+                        errorMsg = 'SSL Certificate Error: Your Supabase instance needs a valid SSL certificate. Configure SSL/TLS on your Supabase Kong gateway in Coolify.';
+                    } else {
+                        errorMsg = 'Cannot connect to Supabase. Check if the service is running.';
+                    }
                 }
                 
-                errorMessage.textContent = errorMsg;
+                errorMessage.innerHTML = errorMsg + '<br><small style="opacity:0.7">Check browser console (F12) for details.</small>';
                 errorMessage.classList.add('show');
             } finally {
                 loginBtn.classList.remove('loading');

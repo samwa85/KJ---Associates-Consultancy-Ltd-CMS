@@ -459,11 +459,21 @@
                     errorMsg = 'An account with this email already exists. Try logging in instead.';
                 } else if (errorMsg.includes('invalid_type') || errorMsg.includes('undefined')) {
                     errorMsg = 'Supabase Auth service error. Please check your Supabase configuration.';
-                } else if (errorMsg.includes('fetch')) {
-                    errorMsg = 'Cannot connect to Supabase. Check if the URL is correct.';
+                } else if (errorMsg.includes('fetch') || errorMsg.includes('Failed to fetch')) {
+                    // Check for SSL certificate errors
+                    if (errorMsg.includes('CERT') || errorMsg.includes('certificate') || 
+                        error.name === 'TypeError' && error.message.includes('fetch')) {
+                        errorMsg = `
+                            <strong>SSL Certificate Error</strong><br>
+                            Your Supabase instance needs a valid SSL certificate.<br>
+                            <strong>Solution:</strong> Configure SSL/TLS on your Supabase Kong gateway in Coolify, or use a reverse proxy with valid SSL certificates (Let's Encrypt).
+                        `;
+                    } else {
+                        errorMsg = 'Cannot connect to Supabase. Check if the URL is correct and the service is running.';
+                    }
                 }
                 
-                errorMessage.innerHTML = errorMsg + '<br><small style="opacity:0.7">Check browser console for details.</small>';
+                errorMessage.innerHTML = errorMsg + '<br><small style="opacity:0.7">Check browser console (F12) for details.</small>';
                 errorMessage.classList.add('show');
             } finally {
                 setupBtn.classList.remove('loading');
