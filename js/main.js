@@ -1,9 +1,58 @@
 // KJ & Associates - Main JavaScript
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', async function() {
     
     // ==================== CMS DATA LOADER ====================
-    function loadCMSData() {
+    // Check if we should use API
+    const useAPI = window.USE_API !== false && typeof window.API_BASE_URL !== 'undefined';
+    
+    async function loadCMSDataFromAPI() {
+        if (!useAPI) return null;
+        
+        try {
+            const baseURL = window.API_BASE_URL || 'http://localhost:3001/api';
+            
+            // Fetch all data in parallel
+            const [
+                settingsRes,
+                projectsRes,
+                clientsRes,
+                testimonialsRes,
+                teamRes
+            ] = await Promise.all([
+                fetch(`${baseURL}/settings`).then(r => r.ok ? r.json() : null).catch(() => null),
+                fetch(`${baseURL}/projects`).then(r => r.ok ? r.json() : null).catch(() => null),
+                fetch(`${baseURL}/clients`).then(r => r.ok ? r.json() : null).catch(() => null),
+                fetch(`${baseURL}/testimonials`).then(r => r.ok ? r.json() : null).catch(() => null),
+                fetch(`${baseURL}/team`).then(r => r.ok ? r.json() : null).catch(() => null)
+            ]);
+            
+            // Combine into CMS data format
+            const apiData = {
+                branding: settingsRes?.data?.branding || null,
+                contact: settingsRes?.data?.contact || null,
+                seo: settingsRes?.data?.seo || null,
+                theme: settingsRes?.data?.theme || 'classic-green',
+                projects: projectsRes?.data || [],
+                clients: clientsRes?.data || [],
+                testimonials: testimonialsRes?.data || [],
+                team: teamRes?.data || []
+            };
+            
+            // Cache in localStorage for offline use
+            if (apiData.projects.length > 0 || apiData.clients.length > 0) {
+                localStorage.setItem('kj_cms_data', JSON.stringify(apiData));
+                console.log('[Main] Data loaded from API and cached');
+            }
+            
+            return apiData;
+        } catch (error) {
+            console.warn('[Main] API load failed:', error.message);
+            return null;
+        }
+    }
+    
+    function loadCMSDataFromLocalStorage() {
         const savedData = localStorage.getItem('kj_cms_data');
         if (savedData) {
             try {
@@ -14,8 +63,15 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         return null;
     }
-
-    const cmsData = loadCMSData();
+    
+    // Try API first, then fall back to localStorage
+    let cmsData = await loadCMSDataFromAPI();
+    if (!cmsData || (!cmsData.projects?.length && !cmsData.clients?.length)) {
+        cmsData = loadCMSDataFromLocalStorage();
+        if (cmsData) {
+            console.log('[Main] Using localStorage data');
+        }
+    }
 
     // ==================== THEME SYSTEM ====================
     function loadTheme() {

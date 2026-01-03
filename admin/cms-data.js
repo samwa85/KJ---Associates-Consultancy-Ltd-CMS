@@ -129,15 +129,20 @@ const CMS = {
     data: {},
 
     // Initialize
-    init() {
+    async init() {
         try {
-        this.loadData();
-        this.renderAll();
-        this.updateStats();
-        this.loadBrandingForm();
-        this.loadContactForm();
-        this.loadSEOForm();
-        this.loadThemeForm();
+            // Initialize API sync layer if available
+            if (typeof CMSSync !== 'undefined') {
+                await CMSSync.init();
+            }
+            
+            await this.loadData();
+            this.renderAll();
+            this.updateStats();
+            this.loadBrandingForm();
+            this.loadContactForm();
+            this.loadSEOForm();
+            this.loadThemeForm();
         } catch (error) {
             console.error('CMS initialization error:', error);
             // Try to recover by using defaults
@@ -151,8 +156,29 @@ const CMS = {
         }
     },
 
-    // Load data from localStorage or use defaults
-    loadData() {
+    // Load data from API or localStorage
+    async loadData() {
+        // Try to load from API first if CMSSync is available
+        if (typeof CMSSync !== 'undefined' && CMSSync.apiAvailable) {
+            try {
+                const apiData = await CMSSync.loadAll();
+                if (apiData) {
+                    this.data = apiData;
+                    // Merge with defaults to ensure all keys exist
+                    Object.keys(this.defaults).forEach(key => {
+                        if (!this.data[key]) {
+                            this.data[key] = this.defaults[key];
+                        }
+                    });
+                    console.log('[CMS] Data loaded from API');
+                    return;
+                }
+            } catch (error) {
+                console.warn('[CMS] API load failed, falling back to localStorage:', error);
+            }
+        }
+        
+        // Fall back to localStorage
         const stored = localStorage.getItem('kj_cms_data');
         if (stored) {
             try {
@@ -186,21 +212,7 @@ const CMS = {
                     this.data.branding = JSON.parse(JSON.stringify(this.defaults.branding));
                     this.saveData(true);
                 }
-                // Update Adelhard Kweyamba's photo if it's still the old placeholder
-                if (this.data.team && Array.isArray(this.data.team)) {
-                    const adelhardTeam = this.data.team.find(m => m.name && m.name.includes('Adelhard'));
-                    if (adelhardTeam && adelhardTeam.photo && adelhardTeam.photo.includes('unsplash.com/photo-1507003211169')) {
-                        adelhardTeam.photo = '/images/team/adelhard-kweyamba.jpg';
-                        this.saveData(true);
-                    }
-                }
-                if (this.data.board && Array.isArray(this.data.board)) {
-                    const adelhardBoard = this.data.board.find(m => m.name && m.name.includes('Adelhard'));
-                    if (adelhardBoard && adelhardBoard.photo && adelhardBoard.photo.includes('unsplash.com/photo-1507003211169')) {
-                        adelhardBoard.photo = '/images/team/adelhard-kweyamba.jpg';
-                        this.saveData(true);
-                    }
-                }
+                console.log('[CMS] Data loaded from localStorage');
             } catch (e) {
                 this.data = JSON.parse(JSON.stringify(this.defaults));
             }
