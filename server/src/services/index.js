@@ -14,7 +14,7 @@ class SlidesService extends BaseService {
   async getActive() {
     return this.getAll({
       filters: { active: true },
-      orderBy: 'order_index',
+      orderBy: 'display_order',
       orderDirection: 'asc'
     });
   }
@@ -59,7 +59,7 @@ class TeamService extends BaseService {
   async getByCategory(category) {
     return this.getAll({
       filters: { category },
-      orderBy: 'order_index',
+      orderBy: 'display_order',
       orderDirection: 'asc'
     });
   }
@@ -122,7 +122,7 @@ class ServicesService extends BaseService {
   async getByCategory(category) {
     return this.getAll({
       filters: { category },
-      orderBy: 'order_index',
+      orderBy: 'display_order',
       orderDirection: 'asc'
     });
   }
