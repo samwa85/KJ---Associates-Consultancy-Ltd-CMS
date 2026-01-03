@@ -1838,8 +1838,8 @@
                 const { data: { session } } = await window.supabaseClient.auth.getSession();
                 
                 if (!session) {
-                    // Not logged in, redirect to login
-                    window.location.href = 'login.html';
+                    // Not logged in, redirect to site home
+                    window.location.href = '../index.html';
                     return;
                 }
                 
@@ -1872,7 +1872,7 @@
                 }
                 localStorage.removeItem('cms_token');
                 localStorage.removeItem('cms_user');
-                window.location.href = 'login.html';
+                window.location.href = '../index.html';
             };
         })();
     </script>

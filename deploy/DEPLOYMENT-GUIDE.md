@@ -116,7 +116,7 @@ Directory structure:
 ├── ...
 ├── admin/
 │   ├── index.html
-│   ├── login.html
+│   ├── (auth pages removed)
 │   └── ...
 ├── css/
 ├── js/
@@ -184,7 +184,7 @@ curl https://kjconsultancy.co.tz/demo/api/
 2. Check browser console for `[Config] API URL: /demo/api`
 
 ### Test Admin Login
-1. Visit `https://kjconsultancy.co.tz/demo/admin/login.html`
+1. (Auth pages removed) Use server-side admin scripts or API to manage users.
 2. Log in with the admin credentials you created
 3. Verify you can access the CMS dashboard
 

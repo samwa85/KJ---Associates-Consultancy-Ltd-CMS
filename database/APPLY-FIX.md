@@ -32,10 +32,8 @@ After running the script, you should see:
 
 ### Step 3: Test User Creation
 
-1. Go to `admin/setup.html` in your browser
-2. Try creating a new admin user
-3. The connection will be tested automatically before signup
-4. User role will be created automatically via database trigger
+1. (Auth pages removed) Use server-side/admin API to create users
+2. User roles are created automatically via database trigger
 
 ## What the Fix Does
 

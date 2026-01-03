@@ -117,7 +117,7 @@ async function createAdmin() {
     console.log(`║  User ID:  ${data.user.id.padEnd(45)}║`);
     console.log(`║  Role:     admin${' '.repeat(40)}║`);
     console.log('╚═══════════════════════════════════════════════════════════╝');
-    console.log('\n🔐 You can now log in at: /admin/login.html\n');
+    console.log('\n🔐 Auth pages removed; use admin API or scripts to manage access.\n');
 
   } catch (error) {
     console.error('❌ Unexpected error:', error);

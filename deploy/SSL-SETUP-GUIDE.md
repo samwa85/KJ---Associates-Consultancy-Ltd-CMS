@@ -51,7 +51,7 @@ After configuring SSL:
 
 1. Visit: `https://your-supabase-domain.com/auth/v1/health`
 2. Should return: `{"status":"ok"}` without certificate warnings
-3. Test the setup page: `https://kjconsultancy.co.tz/demo/admin/setup.html`
+3. (Auth pages removed) Use server-side admin scripts or API to manage users.
 
 ## Troubleshooting
 
