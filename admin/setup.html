@@ -466,6 +466,12 @@
                         name: error.name,
                         stack: error.stack
                     });
+                    // Format error before throwing to ensure formattedError property exists
+                    const formattedErr = (typeof window !== 'undefined' && window.formatError) 
+                        ? window.formatError(error) 
+                        : { formattedError: error?.message || String(error) || 'Failed to create admin account', ...error };
+                    // Attach formattedError to the error object before throwing
+                    error.formattedError = formattedErr.formattedError;
                     throw error;
                 }
 
