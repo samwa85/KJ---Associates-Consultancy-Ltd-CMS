@@ -1245,6 +1245,14 @@ section > .container > h3:first-of-type {
     box-shadow: 0 4px 15px rgba(13, 77, 44, 0.2);
 }
 
+.service-icon svg,
+.service-icon i {
+    width: 28px;
+    height: 28px;
+    color: white;
+    stroke-width: 2;
+}
+
 .service-card h3 {
     font-size: 1.25rem;
     margin-bottom: var(--spacing-sm);
@@ -1315,9 +1323,23 @@ section > .container > h3:first-of-type {
     transition: var(--transition);
 }
 
+.feature-icon svg,
+.feature-icon i {
+    width: 28px;
+    height: 28px;
+    color: var(--primary);
+    stroke-width: 2;
+    transition: var(--transition);
+}
+
 .feature-item:hover .feature-icon {
     background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
     transform: scale(1.05);
+}
+
+.feature-item:hover .feature-icon svg,
+.feature-item:hover .feature-icon i {
+    color: white;
 }
 
 .feature-content h3 {
@@ -1622,9 +1644,36 @@ section > .container > h3:first-of-type {
     transition: var(--transition);
 }
 
+.social-links a svg,
+.social-links a i {
+    width: 20px;
+    height: 20px;
+    color: var(--gray-400);
+    transition: var(--transition);
+}
+
 .social-links a:hover {
     background: var(--primary);
     transform: translateY(-3px);
+}
+
+.social-links a:hover svg,
+.social-links a:hover i {
+    color: white;
+}
+
+/* Inline icons for text */
+.inline-icon {
+    width: 16px;
+    height: 16px;
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 6px;
+    color: var(--primary-light);
+}
+
+.footer-col .inline-icon {
+    color: var(--gray-400);
 }
 
 .footer-bottom {

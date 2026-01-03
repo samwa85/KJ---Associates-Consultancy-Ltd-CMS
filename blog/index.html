@@ -364,6 +364,8 @@
             }
         }
     </style>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body>
     <!-- Navigation -->
@@ -492,7 +494,7 @@
                 <div class="footer-col">
                     <h3>KJ & Associates</h3>
                     <p>Quantity Surveyors & Construction Project Managers serving Tanzania with excellence for 17+ years.</p>
-                    <p class="footer-location">📍 KIJITONYAMA, MABATINI ROAD<br>DAR ES SALAAM, TANZANIA</p>
+                    <p class="footer-location"><i data-lucide="map-pin" class="inline-icon"></i> KIJITONYAMA, MABATINI ROAD<br>DAR ES SALAAM, TANZANIA</p>
                 </div>
                 <div class="footer-col">
                     <h4>Quick Links</h4>
@@ -515,9 +517,9 @@
                 </div>
                 <div class="footer-col">
                     <h4>Contact</h4>
-                    <p>📧 <a href="mailto:md@kjconsultancy.co.tz">md@kjconsultancy.co.tz</a></p>
-                    <p>📧 <a href="mailto:info@kjconsultancy.co.tz">info@kjconsultancy.co.tz</a></p>
-                    <p>📞 <a href="tel:+255768757779">+255 768 757 779</a></p>
+                    <p><i data-lucide="mail" class="inline-icon"></i> <a href="mailto:md@kjconsultancy.co.tz">md@kjconsultancy.co.tz</a></p>
+                    <p><i data-lucide="mail" class="inline-icon"></i> <a href="mailto:info@kjconsultancy.co.tz">info@kjconsultancy.co.tz</a></p>
+                    <p><i data-lucide="phone" class="inline-icon"></i> <a href="tel:+255768757779">+255 768 757 779</a></p>
                     <div class="social-links">
                         <a href="#" aria-label="LinkedIn">in</a>
                         <a href="#" aria-label="Facebook">f</a>
@@ -705,7 +707,7 @@
                                     <img src="${featuredPost.authorPhoto}" alt="${featuredPost.author}" onerror="this.src='https://via.placeholder.com/32?text=?'">
                                     <span>${featuredPost.author}</span>
                                 </div>
-                                <span class="post-date">📅 ${formatDate(featuredPost.date)}</span>
+                                <span class="post-date"><i data-lucide="calendar" class="inline-icon"></i> ${formatDate(featuredPost.date)}</span>
                             </div>
                             <a href="post.html?slug=${featuredPost.slug}" class="read-more-link">
                                 Read Full Article
@@ -736,7 +738,7 @@
                                     <img src="${post.authorPhoto}" alt="${post.author}" onerror="this.src='https://via.placeholder.com/32?text=?'">
                                     <span>${post.author}</span>
                                 </div>
-                                <span class="post-date">📅 ${formatDate(post.date)}</span>
+                                <span class="post-date"><i data-lucide="calendar" class="inline-icon"></i> ${formatDate(post.date)}</span>
                             </div>
                             <a href="post.html?slug=${post.slug}" class="read-more-link">
                                 Read More
@@ -841,6 +843,8 @@
         // Initialize on load
         document.addEventListener('DOMContentLoaded', loadBlogPosts);
     </script>
+    <!-- Initialize Lucide Icons -->
+    <script>lucide.createIcons();</script>
 </body>
 </html>
 

@@ -24,6 +24,8 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body>
     <!-- Navigation -->
@@ -193,21 +195,21 @@
                 <h3 style="font-size: 1.3rem; color: var(--primary); margin-bottom: 2rem; text-align: center; font-weight: 600;">Governance & Responsibilities</h3>
                 <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem;">
                     <div style="background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); padding: 2rem; border-radius: var(--radius-md); color: white; text-align: center;">
-                        <div style="font-size: 2.5rem; margin-bottom: 1rem;">📋</div>
+                        <div style="margin-bottom: 1rem;"><i data-lucide="clipboard-list" style="width: 40px; height: 40px;"></i></div>
                         <h4 style="font-size: 1.1rem; font-weight: 600; margin-bottom: 0.75rem;">Strategic Oversight</h4>
                         <p style="font-size: 0.9rem; line-height: 1.6; opacity: 0.9; margin: 0;">
                             Providing strategic direction and oversight for the company's long-term growth and development.
                         </p>
                     </div>
                     <div style="background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary) 100%); padding: 2rem; border-radius: var(--radius-md); color: white; text-align: center;">
-                        <div style="font-size: 2.5rem; margin-bottom: 1rem;">⚖️</div>
+                        <div style="margin-bottom: 1rem;"><i data-lucide="scale" style="width: 40px; height: 40px;"></i></div>
                         <h4 style="font-size: 1.1rem; font-weight: 600; margin-bottom: 0.75rem;">Governance & Compliance</h4>
                         <p style="font-size: 0.9rem; line-height: 1.6; opacity: 0.9; margin: 0;">
                             Ensuring compliance with regulatory requirements and maintaining the highest standards of corporate governance.
                         </p>
                     </div>
                     <div style="background: linear-gradient(135deg, var(--gray-700) 0%, var(--gray-800) 100%); padding: 2rem; border-radius: var(--radius-md); color: white; text-align: center;">
-                        <div style="font-size: 2.5rem; margin-bottom: 1rem;">🎯</div>
+                        <div style="margin-bottom: 1rem;"><i data-lucide="target" style="width: 40px; height: 40px;"></i></div>
                         <h4 style="font-size: 1.1rem; font-weight: 600; margin-bottom: 0.75rem;">Performance Monitoring</h4>
                         <p style="font-size: 0.9rem; line-height: 1.6; opacity: 0.9; margin: 0;">
                             Monitoring company performance, financial health, and ensuring accountability across all operations.
@@ -322,7 +324,7 @@
                 <div class="footer-col">
                     <h3>KJ & Associates</h3>
                     <p>Quantity Surveyors & Construction Project Managers</p>
-                    <p class="footer-location">📍 KIJITONYAMA, MABATINI ROAD<br>DAR ES SALAAM, TANZANIA</p>
+                    <p class="footer-location"><i data-lucide="map-pin" class="inline-icon"></i> KIJITONYAMA, MABATINI ROAD<br>DAR ES SALAAM, TANZANIA</p>
                 </div>
                 <div class="footer-col">
                     <h4>Quick Links</h4>
@@ -344,12 +346,12 @@
                 </div>
                 <div class="footer-col">
                     <h4>Contact</h4>
-                    <p>Email: <a href="mailto:md@kjconsultancy.co.tz">md@kjconsultancy.co.tz</a></p>
-                    <p>Email: <a href="mailto:info@kjconsultancy.co.tz">info@kjconsultancy.co.tz</a></p>
-                    <p>Phone: <a href="tel:+255768757779">+255 768 757 779</a></p>
+                    <p><i data-lucide="mail" class="inline-icon"></i> <a href="mailto:md@kjconsultancy.co.tz">md@kjconsultancy.co.tz</a></p>
+                    <p><i data-lucide="mail" class="inline-icon"></i> <a href="mailto:info@kjconsultancy.co.tz">info@kjconsultancy.co.tz</a></p>
+                    <p><i data-lucide="phone" class="inline-icon"></i> <a href="tel:+255768757779">+255 768 757 779</a></p>
                     <div class="social-links">
-                        <a href="#" aria-label="LinkedIn">LinkedIn</a>
-                        <a href="#" aria-label="Facebook">Facebook</a>
+                        <a href="#" aria-label="LinkedIn"><i data-lucide="linkedin"></i></a>
+                        <a href="#" aria-label="Facebook"><i data-lucide="facebook"></i></a>
                     </div>
                 </div>
             </div>
@@ -591,6 +593,8 @@
             }
         }
     </style>
+    <!-- Initialize Lucide Icons -->
+    <script>lucide.createIcons();</script>
 </body>
 </html>
 

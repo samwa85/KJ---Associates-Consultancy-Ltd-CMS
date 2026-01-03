@@ -283,6 +283,8 @@
             }
         }
     </style>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body>
     <!-- Navigation -->
@@ -343,22 +345,22 @@
         <div class="container">
             <div class="stats-container">
                 <div class="stat-card">
-                    <div class="stat-icon">📊</div>
+                    <div class="stat-icon"><i data-lucide="bar-chart-3"></i></div>
                     <div class="stat-number" id="totalProjects">15</div>
                     <div class="stat-label">Total Projects</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-icon">✅</div>
+                    <div class="stat-icon"><i data-lucide="check-circle"></i></div>
                     <div class="stat-number" id="completedProjects">9</div>
                     <div class="stat-label">Completed</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-icon">🚧</div>
+                    <div class="stat-icon"><i data-lucide="clock"></i></div>
                     <div class="stat-number" id="ongoingProjects">6</div>
                     <div class="stat-label">Ongoing</div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-icon">💰</div>
+                    <div class="stat-icon"><i data-lucide="banknote"></i></div>
                     <div class="stat-number" id="totalValue">200B+</div>
                     <div class="stat-label">TZS Value</div>
                 </div>
@@ -398,7 +400,7 @@
                 <div class="footer-col">
                     <h3>KJ & Associates</h3>
                     <p>Quantity Surveyors & Construction Project Managers</p>
-                    <p class="footer-location">📍 KIJITONYAMA, MABATINI ROAD<br>DAR ES SALAAM, TANZANIA</p>
+                    <p class="footer-location"><i data-lucide="map-pin" class="inline-icon"></i> KIJITONYAMA, MABATINI ROAD<br>DAR ES SALAAM, TANZANIA</p>
                 </div>
                 <div class="footer-col">
                     <h4>Quick Links</h4>
@@ -557,9 +559,9 @@
                         </div>
                     `;
                 } else if (allImages.length === 1) {
-                    imageHtml = `<img src="${allImages[0]}" alt="${project.title}" onerror="this.parentElement.innerHTML='<div class=\\'project-image-placeholder\\'>🏗️</div>'">`;
+                    imageHtml = `<img src="${allImages[0]}" alt="${project.title}" onerror="this.parentElement.innerHTML='<div class=\\'project-image-placeholder\\'><i data-lucide=\\'hard-hat\\'></i></div>'">`;
                 } else {
-                    imageHtml = `<div class="project-image-placeholder">🏗️</div>`;
+                    imageHtml = `<div class="project-image-placeholder"><i data-lucide="hard-hat"></i></div>`;
                 }
                 
                 return `
@@ -936,5 +938,7 @@
             }
         }
     </style>
+    <!-- Initialize Lucide Icons -->
+    <script>lucide.createIcons();</script>
 </body>
 </html>
