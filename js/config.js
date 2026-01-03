@@ -6,7 +6,7 @@
 (function() {
   // Allow overriding via global (e.g., set before this script) or meta tag
   const metaApiBase = document.querySelector('meta[name="api-base-url"]')?.content;
-  const globalApiOverride = window.API_BASE_URL_OVERRIDE || window.API_BASE_URL;
+  const globalApiOverride = window.API_BASE_URL_OVERRIDE;
 
   // Detect environment
   const isLocalhost = window.location.hostname === 'localhost' || 
