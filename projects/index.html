@@ -457,9 +457,10 @@
             }
             
             // Fallback to existing localStorage cache only if API data unavailable
-            if ((!projects || projects.length === 0) && localStorage.getItem('kj_cms_data')) {
+            const cachedRaw = localStorage.getItem('kj_cms_data');
+            if ((!projects || projects.length === 0) && cachedRaw) {
                 try {
-                    const cached = JSON.parse(localStorage.getItem('kj_cms_data'));
+                    const cached = JSON.parse(cachedRaw);
                     projects = cached.projects || [];
                     cmsData = cached;
                     console.log('[Projects] Using cached CMS data', projects.length);
@@ -637,8 +638,8 @@
         }
         
         // Filter functionality
-        document.addEventListener('DOMContentLoaded', () => {
-            loadProjects();
+        document.addEventListener('DOMContentLoaded', async () => {
+            await loadProjects();
             
             const filterButtons = document.querySelectorAll('.filter-btn');
             const projectCards = document.querySelectorAll('.project-card');

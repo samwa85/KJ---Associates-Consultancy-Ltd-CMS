@@ -641,9 +641,10 @@
             }
 
             // Fallback to cached localStorage only if API data unavailable
-            if ((!allPosts || allPosts.length === 0) && localStorage.getItem('kj_cms_data')) {
+            const cachedRaw = localStorage.getItem('kj_cms_data');
+            if ((!allPosts || allPosts.length === 0) && cachedRaw) {
                 try {
-                    const cached = JSON.parse(localStorage.getItem('kj_cms_data'));
+                    const cached = JSON.parse(cachedRaw);
                     allPosts = cached.blog || [];
                     console.log('[Blog Post] Using cached posts', allPosts.length);
                 } catch (e) {
@@ -1047,7 +1048,7 @@
         }
 
         // Load and display post
-        function loadPost() {
+        async function loadPost() {
             const slug = getSlugFromUrl();
             
             if (!slug) {
@@ -1055,7 +1056,7 @@
                 return;
             }
             
-            loadBlogData();
+            await loadBlogData();
             currentPost = allPosts.find(p => p.slug === slug && p.published);
             
             if (!currentPost) {
@@ -1189,7 +1190,9 @@
         }
 
         // Initialize on load
-        document.addEventListener('DOMContentLoaded', loadPost);
+        document.addEventListener('DOMContentLoaded', async () => {
+            await loadPost();
+        });
     </script>
     <!-- Initialize Lucide Icons -->
     <script>lucide.createIcons();</script>

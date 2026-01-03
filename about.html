@@ -393,9 +393,10 @@
             }
 
             // Fallback to cached localStorage only if API data unavailable
-            if ((!teamData || teamData.length === 0) && localStorage.getItem('kj_cms_data')) {
+            const cachedRaw = localStorage.getItem('kj_cms_data');
+            if ((!teamData || teamData.length === 0) && cachedRaw) {
                 try {
-                    const cached = JSON.parse(localStorage.getItem('kj_cms_data'));
+                    const cached = JSON.parse(cachedRaw);
                     teamData = cached.team || [];
                     console.log('[About] Using cached team data', teamData.length);
                 } catch (e) {
@@ -488,9 +489,10 @@
             }
 
             // Fallback to cached localStorage only if API data unavailable
-            if ((!boardData || boardData.length === 0) && localStorage.getItem('kj_cms_data')) {
+            const cachedRaw = localStorage.getItem('kj_cms_data');
+            if ((!boardData || boardData.length === 0) && cachedRaw) {
                 try {
-                    const cached = JSON.parse(localStorage.getItem('kj_cms_data'));
+                    const cached = JSON.parse(cachedRaw);
                     boardData = cached.board || [];
                     console.log('[About] Using cached board data', boardData.length);
                 } catch (e) {

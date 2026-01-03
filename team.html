@@ -195,9 +195,10 @@
             }
 
             // Fallback to cached localStorage only if API data unavailable
-            if ((!teamData || teamData.length === 0) && localStorage.getItem('kj_cms_data')) {
+            const cachedRaw = localStorage.getItem('kj_cms_data');
+            if ((!teamData || teamData.length === 0) && cachedRaw) {
                 try {
-                    const cached = JSON.parse(localStorage.getItem('kj_cms_data'));
+                    const cached = JSON.parse(cachedRaw);
                     teamData = cached.team || [];
                     console.log('[Team] Using cached data', teamData.length);
                 } catch (e) {
@@ -264,8 +265,8 @@
         }
 
         // Load team when page loads
-        document.addEventListener('DOMContentLoaded', function() {
-            loadTeam();
+        document.addEventListener('DOMContentLoaded', async function() {
+            await loadTeam();
         });
     </script>
     <!-- Initialize Lucide Icons -->

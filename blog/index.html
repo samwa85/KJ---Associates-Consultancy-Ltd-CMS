@@ -558,9 +558,10 @@
             }
 
             // Fallback to cached localStorage only if API data unavailable
-            if ((!allPosts || allPosts.length === 0) && localStorage.getItem('kj_cms_data')) {
+            const cachedRaw = localStorage.getItem('kj_cms_data');
+            if ((!allPosts || allPosts.length === 0) && cachedRaw) {
                 try {
-                    const cached = JSON.parse(localStorage.getItem('kj_cms_data'));
+                    const cached = JSON.parse(cachedRaw);
                     allPosts = cached.blog || [];
                     console.log('[Blog] Using cached posts', allPosts.length);
                 } catch (e) {
@@ -860,7 +861,9 @@
         }
 
         // Initialize on load
-        document.addEventListener('DOMContentLoaded', loadBlogPosts);
+        document.addEventListener('DOMContentLoaded', async () => {
+            await loadBlogPosts();
+        });
     </script>
     <!-- Initialize Lucide Icons -->
     <script>lucide.createIcons();</script>

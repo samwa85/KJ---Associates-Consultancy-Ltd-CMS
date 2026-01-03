@@ -302,9 +302,10 @@
             }
 
             // Fallback to existing localStorage cache only if API data unavailable
-            if ((!projects || projects.length === 0) && localStorage.getItem('kj_cms_data')) {
+            const cachedRaw = localStorage.getItem('kj_cms_data');
+            if ((!projects || projects.length === 0) && cachedRaw) {
                 try {
-                    const cached = JSON.parse(localStorage.getItem('kj_cms_data'));
+                    const cached = JSON.parse(cachedRaw);
                     projects = cached.projects || [];
                     cmsImageData = cached._imageData || {};
                     console.log('[Home] Using cached CMS data', projects.length);
@@ -465,8 +466,8 @@
         }
 
         // Load projects when DOM is ready
-        document.addEventListener('DOMContentLoaded', function() {
-            loadFeaturedProjects();
+        document.addEventListener('DOMContentLoaded', async function() {
+            await loadFeaturedProjects();
         });
     </script>
 

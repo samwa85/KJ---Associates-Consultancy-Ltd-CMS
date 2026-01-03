@@ -128,9 +128,10 @@
             }
 
             // Fallback to cached localStorage only if API data unavailable
-            if ((!certifications || certifications.length === 0) && localStorage.getItem('kj_cms_data')) {
+            const cachedRaw = localStorage.getItem('kj_cms_data');
+            if ((!certifications || certifications.length === 0) && cachedRaw) {
                 try {
-                    const cached = JSON.parse(localStorage.getItem('kj_cms_data'));
+                    const cached = JSON.parse(cachedRaw);
                     certifications = cached.certifications || [];
                     console.log('[Certifications] Using cached data', certifications.length);
                 } catch (e) {
@@ -208,8 +209,8 @@
         });
 
         // Load certificates when page loads
-        document.addEventListener('DOMContentLoaded', function() {
-            loadCertificates();
+        document.addEventListener('DOMContentLoaded', async function() {
+            await loadCertificates();
         });
     </script>
 
