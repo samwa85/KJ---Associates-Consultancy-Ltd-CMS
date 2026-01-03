@@ -504,6 +504,110 @@
     </style>
 </head>
 <body class="bg-gray-50 font-sans antialiased">
+    <!-- Password Protection Overlay -->
+    <div id="auth-overlay" class="fixed inset-0 bg-gray-900 z-[9999] flex items-center justify-center">
+        <div class="bg-white rounded-xl shadow-2xl p-8 w-full max-w-md mx-4">
+            <div class="text-center mb-6">
+                <div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                    </svg>
+                </div>
+                <h1 class="text-2xl font-bold text-gray-900">CMS Admin Access</h1>
+                <p class="text-gray-500 mt-2">Enter password to continue</p>
+            </div>
+            <form id="auth-form" class="space-y-4">
+                <div>
+                    <label for="admin-password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+                    <input 
+                        type="password" 
+                        id="admin-password" 
+                        name="password"
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition"
+                        placeholder="Enter admin password"
+                        autocomplete="current-password"
+                        required
+                    >
+                </div>
+                <div id="auth-error" class="hidden text-red-600 text-sm bg-red-50 p-3 rounded-lg"></div>
+                <button 
+                    type="submit" 
+                    class="w-full bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-4 rounded-lg transition duration-200"
+                >
+                    Access CMS
+                </button>
+            </form>
+            <p class="text-center text-gray-400 text-xs mt-6">KJ & Associates Consultancy Ltd</p>
+        </div>
+    </div>
+
+    <script>
+    (function() {
+        // ============================================
+        // CHANGE THIS PASSWORD TO YOUR DESIRED PASSWORD
+        // ============================================
+        const ADMIN_PASSWORD = 'KJAdmin2024!';
+        // ============================================
+        
+        const SESSION_KEY = 'kj_cms_auth';
+        const SESSION_DURATION = 8 * 60 * 60 * 1000; // 8 hours in milliseconds
+        
+        function isAuthenticated() {
+            const session = localStorage.getItem(SESSION_KEY);
+            if (!session) return false;
+            
+            try {
+                const { timestamp } = JSON.parse(session);
+                const now = Date.now();
+                if (now - timestamp > SESSION_DURATION) {
+                    localStorage.removeItem(SESSION_KEY);
+                    return false;
+                }
+                return true;
+            } catch {
+                localStorage.removeItem(SESSION_KEY);
+                return false;
+            }
+        }
+        
+        function setAuthenticated() {
+            localStorage.setItem(SESSION_KEY, JSON.stringify({ timestamp: Date.now() }));
+        }
+        
+        function showCMS() {
+            document.getElementById('auth-overlay').style.display = 'none';
+        }
+        
+        // Check if already authenticated
+        if (isAuthenticated()) {
+            showCMS();
+        }
+        
+        // Handle form submission
+        document.getElementById('auth-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const password = document.getElementById('admin-password').value;
+            const errorEl = document.getElementById('auth-error');
+            
+            if (password === ADMIN_PASSWORD) {
+                setAuthenticated();
+                showCMS();
+            } else {
+                errorEl.textContent = 'Incorrect password. Please try again.';
+                errorEl.classList.remove('hidden');
+                document.getElementById('admin-password').value = '';
+                document.getElementById('admin-password').focus();
+            }
+        });
+        
+        // Expose logout function globally
+        window.cmsLogout = function() {
+            localStorage.removeItem(SESSION_KEY);
+            location.reload();
+        };
+    })();
+    </script>
+
     <div class="flex min-h-screen">
         <!-- Sidebar -->
         <aside class="fixed top-0 left-0 bottom-0 z-50 w-64 bg-gray-900 text-white overflow-y-auto transition-transform duration-300 scrollbar-hide" id="sidebar">
@@ -1797,12 +1901,13 @@
     <!-- Supabase Client -->
     <script src="../js/supabase-client.js"></script>
     
-    <!-- Auth removed: local CMS mode -->
+    <!-- Auth: Simple password protection -->
     <script>
         window.supabaseClient = null;
         window.logout = function() {
             localStorage.removeItem('cms_token');
             localStorage.removeItem('cms_user');
+            localStorage.removeItem('kj_cms_auth');
             window.location.reload();
         };
     </script>
