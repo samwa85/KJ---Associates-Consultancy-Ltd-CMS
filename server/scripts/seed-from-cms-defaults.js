@@ -111,7 +111,7 @@ async function seedDatabase() {
     await supabase.from('testimonials').delete().neq('id', '00000000-0000-0000-0000-000000000000');
     await supabase.from('certifications').delete().neq('id', '00000000-0000-0000-0000-000000000000');
 
-    // Seed slides
+    // Seed slides (without display_order if column doesn't exist)
     console.log('📊 Seeding slides...');
     const { data: slidesData, error: slidesError } = await supabase
       .from('slides')
@@ -122,8 +122,7 @@ async function seedDatabase() {
         button_text: s.button_text,
         button_link: s.button_link,
         image: s.image,
-        active: s.active,
-        display_order: s.display_order
+        active: s.active
       })));
     if (slidesError) console.error('Slides error:', slidesError.message);
     else console.log(`  ✅ ${defaults.slides.length} slides inserted`);
@@ -136,11 +135,18 @@ async function seedDatabase() {
     if (projectsError) console.error('Projects error:', projectsError.message);
     else console.log(`  ✅ ${defaults.projects.length} projects inserted`);
 
-    // Seed team members
+    // Seed team members (only columns that exist)
     console.log('👥 Seeding team members...');
     const { data: teamData, error: teamError } = await supabase
       .from('team_members')
-      .insert(defaults.team);
+      .insert(defaults.team.map(t => ({
+        name: t.name,
+        role: t.role,
+        experience: t.experience,
+        bio: t.bio,
+        photo: t.photo,
+        category: t.category
+      })));
     if (teamError) console.error('Team error:', teamError.message);
     else console.log(`  ✅ ${defaults.team.length} team members inserted`);
 
@@ -152,19 +158,30 @@ async function seedDatabase() {
     if (clientsError) console.error('Clients error:', clientsError.message);
     else console.log(`  ✅ ${defaults.clients.length} clients inserted`);
 
-    // Seed board members
+    // Seed board members (only columns that exist)
     console.log('📋 Seeding board members...');
     const { data: boardData, error: boardError } = await supabase
       .from('board_members')
-      .insert(defaults.board);
+      .insert(defaults.board.map(b => ({
+        name: b.name,
+        role: b.role
+      })));
     if (boardError) console.error('Board error:', boardError.message);
     else console.log(`  ✅ ${defaults.board.length} board members inserted`);
 
-    // Seed testimonials
+    // Seed testimonials (use 'text' instead of 'content')
     console.log('💬 Seeding testimonials...');
     const { data: testimonialsData, error: testimonialsError } = await supabase
       .from('testimonials')
-      .insert(defaults.testimonials);
+      .insert(defaults.testimonials.map(t => ({
+        name: t.name,
+        position: t.position,
+        company: t.company,
+        text: t.content,  // Map content to text column
+        photo: t.photo,
+        rating: t.rating,
+        published: t.published
+      })));
     if (testimonialsError) console.error('Testimonials error:', testimonialsError.message);
     else console.log(`  ✅ ${defaults.testimonials.length} testimonials inserted`);
 
