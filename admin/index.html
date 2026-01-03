@@ -1812,6 +1812,7 @@
             
             try {
                 // Initialize Supabase client with custom headers for Kong compatibility
+                // The Supabase JS client automatically sends 'apikey' header, but we ensure it's explicit
                 window.supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
                     auth: {
                         persistSession: true,
@@ -1821,8 +1822,12 @@
                     global: {
                         headers: {
                             'apikey': SUPABASE_ANON_KEY,
-                            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                            'x-api-key': SUPABASE_ANON_KEY  // Some Kong configs use this header
                         }
+                    },
+                    db: {
+                        schema: 'public'
                     }
                 });
                 
