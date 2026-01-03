@@ -18,13 +18,15 @@ document.addEventListener('DOMContentLoaded', async function() {
                 projectsRes,
                 clientsRes,
                 testimonialsRes,
-                teamRes
+                teamRes,
+                slidesRes
             ] = await Promise.all([
                 fetch(`${baseURL}/settings`).then(r => r.ok ? r.json() : null).catch(() => null),
                 fetch(`${baseURL}/projects`).then(r => r.ok ? r.json() : null).catch(() => null),
                 fetch(`${baseURL}/clients`).then(r => r.ok ? r.json() : null).catch(() => null),
                 fetch(`${baseURL}/testimonials`).then(r => r.ok ? r.json() : null).catch(() => null),
-                fetch(`${baseURL}/team`).then(r => r.ok ? r.json() : null).catch(() => null)
+                fetch(`${baseURL}/team`).then(r => r.ok ? r.json() : null).catch(() => null),
+                fetch(`${baseURL}/slides/active`).then(r => r.ok ? r.json() : null).catch(() => null)
             ]);
             
             // Combine into CMS data format
@@ -36,11 +38,17 @@ document.addEventListener('DOMContentLoaded', async function() {
                 projects: projectsRes?.data || [],
                 clients: clientsRes?.data || [],
                 testimonials: testimonialsRes?.data || [],
-                team: teamRes?.data || []
+                team: teamRes?.data || [],
+                slides: slidesRes?.data || []
             };
             
             // Cache in localStorage for offline use
-            if (apiData.projects.length > 0 || apiData.clients.length > 0) {
+            if (
+                apiData.projects.length > 0 || 
+                apiData.clients.length > 0 || 
+                apiData.slides.length > 0 || 
+                apiData.testimonials.length > 0
+            ) {
                 localStorage.setItem('kj_cms_data', JSON.stringify(apiData));
                 console.log('[Main] Data loaded from API and cached');
             }
@@ -184,7 +192,8 @@ document.addEventListener('DOMContentLoaded', async function() {
         // Resolve logo path respecting subdirectories and remote/data URLs
         const resolveLogoPath = (path) => {
             if (!path) return null;
-            if (/^(https?:)?\\/\\//.test(path) || path.startsWith('data:')) return path;
+            // Allow absolute and data URLs
+            if (/^(https?:)?\/\//.test(path) || path.startsWith('data:')) return path;
             
             const currentPath = window.location.pathname;
             const isInSubdir = currentPath.includes('/projects/') || 
