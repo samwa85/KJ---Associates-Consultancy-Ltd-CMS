@@ -391,8 +391,6 @@ const CMSSync = {
   }
 };
 
-// Initialize sync on load
-document.addEventListener('DOMContentLoaded', async () => {
-  await CMSSync.init();
-});
+// CMSSync.init() is now called explicitly by CMS.init() to ensure proper order
+// Do not auto-initialize here to avoid race conditions
 

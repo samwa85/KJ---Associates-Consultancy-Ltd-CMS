@@ -65,12 +65,16 @@ document.addEventListener('DOMContentLoaded', async function() {
     }
     
     // Try API first, then fall back to localStorage
+    // Only fall back if API call itself failed (returned null), not based on content
     let cmsData = await loadCMSDataFromAPI();
-    if (!cmsData || (!cmsData.projects?.length && !cmsData.clients?.length)) {
+    if (cmsData === null) {
+        // API failed completely, use localStorage
         cmsData = loadCMSDataFromLocalStorage();
         if (cmsData) {
-            console.log('[Main] Using localStorage data');
+            console.log('[Main] API unavailable, using localStorage data');
         }
+    } else {
+        console.log('[Main] Using API data');
     }
 
     // ==================== THEME SYSTEM ====================

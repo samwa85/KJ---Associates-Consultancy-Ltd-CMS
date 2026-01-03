@@ -2436,12 +2436,13 @@ function previewTheme() {
 }
 
 // Initialize on load
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     try {
-    CMS.init();
-    
-    // Show dashboard by default
-    document.querySelectorAll('.section').forEach(s => s.style.display = 'none');
+        // Wait for CMS to fully initialize (including API sync)
+        await CMS.init();
+        
+        // Show dashboard by default (after data is loaded)
+        document.querySelectorAll('.section').forEach(s => s.style.display = 'none');
         const dashboard = document.getElementById('section-dashboard');
         if (dashboard) {
             dashboard.style.display = 'block';
