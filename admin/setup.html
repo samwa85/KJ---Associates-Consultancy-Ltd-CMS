@@ -17,6 +17,9 @@
     <!-- Supabase Config (loads credentials) -->
     <script src="../js/supabase-config.js"></script>
     
+    <!-- Error Formatting Utilities -->
+    <script src="../js/error-utils.js"></script>
+    
     <!-- Supabase JS -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
@@ -415,25 +418,54 @@
             setupBtn.disabled = true;
 
             try {
+                // Validate inputs are not undefined
+                if (!email || typeof email !== 'string') {
+                    throw new Error('Email is required and must be a string');
+                }
+                if (!password || typeof password !== 'string') {
+                    throw new Error('Password is required and must be a string');
+                }
+                
                 console.log('[Setup] Attempting to create user with email:', email);
                 console.log('[Setup] Supabase URL:', SUPABASE_URL);
+                console.log('[Setup] Supabase client initialized:', !!supabaseClient);
                 
                 // Create user with Supabase Auth
-                const { data, error } = await supabaseClient.auth.signUp({
-                    email: email,
+                // Note: For self-hosted Supabase, email confirmation might be disabled
+                const signUpOptions = {
+                    email: email.trim(),
                     password: password,
                     options: {
+                        emailRedirectTo: window.location.origin + '/admin/login.html',
                         data: {
                             role: 'admin',
                             name: 'Administrator'
                         }
                     }
+                };
+                
+                console.log('[Setup] Signup options:', { ...signUpOptions, password: '***' });
+                
+                const { data, error } = await supabaseClient.auth.signUp(signUpOptions);
+
+                console.log('[Setup] Response:', { 
+                    hasData: !!data, 
+                    hasUser: !!data?.user,
+                    hasSession: !!data?.session,
+                    error: error ? {
+                        message: error.message,
+                        status: error.status,
+                        name: error.name
+                    } : null
                 });
 
-                console.log('[Setup] Response:', { data, error });
-
                 if (error) {
-                    console.error('[Setup] Supabase error:', error);
+                    console.error('[Setup] Supabase error details:', {
+                        message: error.message,
+                        status: error.status,
+                        name: error.name,
+                        stack: error.stack
+                    });
                     throw error;
                 }
 
@@ -460,33 +492,32 @@
 
             } catch (error) {
                 console.error('[Setup] Error details:', error);
-                let errorMsg = error.message || JSON.stringify(error) || 'Failed to create admin account';
                 
-                // Handle specific errors
-                if (errorMsg.includes('already registered') || errorMsg.includes('already exists')) {
-                    errorMsg = 'An account with this email already exists. Try logging in instead.';
-                } else if (errorMsg.includes('invalid_type') || errorMsg.includes('undefined')) {
-                    errorMsg = 'Supabase Auth service error. Please check your Supabase configuration.';
-                } else if (errorMsg.includes('fetch') || errorMsg.includes('Failed to fetch')) {
-                    // Check for SSL certificate errors
-                    const isSSLError = errorMsg.includes('CERT') || 
-                                      errorMsg.includes('certificate') || 
-                                      error.message?.includes('CERT') ||
-                                      (error.name === 'TypeError' && error.message.includes('fetch'));
-                    
-                    if (isSSLError) {
-                        errorMsg = `
-                            <strong>🔒 SSL Certificate Error</strong><br><br>
-                            <strong>Quick Fix (Self-Signed Certificate):</strong><br>
-                            1. Open this URL in a new tab: <a href="${SUPABASE_URL}/auth/v1/health" target="_blank" style="color: inherit; text-decoration: underline;">${SUPABASE_URL}/auth/v1/health</a><br>
-                            2. Click "Advanced" → "Proceed to site" to accept the certificate<br>
-                            3. Come back and try again<br><br>
-                            <strong>Permanent Fix:</strong><br>
-                            Configure valid SSL/TLS on your Supabase Kong gateway in Coolify (Let's Encrypt).
-                        `;
-                    } else {
-                        errorMsg = 'Cannot connect to Supabase. Check if the URL is correct and the service is running.';
-                    }
+                // Format error to ensure it has formattedError property
+                // This ensures formattedError is always a string, preventing validation errors
+                const formattedError = (typeof window !== 'undefined' && window.formatError) 
+                    ? window.formatError(error) 
+                    : (typeof formatError !== 'undefined' ? formatError(error) : { formattedError: error?.message || String(error) || 'Failed to create admin account' });
+                
+                // Use formattedError property (guaranteed to be a string)
+                let errorMsg = formattedError.formattedError || formattedError.message || 'Failed to create admin account';
+                
+                // Handle SSL certificate errors with special formatting
+                if (errorMsg.includes('SSL Certificate Error') || 
+                    (error.message && (
+                        error.message.includes('CERT') || 
+                        error.message.includes('certificate') ||
+                        (error.name === 'TypeError' && error.message.includes('fetch'))
+                    ))) {
+                    errorMsg = `
+                        <strong>🔒 SSL Certificate Error</strong><br><br>
+                        <strong>Quick Fix (Self-Signed Certificate):</strong><br>
+                        1. Open this URL in a new tab: <a href="${SUPABASE_URL}/auth/v1/health" target="_blank" style="color: inherit; text-decoration: underline;">${SUPABASE_URL}/auth/v1/health</a><br>
+                        2. Click "Advanced" → "Proceed to site" to accept the certificate<br>
+                        3. Come back and try again<br><br>
+                        <strong>Permanent Fix:</strong><br>
+                        Configure valid SSL/TLS on your Supabase Kong gateway in Coolify (Let's Encrypt).
+                    `;
                 }
                 
                 errorMessage.innerHTML = errorMsg + '<br><small style="opacity:0.7">Check browser console (F12) for details.</small>';
