@@ -461,12 +461,20 @@
                     errorMsg = 'Supabase Auth service error. Please check your Supabase configuration.';
                 } else if (errorMsg.includes('fetch') || errorMsg.includes('Failed to fetch')) {
                     // Check for SSL certificate errors
-                    if (errorMsg.includes('CERT') || errorMsg.includes('certificate') || 
-                        error.name === 'TypeError' && error.message.includes('fetch')) {
+                    const isSSLError = errorMsg.includes('CERT') || 
+                                      errorMsg.includes('certificate') || 
+                                      error.message?.includes('CERT') ||
+                                      (error.name === 'TypeError' && error.message.includes('fetch'));
+                    
+                    if (isSSLError) {
                         errorMsg = `
-                            <strong>SSL Certificate Error</strong><br>
-                            Your Supabase instance needs a valid SSL certificate.<br>
-                            <strong>Solution:</strong> Configure SSL/TLS on your Supabase Kong gateway in Coolify, or use a reverse proxy with valid SSL certificates (Let's Encrypt).
+                            <strong>🔒 SSL Certificate Error</strong><br><br>
+                            <strong>Quick Fix (Self-Signed Certificate):</strong><br>
+                            1. Open this URL in a new tab: <a href="${SUPABASE_URL}/auth/v1/health" target="_blank" style="color: inherit; text-decoration: underline;">${SUPABASE_URL}/auth/v1/health</a><br>
+                            2. Click "Advanced" → "Proceed to site" to accept the certificate<br>
+                            3. Come back and try again<br><br>
+                            <strong>Permanent Fix:</strong><br>
+                            Configure valid SSL/TLS on your Supabase Kong gateway in Coolify (Let's Encrypt).
                         `;
                     } else {
                         errorMsg = 'Cannot connect to Supabase. Check if the URL is correct and the service is running.';
