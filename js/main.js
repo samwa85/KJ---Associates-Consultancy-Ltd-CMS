@@ -239,7 +239,21 @@ document.addEventListener('DOMContentLoaded', async function () {
                 currentPath.includes('/admin/');
 
             const fallbackPath = isInSubdir ? '../uploads/logo_kj&.png' : 'uploads/logo_kj&.png';
-            const primaryPath = resolveLogoPath(branding.logoImageUrl) || fallbackPath;
+
+            // Encode URI to handle special characters like '&'
+            const encodeLogoPath = (path) => {
+                if (!path) return path;
+                if (path.startsWith('data:')) return path; // Don't encode data URLs
+
+                // Encode special characters but keep slashes and protocol
+                return path.split('/').map(segment => {
+                    if (segment.includes(':')) return segment; // Protocol
+                    return encodeURIComponent(segment);
+                }).join('/');
+            };
+
+            const rawPrimaryPath = resolveLogoPath(branding.logoImageUrl) || fallbackPath;
+            const primaryPath = encodeLogoPath(rawPrimaryPath);
 
             // Create image element
             const img = document.createElement('img');

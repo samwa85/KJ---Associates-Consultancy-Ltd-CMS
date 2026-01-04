@@ -79,19 +79,90 @@ class BaseService {
     const to = from + limit - 1;
     query = query.range(from, to);
 
-    const { data, error, count } = await query;
+    try {
+      const { data, error, count } = await query;
 
-    if (error) throw error;
+      if (error) throw error;
 
-    return {
-      data,
-      pagination: {
-        page,
-        limit,
-        total: count,
-        totalPages: Math.ceil(count / limit)
+      return {
+        data,
+        pagination: {
+          page,
+          limit,
+          total: count,
+          totalPages: Math.ceil(count / limit)
+        }
+      };
+    } catch (error) {
+      // If column not found (42703), retry without ordering
+      // Only retry if the orderBy column is not the default 'created_at'
+      if (error.code === '42703' && orderBy !== 'created_at') {
+        process.env.NODE_ENV === 'development' && console.warn(`[BaseService] Column '${orderBy}' not found in table '${this.tableName}', retrying without ordering.`);
+
+        let fallbackQuery = this.supabase
+          .from(this.tableName)
+          .select(select, { count: 'exact' });
+
+        // Re-apply filters
+        Object.entries(filters).forEach(([key, value]) => {
+          if (value !== undefined && value !== null && value !== '') {
+            if (Array.isArray(value)) {
+              fallbackQuery = fallbackQuery.in(key, value);
+            } else if (typeof value === 'object' && value.operator) {
+              // Handle special operators like gte, lte, etc.
+              switch (value.operator) {
+                case 'gte':
+                  fallbackQuery = fallbackQuery.gte(key, value.value);
+                  break;
+                case 'lte':
+                  fallbackQuery = fallbackQuery.lte(key, value.value);
+                  break;
+                case 'gt':
+                  fallbackQuery = fallbackQuery.gt(key, value.value);
+                  break;
+                case 'lt':
+                  fallbackQuery = fallbackQuery.lt(key, value.value);
+                  break;
+                case 'like':
+                  fallbackQuery = fallbackQuery.ilike(key, `%${value.value}%`);
+                  break;
+                case 'neq':
+                  fallbackQuery = fallbackQuery.neq(key, value.value);
+                  break;
+              }
+            } else {
+              fallbackQuery = fallbackQuery.eq(key, value);
+            }
+          }
+        });
+
+        // Re-apply search across multiple fields
+        if (search && searchFields.length > 0) {
+          const searchConditions = searchFields
+            .map(field => `${field}.ilike.%${search}%`)
+            .join(',');
+          fallbackQuery = fallbackQuery.or(searchConditions);
+        }
+
+        // Apply pagination (ordering is skipped)
+        fallbackQuery = fallbackQuery.range(from, to);
+
+        const { data: fallbackData, error: fallbackError, count: fallbackCount } = await fallbackQuery;
+
+        if (fallbackError) throw fallbackError;
+
+        return {
+          data: fallbackData,
+          pagination: {
+            page,
+            limit,
+            total: fallbackCount,
+            totalPages: Math.ceil(fallbackCount / limit)
+          }
+        };
       }
-    };
+      throw error;
+    }
   }
 
   /**
