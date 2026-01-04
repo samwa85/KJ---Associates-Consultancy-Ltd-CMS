@@ -475,17 +475,46 @@
         // Auto-scan on load
         window.addEventListener('load', () => {
             log(`Ready! API Base URL: ${API_BASE_URL}`, 'info');
+            log(`Page origin: ${window.location.origin || window.location.href}`, 'info');
             log('Click "Scan Differences" to start.', 'info');
             
+            // Check for mixed content issue
+            const isHttps = window.location.protocol === 'https:';
+            const apiIsHttp = API_BASE_URL.startsWith('http://');
+            
+            if (isHttps && apiIsHttp) {
+                log(`⚠️ Mixed content warning: Page is HTTPS but API is HTTP`, 'error');
+                log(`   This may cause connection failures in some browsers.`, 'error');
+                log(`   Try opening this page via HTTP instead, or use a browser that allows mixed content.`, 'error');
+            }
+            
             // Test API connection
-            fetch(`${API_BASE_URL.replace('/api', '')}/api`)
-                .then(r => r.json())
+            fetch(`${API_BASE_URL.replace('/api', '')}/api`, {
+                method: 'GET',
+                mode: 'cors',
+                headers: {
+                    'Accept': 'application/json'
+                }
+            })
+                .then(r => {
+                    if (!r.ok) throw new Error(`HTTP ${r.status}`);
+                    return r.json();
+                })
                 .then(data => {
                     log(`✅ API connection successful: ${data.name || 'Connected'}`, 'success');
                 })
                 .catch(err => {
                     log(`⚠️ API connection test failed: ${err.message}`, 'error');
                     log(`   Make sure the backend is running at ${API_BASE_URL}`, 'error');
+                    
+                    // Additional troubleshooting
+                    if (err.message === 'Failed to fetch') {
+                        log(`   Possible causes:`, 'error');
+                        log(`   1. Backend server is not running`, 'error');
+                        log(`   2. CORS is blocking the request`, 'error');
+                        log(`   3. Mixed content (HTTPS page → HTTP API)`, 'error');
+                        log(`   4. Network/firewall blocking port 3001`, 'error');
+                    }
                 });
         });
     </script>
