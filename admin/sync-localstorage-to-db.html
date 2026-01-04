@@ -115,8 +115,8 @@
         
         // ALWAYS use production API for syncing (database is on production server)
         // This ensures we sync to the live database regardless of where we're testing from
-        // Override any config.js settings
-        const API_BASE_URL = 'http://31.97.79.197:3001/api';
+        // Override any config.js settings - using HTTPS for secure access
+        const API_BASE_URL = 'https://api.kjconsultancy.co.tz/api';
 
         function log(message, type = 'info') {
             const logEl = document.getElementById('log');

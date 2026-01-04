@@ -31,8 +31,8 @@
   } else if (isLocalhost) {
     apiUrl = 'http://localhost:3001/api';
   } else {
-    // Production: Use Coolify server API
-    apiUrl = 'http://31.97.79.197:3001/api';
+    // Production: Use Coolify server API with HTTPS
+    apiUrl = 'https://api.kjconsultancy.co.tz/api';
   }
   
   window.API_BASE_URL = apiUrl;
