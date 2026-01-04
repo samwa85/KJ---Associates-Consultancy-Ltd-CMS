@@ -117,6 +117,9 @@
         // This ensures we sync to the live database regardless of where we're testing from
         // Override any config.js settings - using HTTPS for secure access
         const API_BASE_URL = 'https://api.kjconsultancy.co.tz/api';
+        
+        // Sync secret for authentication (must match server)
+        const SYNC_SECRET = 'kj-cms-sync-2024-secret';
 
         function log(message, type = 'info') {
             const logEl = document.getElementById('log');
@@ -355,7 +358,8 @@
                                           type === 'board' ? 'board' : 
                                           type === 'blog' ? 'blog' : type;
                             
-                            const endpoint = `${API_BASE_URL}/${apiType}`;
+                            // Use the sync endpoint with secret key
+                            const endpoint = `${API_BASE_URL}/sync/${apiType}`;
                             const transformed = transformItem(item, type);
 
                             log(`  → Syncing: ${item.title || item.name || item.tagline || 'Unknown'}`, 'info');
@@ -363,7 +367,8 @@
                             const response = await fetch(endpoint, {
                                 method: 'POST',
                                 headers: { 
-                                    'Content-Type': 'application/json'
+                                    'Content-Type': 'application/json',
+                                    'X-Sync-Secret': SYNC_SECRET
                                 },
                                 body: JSON.stringify(transformed)
                             });

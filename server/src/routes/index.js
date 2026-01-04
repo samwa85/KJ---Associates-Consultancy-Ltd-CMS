@@ -19,6 +19,7 @@ const certificationsRoutes = require('./certifications');
 const settingsRoutes = require('./settings');
 const uploadRoutes = require('./upload');
 const authRoutes = require('./auth');
+const syncRoutes = require('./sync');
 
 // API Info endpoint
 router.get('/', (req, res) => {
@@ -55,6 +56,7 @@ router.use('/certifications', certificationsRoutes);
 router.use('/settings', settingsRoutes);
 router.use('/upload', uploadRoutes);
 router.use('/auth', authRoutes);
+router.use('/sync', syncRoutes);
 
 module.exports = router;
 
