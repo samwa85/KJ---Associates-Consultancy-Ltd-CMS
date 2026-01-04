@@ -1,40 +1,95 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sync localStorage to Database</title>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
             background: #f5f5f5;
             padding: 20px;
         }
+
         .container {
             max-width: 1200px;
             margin: 0 auto;
             background: white;
             border-radius: 8px;
             padding: 30px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
-        h1 { margin-bottom: 10px; color: #333; }
-        .subtitle { color: #666; margin-bottom: 30px; }
-        .section { margin-bottom: 30px; padding: 20px; background: #f9f9f9; border-radius: 6px; }
-        .section h2 { margin-bottom: 15px; color: #444; font-size: 18px; }
-        .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px; }
+
+        h1 {
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 6px;
+        }
+
+        .section h2 {
+            margin-bottom: 15px;
+            color: #444;
+            font-size: 18px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
         .stat-card {
             background: white;
             padding: 15px;
             border-radius: 6px;
             border-left: 4px solid #22c55e;
         }
-        .stat-card.warning { border-left-color: #f59e0b; }
-        .stat-card.danger { border-left-color: #ef4444; }
-        .stat-label { font-size: 12px; color: #666; text-transform: uppercase; }
-        .stat-value { font-size: 24px; font-weight: bold; color: #333; margin-top: 5px; }
-        .diff-list { max-height: 300px; overflow-y: auto; }
+
+        .stat-card.warning {
+            border-left-color: #f59e0b;
+        }
+
+        .stat-card.danger {
+            border-left-color: #ef4444;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+            text-transform: uppercase;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+            margin-top: 5px;
+        }
+
+        .diff-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
         .diff-item {
             padding: 10px;
             margin: 5px 0;
@@ -42,10 +97,26 @@
             border-radius: 4px;
             border-left: 3px solid #3b82f6;
         }
-        .diff-item.missing { border-left-color: #ef4444; }
-        .diff-item.extra { border-left-color: #f59e0b; }
-        .diff-title { font-weight: 600; color: #333; }
-        .diff-details { font-size: 12px; color: #666; margin-top: 5px; }
+
+        .diff-item.missing {
+            border-left-color: #ef4444;
+        }
+
+        .diff-item.extra {
+            border-left-color: #f59e0b;
+        }
+
+        .diff-title {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .diff-details {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+
         button {
             background: #22c55e;
             color: white;
@@ -57,10 +128,24 @@
             margin-right: 10px;
             margin-top: 10px;
         }
-        button:hover { background: #16a34a; }
-        button:disabled { background: #ccc; cursor: not-allowed; }
-        button.danger { background: #ef4444; }
-        button.danger:hover { background: #dc2626; }
+
+        button:hover {
+            background: #16a34a;
+        }
+
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        button.danger {
+            background: #ef4444;
+        }
+
+        button.danger:hover {
+            background: #dc2626;
+        }
+
         .log {
             background: #1e1e1e;
             color: #d4d4d4;
@@ -72,14 +157,41 @@
             overflow-y: auto;
             margin-top: 20px;
         }
-        .log-entry { margin: 5px 0; }
-        .log-entry.success { color: #4ade80; }
-        .log-entry.error { color: #f87171; }
-        .log-entry.info { color: #60a5fa; }
-        .loading { display: inline-block; width: 16px; height: 16px; border: 2px solid #ccc; border-top-color: #333; border-radius: 50%; animation: spin 0.6s linear infinite; }
-        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .log-entry {
+            margin: 5px 0;
+        }
+
+        .log-entry.success {
+            color: #4ade80;
+        }
+
+        .log-entry.error {
+            color: #f87171;
+        }
+
+        .log-entry.info {
+            color: #60a5fa;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid #ccc;
+            border-top-color: #333;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
     </style>
 </head>
+
 <body>
     <div class="container">
         <h1>🔄 Sync localStorage to Database</h1>
@@ -112,14 +224,12 @@
     <script src="../js/api-client.js"></script>
     <script>
         let comparison = null;
-        
-        // ALWAYS use production API for syncing (database is on production server)
-        // This ensures we sync to the live database regardless of where we're testing from
-        // Override any config.js settings - using HTTPS for secure access
-        const API_BASE_URL = 'https://api.kjconsultancy.co.tz/api';
-        
-        // Sync secret for authentication (must match server)
-        const SYNC_SECRET = 'kj-cms-sync-2024-secret';
+
+        // Use configuration from API_CONFIG (already loaded via config.js)
+        const API_BASE_URL = window.API_CONFIG?.apiBaseUrl || 'http://localhost:3001/api';
+
+        // Sync secret for authentication (must match server .env)
+        const SYNC_SECRET = window.API_CONFIG?.syncSecret || 'kj-cms-sync-2024-secret';
 
         function log(message, type = 'info') {
             const logEl = document.getElementById('log');
@@ -146,7 +256,7 @@
 
                 // Get database data
                 log(`Fetching data from database at: ${API_BASE_URL}`, 'info');
-                
+
                 async function fetchWithErrorHandling(url, name) {
                     try {
                         const response = await fetch(url);
@@ -163,7 +273,7 @@
                         return { data: [], error: error.message };
                     }
                 }
-                
+
                 const [slidesRes, projectsRes, teamRes, boardRes, clientsRes, testimonialsRes, blogRes, certsRes] = await Promise.all([
                     fetchWithErrorHandling(`${API_BASE_URL}/slides`, 'Slides'),
                     fetchWithErrorHandling(`${API_BASE_URL}/projects`, 'Projects'),
@@ -185,7 +295,7 @@
                     blog: blogRes.data || [],
                     certifications: certsRes.data || []
                 };
-                
+
                 // Log any errors
                 const errors = [slidesRes, projectsRes, teamRes, boardRes, clientsRes, testimonialsRes, blogRes, certsRes]
                     .filter(r => r.error).map(r => r.error);
@@ -354,19 +464,19 @@
 
                     for (const item of comp.missing) {
                         try {
-                            const apiType = type === 'team' ? 'team' : 
-                                          type === 'board' ? 'board' : 
-                                          type === 'blog' ? 'blog' : type;
-                            
+                            const apiType = type === 'team' ? 'team' :
+                                type === 'board' ? 'board' :
+                                    type === 'blog' ? 'blog' : type;
+
                             // Use the sync endpoint with secret key
                             const endpoint = `${API_BASE_URL}/sync/${apiType}`;
                             const transformed = transformItem(item, type);
 
                             log(`  → Syncing: ${item.title || item.name || item.tagline || 'Unknown'}`, 'info');
-                            
+
                             const response = await fetch(endpoint, {
                                 method: 'POST',
-                                headers: { 
+                                headers: {
                                     'Content-Type': 'application/json',
                                     'X-Sync-Secret': SYNC_SECRET
                                 },
@@ -384,7 +494,7 @@
                                 }
                                 throw new Error(errorMsg);
                             }
-                            
+
                             const result = await response.json();
                             synced++;
                             const name = item.title || item.name || item.tagline || 'Unknown';
@@ -399,7 +509,7 @@
                 }
 
                 log(`\n✅ Sync complete! ${synced} items synced, ${errors} errors`, synced > 0 ? 'success' : 'error');
-                
+
                 // Refresh comparison
                 setTimeout(() => {
                     scanDifferences();
@@ -416,14 +526,14 @@
         function transformItem(item, type) {
             // Transform camelCase to snake_case and handle special fields
             const transformed = {};
-            
+
             Object.keys(item).forEach(key => {
                 // Skip ID for new items (let DB generate UUID)
                 if (key === 'id') return;
-                
+
                 // Convert camelCase to snake_case
                 const snakeKey = key.replace(/([A-Z])/g, '_$1').toLowerCase();
-                
+
                 // Handle special field mappings
                 if (type === 'slides') {
                     if (key === 'titleHighlight') transformed.title_highlight = item[key];
@@ -473,7 +583,7 @@
             a.download = `cms-data-${new Date().toISOString().split('T')[0]}.json`;
             a.click();
             URL.revokeObjectURL(url);
-            
+
             log('LocalStorage data exported', 'success');
         }
 
@@ -482,17 +592,17 @@
             log(`Ready! API Base URL: ${API_BASE_URL}`, 'info');
             log(`Page origin: ${window.location.origin || window.location.href}`, 'info');
             log('Click "Scan Differences" to start.', 'info');
-            
+
             // Check for mixed content issue
             const isHttps = window.location.protocol === 'https:';
             const apiIsHttp = API_BASE_URL.startsWith('http://');
-            
+
             if (isHttps && apiIsHttp) {
                 log(`⚠️ Mixed content warning: Page is HTTPS but API is HTTP`, 'error');
                 log(`   This may cause connection failures in some browsers.`, 'error');
                 log(`   Try opening this page via HTTP instead, or use a browser that allows mixed content.`, 'error');
             }
-            
+
             // Test API connection - hit the root /api endpoint
             fetch(API_BASE_URL, {
                 method: 'GET',
@@ -511,7 +621,7 @@
                 .catch(err => {
                     log(`⚠️ API connection test failed: ${err.message}`, 'error');
                     log(`   Make sure the backend is running at ${API_BASE_URL}`, 'error');
-                    
+
                     // Additional troubleshooting
                     if (err.message === 'Failed to fetch') {
                         log(`   Possible causes:`, 'error');
@@ -524,5 +634,5 @@
         });
     </script>
 </body>
-</html>
 
+</html>

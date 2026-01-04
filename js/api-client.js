@@ -5,7 +5,7 @@
 
 const API = {
   // Configuration
-  baseURL: window.API_BASE_URL || 'http://localhost:3001/api',
+  baseURL: window.API_CONFIG?.apiBaseUrl || window.API_BASE_URL || 'http://localhost:3001/api',
   token: null,
 
   // Initialize API client

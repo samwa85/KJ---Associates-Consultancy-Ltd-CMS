@@ -1,28 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CMS Admin | KJ & Associates</title>
-    
+
     <!-- Supabase Configuration can be overridden via meta tags or server-side injection -->
     <!-- For production, inject these server-side from environment variables -->
     <meta name="supabase-url" content="" data-placeholder="Override Supabase URL here if needed">
     <meta name="supabase-anon-key" content="" data-placeholder="Override Supabase anon key here if needed">
-    
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
+
+    <!-- Unified Configuration -->
+    <script src="../js/config.js"></script>
+
     <!-- Supabase Config (loads credentials) -->
     <script src="../js/supabase-config.js"></script>
-    
+
     <!-- Error Formatting Utilities -->
     <script src="../js/error-utils.js"></script>
-    
+
     <!-- Supabase JS -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    
+
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -102,7 +106,12 @@
         }
     </style>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         :root {
             --primary: #1a7a47;
             --primary-dark: #0d4d2c;
@@ -122,17 +131,20 @@
             --gray-800: #1f2937;
             --gray-900: #111827;
         }
+
         body {
             font-family: 'Inter', sans-serif;
             background: var(--gray-100);
             min-height: 100vh;
             color: var(--gray-800);
         }
+
         /* Sidebar Layout */
         .admin-layout {
             display: flex;
             min-height: 100vh;
         }
+
         .sidebar {
             width: 260px;
             background: var(--gray-900);
@@ -145,16 +157,25 @@
             z-index: 100;
             transition: transform 0.3s ease;
         }
+
         .sidebar-header {
             padding: 1.5rem;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
+
         .sidebar-logo {
             font-size: 1.25rem;
             font-weight: 700;
         }
-        .sidebar-logo span { color: var(--primary-light); }
-        .sidebar-nav { padding: 1rem 0; }
+
+        .sidebar-logo span {
+            color: var(--primary-light);
+        }
+
+        .sidebar-nav {
+            padding: 1rem 0;
+        }
+
         .nav-section {
             padding: 0.5rem 1.5rem;
             font-size: 0.7rem;
@@ -163,6 +184,7 @@
             color: var(--gray-500);
             margin-top: 1rem;
         }
+
         .nav-item {
             display: flex;
             align-items: center;
@@ -178,25 +200,36 @@
             text-align: left;
             font-size: 0.95rem;
         }
-        .nav-item:hover, .nav-item.active {
+
+        .nav-item:hover,
+        .nav-item.active {
             color: white;
-            background: rgba(255,255,255,0.1);
+            background: rgba(255, 255, 255, 0.1);
         }
+
         .nav-item.active {
             border-left-width: 3px;
             border-left-color: #2ecc71;
             background: rgba(26, 122, 71, 0.2);
             color: white;
         }
+
         .border-l-3 {
             border-left-width: 3px;
         }
-        .nav-item svg { width: 20px; height: 20px; flex-shrink: 0; }
+
+        .nav-item svg {
+            width: 20px;
+            height: 20px;
+            flex-shrink: 0;
+        }
+
         .sidebar-footer {
             padding: 1rem 1.5rem;
-            border-top: 1px solid rgba(255,255,255,0.1);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
             margin-top: auto;
         }
+
         .view-site-btn {
             display: flex;
             align-items: center;
@@ -213,7 +246,11 @@
             text-decoration: none;
             transition: all 0.2s;
         }
-        .view-site-btn:hover { background: var(--primary-dark); }
+
+        .view-site-btn:hover {
+            background: var(--primary-dark);
+        }
+
         /* Main Content */
         .main-content {
             flex: 1;
@@ -221,6 +258,7 @@
             padding: 2rem;
             min-height: 100vh;
         }
+
         .page-header {
             display: flex;
             justify-content: space-between;
@@ -229,8 +267,17 @@
             flex-wrap: wrap;
             gap: 1rem;
         }
-        .page-title { font-size: 1.75rem; font-weight: 700; }
-        .page-subtitle { color: var(--gray-600); margin-top: 0.25rem; }
+
+        .page-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+        }
+
+        .page-subtitle {
+            color: var(--gray-600);
+            margin-top: 0.25rem;
+        }
+
         /* Buttons */
         .btn {
             display: inline-flex;
@@ -245,22 +292,54 @@
             transition: all 0.2s;
             text-decoration: none;
         }
-        .btn-primary { background: var(--primary); color: white; }
-        .btn-primary:hover { background: var(--primary-dark); transform: translateY(-1px); }
-        .btn-secondary { background: var(--gray-200); color: var(--gray-800); }
-        .btn-secondary:hover { background: var(--gray-300); }
-        .btn-danger { background: var(--danger); color: white; }
-        .btn-danger:hover { background: #b91c1c; }
-        .btn-sm { padding: 0.5rem 1rem; font-size: 0.85rem; }
-        .btn-icon { padding: 0.5rem; border-radius: 6px; }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: var(--gray-200);
+            color: var(--gray-800);
+        }
+
+        .btn-secondary:hover {
+            background: var(--gray-300);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #b91c1c;
+        }
+
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            font-size: 0.85rem;
+        }
+
+        .btn-icon {
+            padding: 0.5rem;
+            border-radius: 6px;
+        }
+
         /* Cards */
         .card {
             background: white;
             border-radius: 12px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
             overflow: hidden;
             margin-bottom: 1.5rem;
         }
+
         .card-header {
             padding: 1.25rem 1.5rem;
             border-bottom: 1px solid var(--gray-200);
@@ -268,18 +347,53 @@
             justify-content: space-between;
             align-items: center;
         }
-        .card-title { font-size: 1.1rem; font-weight: 600; }
-        .card-body { padding: 1.5rem; }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+
         /* Grid */
-        .grid { display: grid; gap: 1.5rem; }
-        .grid-2 { grid-template-columns: repeat(2, 1fr); }
-        .grid-3 { grid-template-columns: repeat(3, 1fr); }
-        .grid-4 { grid-template-columns: repeat(4, 1fr); }
-        .grid-auto { grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
+        .grid {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .grid-2 {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .grid-3 {
+            grid-template-columns: repeat(3, 1fr);
+        }
+
+        .grid-4 {
+            grid-template-columns: repeat(4, 1fr);
+        }
+
+        .grid-auto {
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        }
+
         /* Form Elements */
-        .form-group { margin-bottom: 1.25rem; }
-        .form-label { display: block; font-weight: 600; margin-bottom: 0.5rem; font-size: 0.9rem; }
-        .form-input, .form-textarea, .form-select {
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .form-input,
+        .form-textarea,
+        .form-select {
             width: 100%;
             padding: 0.75rem 1rem;
             border: 2px solid var(--gray-200);
@@ -288,59 +402,191 @@
             font-family: inherit;
             transition: all 0.2s;
         }
-        .form-input:focus, .form-textarea:focus, .form-select:focus {
+
+        .form-input:focus,
+        .form-textarea:focus,
+        .form-select:focus {
             outline: none;
             border-color: var(--primary);
             box-shadow: 0 0 0 3px rgba(26, 122, 71, 0.1);
         }
-        .form-textarea { resize: vertical; min-height: 100px; }
-        .form-hint { font-size: 0.8rem; color: var(--gray-500); margin-top: 0.25rem; }
-        .form-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-hint {
+            font-size: 0.8rem;
+            color: var(--gray-500);
+            margin-top: 0.25rem;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
         /* Toggle */
-        .toggle-switch { position: relative; width: 44px; height: 24px; }
-        .toggle-switch input { opacity: 0; width: 0; height: 0; }
+        .toggle-switch {
+            position: relative;
+            width: 44px;
+            height: 24px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
         .toggle-slider {
-            position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
-            background: var(--gray-300); border-radius: 24px; transition: 0.3s;
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--gray-300);
+            border-radius: 24px;
+            transition: 0.3s;
         }
+
         .toggle-slider:before {
-            position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px;
-            background: white; border-radius: 50%; transition: 0.3s;
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background: white;
+            border-radius: 50%;
+            transition: 0.3s;
         }
-        .toggle-switch input:checked + .toggle-slider { background: var(--primary); }
-        .toggle-switch input:checked + .toggle-slider:before { transform: translateX(20px); }
+
+        .toggle-switch input:checked+.toggle-slider {
+            background: var(--primary);
+        }
+
+        .toggle-switch input:checked+.toggle-slider:before {
+            transform: translateX(20px);
+        }
+
         /* Table */
-        .table-container { overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; }
-        th, td { padding: 1rem; text-align: left; border-bottom: 1px solid var(--gray-200); }
-        th { font-weight: 600; color: var(--gray-600); font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em; background: var(--gray-50); }
-        tr:hover { background: var(--gray-50); }
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        th {
+            font-weight: 600;
+            color: var(--gray-600);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            background: var(--gray-50);
+        }
+
+        tr:hover {
+            background: var(--gray-50);
+        }
+
         /* Item Cards */
         .item-card {
             background: white;
             border-radius: 12px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
             overflow: hidden;
             transition: all 0.2s;
         }
-        .item-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.15); transform: translateY(-2px); }
-        .item-card.inactive { opacity: 0.6; }
+
+        .item-card:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transform: translateY(-2px);
+        }
+
+        .item-card.inactive {
+            opacity: 0.6;
+        }
+
         .item-image {
-            width: 100%; height: 160px; object-fit: contain; background: var(--gray-200); padding: 0.5rem;
+            width: 100%;
+            height: 160px;
+            object-fit: contain;
+            background: var(--gray-200);
+            padding: 0.5rem;
         }
-        .item-content { padding: 1.25rem; }
+
+        .item-content {
+            padding: 1.25rem;
+        }
+
         .item-badge {
-            display: inline-block; padding: 0.25rem 0.75rem; border-radius: 20px;
-            font-size: 0.75rem; font-weight: 600; margin-bottom: 0.75rem;
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
         }
-        .badge-success { background: #dcfce7; color: #166534; }
-        .badge-warning { background: #fef3c7; color: #92400e; }
-        .badge-info { background: #dbeafe; color: #1e40af; }
-        .badge-danger { background: #fee2e2; color: #991b1b; }
-        .item-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 0.5rem; }
-        .item-meta { font-size: 0.85rem; color: var(--gray-500); margin-bottom: 0.25rem; }
-        .item-actions { display: flex; gap: 0.5rem; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--gray-200); }
-        .item-actions .btn { flex: 1; justify-content: center; }
+
+        .badge-success {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .badge-warning {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .badge-info {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+
+        .badge-danger {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .item-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .item-meta {
+            font-size: 0.85rem;
+            color: var(--gray-500);
+            margin-bottom: 0.25rem;
+        }
+
+        .item-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--gray-200);
+        }
+
+        .item-actions .btn {
+            flex: 1;
+            justify-content: center;
+        }
+
         /* Modal */
         .modal-overlay {
             position: fixed;
@@ -353,30 +599,39 @@
             justify-content: center;
             padding: 1rem;
         }
-        .modal-overlay.active { 
-            display: flex !important; 
+
+        .modal-overlay.active {
+            display: flex !important;
         }
-        .modal-overlay.hidden { 
-            display: none !important; 
+
+        .modal-overlay.hidden {
+            display: none !important;
         }
-        .modal, .modal-content { 
-            background: white; 
-            border-radius: 1rem; 
-            width: 90%; 
+
+        .modal,
+        .modal-content {
+            background: white;
+            border-radius: 1rem;
+            width: 90%;
             max-width: 42rem;
-            max-height: 90vh; 
+            max-height: 90vh;
             position: relative;
             display: flex;
             flex-direction: column;
             margin: auto;
         }
-        .modal-lg { max-width: 48rem; }
-        .modal-body { 
-            padding: 1.5rem; 
+
+        .modal-lg {
+            max-width: 48rem;
+        }
+
+        .modal-body {
+            padding: 1.5rem;
             flex: 1;
             overflow-y: auto;
             min-height: 0;
         }
+
         .modal-header {
             padding: 1.5rem;
             border-bottom: 1px solid var(--gray-200);
@@ -385,11 +640,13 @@
             align-items: center;
             flex-shrink: 0;
         }
+
         .modal-title {
             font-size: 1.25rem;
             font-weight: 600;
             margin: 0;
         }
+
         .modal-close {
             background: none;
             border: none;
@@ -404,10 +661,12 @@
             justify-content: center;
             border-radius: 4px;
         }
+
         .modal-close:hover {
             background: var(--gray-100);
             color: var(--gray-800);
         }
+
         .modal-footer {
             padding: 1.5rem;
             border-top: 1px solid var(--gray-200);
@@ -416,93 +675,316 @@
             gap: 1rem;
             flex-shrink: 0;
         }
-        .modal-footer { padding: 1.5rem; border-top: 1px solid var(--gray-200); display: flex; justify-content: flex-end; gap: 1rem; }
+
+        .modal-footer {
+            padding: 1.5rem;
+            border-top: 1px solid var(--gray-200);
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+        }
+
         /* Tabs */
-        .tabs { display: flex; gap: 0.5rem; border-bottom: 2px solid var(--gray-200); margin-bottom: 1.5rem; }
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            border-bottom: 2px solid var(--gray-200);
+            margin-bottom: 1.5rem;
+        }
+
         .tab-btn {
-            padding: 0.75rem 1.5rem; background: none; border: none; font-size: 0.95rem;
-            font-weight: 500; color: var(--gray-500); cursor: pointer; position: relative; transition: all 0.2s;
+            padding: 0.75rem 1.5rem;
+            background: none;
+            border: none;
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: var(--gray-500);
+            cursor: pointer;
+            position: relative;
+            transition: all 0.2s;
         }
-        .tab-btn:hover { color: var(--gray-800); }
-        .tab-btn.active { color: var(--primary); }
+
+        .tab-btn:hover {
+            color: var(--gray-800);
+        }
+
+        .tab-btn.active {
+            color: var(--primary);
+        }
+
         .tab-btn.active::after {
-            content: ''; position: absolute; bottom: -2px; left: 0; right: 0;
-            height: 2px; background: var(--primary);
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: var(--primary);
         }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
         /* Image Preview */
-        .image-preview { margin-top: 0.75rem; border-radius: 8px; overflow: hidden; background: var(--gray-100); }
-        .image-preview img { width: 100%; height: 150px; object-fit: contain; background: var(--gray-50); }
+        .image-preview {
+            margin-top: 0.75rem;
+            border-radius: 8px;
+            overflow: hidden;
+            background: var(--gray-100);
+        }
+
+        .image-preview img {
+            width: 100%;
+            height: 150px;
+            object-fit: contain;
+            background: var(--gray-50);
+        }
+
         /* Stats Cards */
         .stat-card {
-            background: white; border-radius: 12px; padding: 1.5rem;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         }
+
         .stat-card-icon {
-            width: 48px; height: 48px; border-radius: 10px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 1.5rem; margin-bottom: 1rem;
+            width: 48px;
+            height: 48px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
         }
-        .stat-card-icon.green { background: #dcfce7; }
-        .stat-card-icon.blue { background: #dbeafe; }
-        .stat-card-icon.yellow { background: #fef3c7; }
-        .stat-card-icon.purple { background: #f3e8ff; }
-        .stat-card-value { font-size: 2rem; font-weight: 700; color: var(--gray-900); }
-        .stat-card-label { font-size: 0.9rem; color: var(--gray-500); margin-top: 0.25rem; }
+
+        .stat-card-icon.green {
+            background: #dcfce7;
+        }
+
+        .stat-card-icon.blue {
+            background: #dbeafe;
+        }
+
+        .stat-card-icon.yellow {
+            background: #fef3c7;
+        }
+
+        .stat-card-icon.purple {
+            background: #f3e8ff;
+        }
+
+        .stat-card-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--gray-900);
+        }
+
+        .stat-card-label {
+            font-size: 0.9rem;
+            color: var(--gray-500);
+            margin-top: 0.25rem;
+        }
+
         /* Notification */
         .notification {
-            position: fixed; bottom: 2rem; right: 2rem; background: var(--gray-900); color: white;
-            padding: 1rem 1.5rem; border-radius: 8px; display: flex; align-items: center; gap: 0.75rem;
-            transform: translateY(100px); opacity: 0; transition: all 0.3s; z-index: 1001;
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: var(--gray-900);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s;
+            z-index: 1001;
         }
-        .notification.show { transform: translateY(0); opacity: 1; }
-        .notification.success { background: var(--success); }
-        .notification.error { background: var(--danger); }
+
+        .notification.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .notification.success {
+            background: var(--success);
+        }
+
+        .notification.error {
+            background: var(--danger);
+        }
+
         /* Logo Preview */
-        .logo-preview-box { display: flex; gap: 1rem; margin-top: 1rem; }
-        .logo-preview-light, .logo-preview-dark {
-            flex: 1; padding: 1.5rem; border-radius: 8px; display: flex;
-            flex-direction: column; align-items: center; gap: 0.75rem;
+        .logo-preview-box {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
         }
-        .logo-preview-light { background: var(--gray-50); border: 2px solid var(--gray-200); }
-        .logo-preview-dark { background: var(--gray-900); }
-        .preview-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--gray-500); }
-        .logo-preview-dark .preview-label { color: var(--gray-400); }
-        .text-logo { display: flex; flex-direction: column; gap: 2px; text-align: center; }
-        .logo-text-preview { font-size: 1.25rem; font-weight: 800; color: var(--primary); }
-        .logo-text-preview.light { color: white; }
-        .logo-subtitle-preview { font-size: 0.65rem; font-weight: 500; color: var(--gray-600); letter-spacing: 0.1em; text-transform: uppercase; }
-        .logo-subtitle-preview.light { color: rgba(255,255,255,0.7); }
+
+        .logo-preview-light,
+        .logo-preview-dark {
+            flex: 1;
+            padding: 1.5rem;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .logo-preview-light {
+            background: var(--gray-50);
+            border: 2px solid var(--gray-200);
+        }
+
+        .logo-preview-dark {
+            background: var(--gray-900);
+        }
+
+        .preview-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--gray-500);
+        }
+
+        .logo-preview-dark .preview-label {
+            color: var(--gray-400);
+        }
+
+        .text-logo {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            text-align: center;
+        }
+
+        .logo-text-preview {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        .logo-text-preview.light {
+            color: white;
+        }
+
+        .logo-subtitle-preview {
+            font-size: 0.65rem;
+            font-weight: 500;
+            color: var(--gray-600);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        .logo-subtitle-preview.light {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
         /* Radio Group */
-        .radio-group { display: flex; gap: 1.5rem; }
-        .radio-item { display: flex; align-items: center; gap: 0.5rem; cursor: pointer; }
-        .radio-item input[type="radio"] { width: 18px; height: 18px; accent-color: var(--primary); }
+        .radio-group {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .radio-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: pointer;
+        }
+
+        .radio-item input[type="radio"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--primary);
+        }
+
         /* Empty State */
-        .empty-state { text-align: center; padding: 3rem; color: var(--gray-500); }
-        .empty-state svg { width: 64px; height: 64px; margin-bottom: 1rem; opacity: 0.5; }
-        .empty-state h3 { color: var(--gray-700); margin-bottom: 0.5rem; }
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: var(--gray-500);
+        }
+
+        .empty-state svg {
+            width: 64px;
+            height: 64px;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .empty-state h3 {
+            color: var(--gray-700);
+            margin-bottom: 0.5rem;
+        }
+
         /* Theme Cards */
-        .theme-card:hover { border-color: var(--primary) !important; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-        .theme-card.selected { border-color: var(--primary) !important; box-shadow: 0 0 0 3px rgba(26, 122, 71, 0.2); }
-        .theme-card.selected .theme-check { display: flex !important; }
+        .theme-card:hover {
+            border-color: var(--primary) !important;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .theme-card.selected {
+            border-color: var(--primary) !important;
+            box-shadow: 0 0 0 3px rgba(26, 122, 71, 0.2);
+        }
+
+        .theme-card.selected .theme-check {
+            display: flex !important;
+        }
+
         /* Responsive */
         @media (max-width: 1024px) {
-            .grid-4 { grid-template-columns: repeat(2, 1fr); }
-            .grid-3 { grid-template-columns: repeat(2, 1fr); }
+            .grid-4 {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .grid-3 {
+                grid-template-columns: repeat(2, 1fr);
+            }
         }
+
         @media (max-width: 1024px) {
-            main { margin-left: 0; }
-            .sidebar { transform: translateX(-100%); }
-            .sidebar.open { transform: translateX(0); }
+            main {
+                margin-left: 0;
+            }
+
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
         }
+
         @media (max-width: 768px) {
-            main { padding: 1rem; }
-            .grid-cols-1.md\\:grid-cols-2.lg\\:grid-cols-4 { grid-template-columns: 1fr; }
-            .grid-cols-1.lg\\:grid-cols-2 { grid-template-columns: 1fr; }
+            main {
+                padding: 1rem;
+            }
+
+            .grid-cols-1.md\\:grid-cols-2.lg\\:grid-cols-4 {
+                grid-template-columns: 1fr;
+            }
+
+            .grid-cols-1.lg\\:grid-cols-2 {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
+
 <body class="bg-gray-50 font-sans antialiased">
     <!-- Password Protection Overlay -->
     <div id="auth-overlay" class="fixed inset-0 bg-gray-900 z-[9999] flex items-center justify-center">
@@ -510,7 +992,9 @@
             <div class="text-center mb-6">
                 <div class="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
                     <svg class="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z">
+                        </path>
                     </svg>
                 </div>
                 <h1 class="text-2xl font-bold text-gray-900">CMS Admin Access</h1>
@@ -519,21 +1003,13 @@
             <form id="auth-form" class="space-y-4">
                 <div>
                     <label for="admin-password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
-                    <input 
-                        type="password" 
-                        id="admin-password" 
-                        name="password"
+                    <input type="password" id="admin-password" name="password"
                         class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition"
-                        placeholder="Enter admin password"
-                        autocomplete="current-password"
-                        required
-                    >
+                        placeholder="Enter admin password" autocomplete="current-password" required>
                 </div>
                 <div id="auth-error" class="hidden text-red-600 text-sm bg-red-50 p-3 rounded-lg"></div>
-                <button 
-                    type="submit" 
-                    class="w-full bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-4 rounded-lg transition duration-200"
-                >
+                <button type="submit"
+                    class="w-full bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-4 rounded-lg transition duration-200">
                     Access CMS
                 </button>
             </form>
@@ -542,148 +1018,246 @@
     </div>
 
     <script>
-    (function() {
-        // ============================================
-        // CHANGE THIS PASSWORD TO YOUR DESIRED PASSWORD
-        // ============================================
-        const ADMIN_PASSWORD = 'qwerty7890@';
-        // ============================================
-        
-        const SESSION_KEY = 'kj_cms_auth';
-        const SESSION_DURATION = 8 * 60 * 60 * 1000; // 8 hours in milliseconds
-        
-        function isAuthenticated() {
-            const session = localStorage.getItem(SESSION_KEY);
-            if (!session) return false;
-            
-            try {
-                const { timestamp } = JSON.parse(session);
-                const now = Date.now();
-                if (now - timestamp > SESSION_DURATION) {
-                    localStorage.removeItem(SESSION_KEY);
-                    return false;
+            (function () {
+                // ============================================
+                // CHANGE THIS PASSWORD TO YOUR DESIRED PASSWORD
+                // ============================================
+                const ADMIN_PASSWORD = 'qwerty7890@';
+                // ============================================
+
+                const SESSION_KEY = 'kj_cms_auth';
+                const SESSION_DURATION = 8 * 60 * 60 * 1000; // 8 hours in milliseconds
+
+                function isAuthenticated() {
+                    const session = localStorage.getItem(SESSION_KEY);
+                    if (!session) return false;
+
+                    try {
+                        const { timestamp } = JSON.parse(session);
+                        const now = Date.now();
+                        if (now - timestamp > SESSION_DURATION) {
+                            localStorage.removeItem(SESSION_KEY);
+                            return false;
+                        }
+                        return true;
+                    } catch {
+                        localStorage.removeItem(SESSION_KEY);
+                        return false;
+                    }
                 }
-                return true;
-            } catch {
-                localStorage.removeItem(SESSION_KEY);
-                return false;
-            }
-        }
-        
-        function setAuthenticated() {
-            localStorage.setItem(SESSION_KEY, JSON.stringify({ timestamp: Date.now() }));
-        }
-        
-        function showCMS() {
-            document.getElementById('auth-overlay').style.display = 'none';
-        }
-        
-        // Check if already authenticated
-        if (isAuthenticated()) {
-            showCMS();
-        }
-        
-        // Handle form submission
-        document.getElementById('auth-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const password = document.getElementById('admin-password').value;
-            const errorEl = document.getElementById('auth-error');
-            
-            if (password === ADMIN_PASSWORD) {
-                setAuthenticated();
-                showCMS();
-            } else {
-                errorEl.textContent = 'Incorrect password. Please try again.';
-                errorEl.classList.remove('hidden');
-                document.getElementById('admin-password').value = '';
-                document.getElementById('admin-password').focus();
-            }
-        });
-        
-        // Expose logout function globally
-        window.cmsLogout = function() {
-            localStorage.removeItem(SESSION_KEY);
-            location.reload();
-        };
-    })();
+
+                function setAuthenticated() {
+                    localStorage.setItem(SESSION_KEY, JSON.stringify({ timestamp: Date.now() }));
+                }
+
+                function showCMS() {
+                    document.getElementById('auth-overlay').style.display = 'none';
+                }
+
+                // Check if already authenticated
+                if (isAuthenticated()) {
+                    showCMS();
+                }
+
+                // Handle form submission
+                document.getElementById('auth-form').addEventListener('submit', function (e) {
+                    e.preventDefault();
+                    const password = document.getElementById('admin-password').value;
+                    const errorEl = document.getElementById('auth-error');
+
+                    if (password === ADMIN_PASSWORD) {
+                        setAuthenticated();
+                        showCMS();
+                    } else {
+                        errorEl.textContent = 'Incorrect password. Please try again.';
+                        errorEl.classList.remove('hidden');
+                        document.getElementById('admin-password').value = '';
+                        document.getElementById('admin-password').focus();
+                    }
+                });
+
+                // Expose logout function globally
+                window.cmsLogout = function () {
+                    localStorage.removeItem(SESSION_KEY);
+                    location.reload();
+                };
+            })();
     </script>
 
     <div class="flex min-h-screen">
         <!-- Sidebar -->
-        <aside class="fixed top-0 left-0 bottom-0 z-50 w-64 bg-gray-900 text-white overflow-y-auto transition-transform duration-300 scrollbar-hide" id="sidebar">
+        <aside
+            class="fixed top-0 left-0 bottom-0 z-50 w-64 bg-gray-900 text-white overflow-y-auto transition-transform duration-300 scrollbar-hide"
+            id="sidebar">
             <div class="p-6 border-b border-white/10">
                 <div class="text-xl font-bold">KJ & Associates <span class="text-primary-light">CMS</span></div>
             </div>
             <nav class="py-4">
                 <div class="px-6 py-2 text-xs uppercase tracking-wider text-gray-500 mt-4">Dashboard</div>
-                <button class="nav-item active flex items-center gap-3 px-6 py-3 w-full text-left text-sm text-gray-400 transition-all hover:text-white hover:bg-white/10 border-l-3 border-transparent" onclick="showSection('dashboard')">
-                    <svg class="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                <button
+                    class="nav-item active flex items-center gap-3 px-6 py-3 w-full text-left text-sm text-gray-400 transition-all hover:text-white hover:bg-white/10 border-l-3 border-transparent"
+                    onclick="showSection('dashboard')">
+                    <svg class="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2">
+                        <rect x="3" y="3" width="7" height="7" />
+                        <rect x="14" y="3" width="7" height="7" />
+                        <rect x="14" y="14" width="7" height="7" />
+                        <rect x="3" y="14" width="7" height="7" />
+                    </svg>
                     Overview
                 </button>
-                
+
                 <div class="px-6 py-2 text-xs uppercase tracking-wider text-gray-500 mt-4">Content</div>
-                <button class="flex items-center gap-3 px-6 py-3 w-full text-left text-sm text-gray-400 transition-all hover:text-white hover:bg-white/10 border-l-3 border-transparent" onclick="showSection('slides')">
-                    <svg class="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg>
+                <button
+                    class="flex items-center gap-3 px-6 py-3 w-full text-left text-sm text-gray-400 transition-all hover:text-white hover:bg-white/10 border-l-3 border-transparent"
+                    onclick="showSection('slides')">
+                    <svg class="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2">
+                        <rect x="2" y="3" width="20" height="14" rx="2" />
+                        <path d="M8 21h8M12 17v4" />
+                    </svg>
                     Hero Slides
                 </button>
-                <button class="flex items-center gap-3 px-6 py-3 w-full text-left text-sm text-gray-400 transition-all hover:text-white hover:bg-white/10 border-l-3 border-transparent" onclick="showSection('projects')">
-                    <svg class="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>
+                <button
+                    class="flex items-center gap-3 px-6 py-3 w-full text-left text-sm text-gray-400 transition-all hover:text-white hover:bg-white/10 border-l-3 border-transparent"
+                    onclick="showSection('projects')">
+                    <svg class="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2">
+                        <path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z" />
+                    </svg>
                     Projects
                 </button>
-                <button class="flex items-center gap-3 px-6 py-3 w-full text-left text-sm text-gray-400 transition-all hover:text-white hover:bg-white/10 border-l-3 border-transparent" onclick="showSection('team')">
-                    <svg class="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+                <button
+                    class="flex items-center gap-3 px-6 py-3 w-full text-left text-sm text-gray-400 transition-all hover:text-white hover:bg-white/10 border-l-3 border-transparent"
+                    onclick="showSection('team')">
+                    <svg class="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2">
+                        <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
+                        <circle cx="9" cy="7" r="4" />
+                        <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" />
+                    </svg>
                     Team Members
                 </button>
-                <button class="flex items-center gap-3 px-6 py-3 w-full text-left text-sm text-gray-400 transition-all hover:text-white hover:bg-white/10 border-l-3 border-transparent" onclick="showSection('board')">
-                    <svg class="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                <button
+                    class="flex items-center gap-3 px-6 py-3 w-full text-left text-sm text-gray-400 transition-all hover:text-white hover:bg-white/10 border-l-3 border-transparent"
+                    onclick="showSection('board')">
+                    <svg class="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2">
+                        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+                    </svg>
                     Board of Directors
                 </button>
-                <button class="flex items-center gap-3 px-6 py-3 w-full text-left text-sm text-gray-400 transition-all hover:text-white hover:bg-white/10 border-l-3 border-transparent" onclick="showSection('clients')">
-                    <svg class="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                <button
+                    class="flex items-center gap-3 px-6 py-3 w-full text-left text-sm text-gray-400 transition-all hover:text-white hover:bg-white/10 border-l-3 border-transparent"
+                    onclick="showSection('clients')">
+                    <svg class="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2">
+                        <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" />
+                    </svg>
                     Clients
                 </button>
-                <button class="flex items-center gap-3 px-6 py-3 w-full text-left text-sm text-gray-400 transition-all hover:text-white hover:bg-white/10 border-l-3 border-transparent" onclick="showSection('testimonials')">
-                    <svg class="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+                <button
+                    class="flex items-center gap-3 px-6 py-3 w-full text-left text-sm text-gray-400 transition-all hover:text-white hover:bg-white/10 border-l-3 border-transparent"
+                    onclick="showSection('testimonials')">
+                    <svg class="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2">
+                        <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />
+                    </svg>
                     Testimonials
                 </button>
-                <button class="flex items-center gap-3 px-6 py-3 w-full text-left text-sm text-gray-400 transition-all hover:text-white hover:bg-white/10 border-l-3 border-transparent" onclick="showSection('services')">
-                    <svg class="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+                <button
+                    class="flex items-center gap-3 px-6 py-3 w-full text-left text-sm text-gray-400 transition-all hover:text-white hover:bg-white/10 border-l-3 border-transparent"
+                    onclick="showSection('services')">
+                    <svg class="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2">
+                        <circle cx="12" cy="12" r="3" />
+                        <path
+                            d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z" />
+                    </svg>
                     Services
                 </button>
-                <button class="flex items-center gap-3 px-6 py-3 w-full text-left text-sm text-gray-400 transition-all hover:text-white hover:bg-white/10 border-l-3 border-transparent" onclick="showSection('blog')">
-                    <svg class="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+                <button
+                    class="flex items-center gap-3 px-6 py-3 w-full text-left text-sm text-gray-400 transition-all hover:text-white hover:bg-white/10 border-l-3 border-transparent"
+                    onclick="showSection('blog')">
+                    <svg class="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2">
+                        <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
+                        <polyline points="14 2 14 8 20 8" />
+                        <line x1="16" y1="13" x2="8" y2="13" />
+                        <line x1="16" y1="17" x2="8" y2="17" />
+                        <polyline points="10 9 9 9 8 9" />
+                    </svg>
                     Blog Posts
                 </button>
-                <button class="flex items-center gap-3 px-6 py-3 w-full text-left text-sm text-gray-400 transition-all hover:text-white hover:bg-white/10 border-l-3 border-transparent" onclick="showSection('certifications')">
-                    <svg class="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 15l-2 5l9-11h-5l2-5L7 15h5z"/><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
+                <button
+                    class="flex items-center gap-3 px-6 py-3 w-full text-left text-sm text-gray-400 transition-all hover:text-white hover:bg-white/10 border-l-3 border-transparent"
+                    onclick="showSection('certifications')">
+                    <svg class="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2">
+                        <path d="M12 15l-2 5l9-11h-5l2-5L7 15h5z" />
+                        <rect x="3" y="3" width="18" height="18" rx="2" />
+                    </svg>
                     Certifications
                 </button>
-                
+
                 <div class="px-6 py-2 text-xs uppercase tracking-wider text-gray-500 mt-4">Settings</div>
-                <button class="flex items-center gap-3 px-6 py-3 w-full text-left text-sm text-gray-400 transition-all hover:text-white hover:bg-white/10 border-l-3 border-transparent" onclick="showSection('theme')">
-                    <svg class="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+                <button
+                    class="flex items-center gap-3 px-6 py-3 w-full text-left text-sm text-gray-400 transition-all hover:text-white hover:bg-white/10 border-l-3 border-transparent"
+                    onclick="showSection('theme')">
+                    <svg class="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2">
+                        <circle cx="12" cy="12" r="5" />
+                        <path
+                            d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
+                    </svg>
                     Theme & Appearance
                 </button>
-                <button class="flex items-center gap-3 px-6 py-3 w-full text-left text-sm text-gray-400 transition-all hover:text-white hover:bg-white/10 border-l-3 border-transparent" onclick="showSection('branding')">
-                    <svg class="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg>
+                <button
+                    class="flex items-center gap-3 px-6 py-3 w-full text-left text-sm text-gray-400 transition-all hover:text-white hover:bg-white/10 border-l-3 border-transparent"
+                    onclick="showSection('branding')">
+                    <svg class="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2">
+                        <path d="M12 19l7-7 3 3-7 7-3-3z" />
+                        <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z" />
+                        <path d="M2 2l7.586 7.586" />
+                        <circle cx="11" cy="11" r="2" />
+                    </svg>
                     Branding & Logo
                 </button>
-                <button class="flex items-center gap-3 px-6 py-3 w-full text-left text-sm text-gray-400 transition-all hover:text-white hover:bg-white/10 border-l-3 border-transparent" onclick="showSection('contact')">
-                    <svg class="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg>
+                <button
+                    class="flex items-center gap-3 px-6 py-3 w-full text-left text-sm text-gray-400 transition-all hover:text-white hover:bg-white/10 border-l-3 border-transparent"
+                    onclick="showSection('contact')">
+                    <svg class="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2">
+                        <path
+                            d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07 19.5 19.5 0 01-6-6 19.79 19.79 0 01-3.07-8.67A2 2 0 014.11 2h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L8.09 9.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z" />
+                    </svg>
                     Contact Info
                 </button>
-                <button class="flex items-center gap-3 px-6 py-3 w-full text-left text-sm text-gray-400 transition-all hover:text-white hover:bg-white/10 border-l-3 border-transparent" onclick="showSection('seo')">
-                    <svg class="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+                <button
+                    class="flex items-center gap-3 px-6 py-3 w-full text-left text-sm text-gray-400 transition-all hover:text-white hover:bg-white/10 border-l-3 border-transparent"
+                    onclick="showSection('seo')">
+                    <svg class="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2">
+                        <circle cx="11" cy="11" r="8" />
+                        <path d="M21 21l-4.35-4.35" />
+                    </svg>
                     SEO Settings
                 </button>
             </nav>
             <div class="p-4 border-t border-white/10 mt-auto">
-                <a href="../index.html" target="_blank" class="flex items-center justify-center gap-2 w-full px-3 py-3 bg-primary text-white rounded-lg font-semibold transition-all hover:bg-primary-dark no-underline mb-2">
-                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/></svg>
+                <a href="../index.html" target="_blank"
+                    class="flex items-center justify-center gap-2 w-full px-3 py-3 bg-primary text-white rounded-lg font-semibold transition-all hover:bg-primary-dark no-underline mb-2">
+                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3" />
+                    </svg>
                     View Website
                 </a>
-                <button onclick="logout()" class="flex items-center justify-center gap-2 w-full px-3 py-2 bg-transparent border border-gray-600 text-gray-400 rounded-lg text-sm transition-all hover:bg-red-500/10 hover:border-red-500 hover:text-red-400">
-                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+                <button onclick="logout()"
+                    class="flex items-center justify-center gap-2 w-full px-3 py-2 bg-transparent border border-gray-600 text-gray-400 rounded-lg text-sm transition-all hover:bg-red-500/10 hover:border-red-500 hover:text-red-400">
+                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9" />
+                    </svg>
                     Sign Out
                 </button>
             </div>
@@ -692,7 +1266,8 @@
         <!-- Main Content -->
         <main class="flex-1 ml-64 p-8 min-h-screen">
             <!-- Mobile Header -->
-            <div class="lg:hidden flex items-center justify-between p-4 bg-white border-b border-gray-200 sticky top-0 z-50">
+            <div
+                class="lg:hidden flex items-center justify-between p-4 bg-white border-b border-gray-200 sticky top-0 z-50">
                 <button class="bg-transparent border-none text-2xl cursor-pointer" onclick="toggleSidebar()">☰</button>
                 <span class="font-semibold">KJ & Associates CMS</span>
                 <a href="../index.html" target="_blank" class="text-primary">View Site</a>
@@ -707,16 +1282,20 @@
                     </div>
                     <div style="display: flex; gap: 0.5rem;">
                         <button class="btn btn-primary" onclick="exportAllData()">
-                            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+                            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" />
+                            </svg>
                             Export All Data
                         </button>
                         <button class="btn btn-secondary" onclick="exportUploadedImages()">
-                            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
+                            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12" />
+                            </svg>
                             Export Images
                         </button>
                     </div>
                 </div>
-                
+
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                     <div class="card p-6">
                         <div class="text-3xl mb-3">📊</div>
@@ -747,10 +1326,14 @@
                         </div>
                         <div class="card-content">
                             <div style="display: flex; flex-direction: column; gap: 0.75rem;">
-                                <button class="btn btn-secondary" onclick="showSection('slides'); openSlideModal();">+ Add New Slide</button>
-                                <button class="btn btn-secondary" onclick="showSection('projects'); openProjectModal();">+ Add New Project</button>
-                                <button class="btn btn-secondary" onclick="showSection('team'); openTeamModal();">+ Add Team Member</button>
-                                <button class="btn btn-secondary" onclick="showSection('blog'); openBlogModal();">+ Add Blog Post</button>
+                                <button class="btn btn-secondary" onclick="showSection('slides'); openSlideModal();">+
+                                    Add New Slide</button>
+                                <button class="btn btn-secondary"
+                                    onclick="showSection('projects'); openProjectModal();">+ Add New Project</button>
+                                <button class="btn btn-secondary" onclick="showSection('team'); openTeamModal();">+ Add
+                                    Team Member</button>
+                                <button class="btn btn-secondary" onclick="showSection('blog'); openBlogModal();">+ Add
+                                    Blog Post</button>
                             </div>
                         </div>
                     </div>
@@ -895,7 +1478,8 @@
                             <label class="form-label">Logo Type</label>
                             <div class="radio-group">
                                 <label class="radio-item">
-                                    <input type="radio" name="logoType" value="text" checked onchange="toggleLogoType()">
+                                    <input type="radio" name="logoType" value="text" checked
+                                        onchange="toggleLogoType()">
                                     <span>Text Logo</span>
                                 </label>
                                 <label class="radio-item">
@@ -908,11 +1492,13 @@
                             <div class="form-row">
                                 <div class="form-group">
                                     <label class="form-label">Company Name</label>
-                                    <input type="text" class="form-input" id="logoText" value="KJ & Associates" oninput="updateLogoPreview()">
+                                    <input type="text" class="form-input" id="logoText" value="KJ & Associates"
+                                        oninput="updateLogoPreview()">
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label">Subtitle</label>
-                                    <input type="text" class="form-input" id="logoSubtitle" value="Consultancy Ltd" oninput="updateLogoPreview()">
+                                    <input type="text" class="form-input" id="logoSubtitle" value="Consultancy Ltd"
+                                        oninput="updateLogoPreview()">
                                 </div>
                             </div>
                         </div>
@@ -920,11 +1506,13 @@
                             <div class="form-row">
                                 <div class="form-group">
                                     <label class="form-label">Logo URL (Light BG)</label>
-                                    <input type="url" class="form-input" id="logoImageUrl" placeholder="https://..." oninput="updateLogoPreview()">
+                                    <input type="url" class="form-input" id="logoImageUrl" placeholder="https://..."
+                                        oninput="updateLogoPreview()">
                                 </div>
                                 <div class="form-group">
                                     <label class="form-label">Logo URL (Dark BG)</label>
-                                    <input type="url" class="form-input" id="logoImageUrlDark" placeholder="https://..." oninput="updateLogoPreview()">
+                                    <input type="url" class="form-input" id="logoImageUrlDark" placeholder="https://..."
+                                        oninput="updateLogoPreview()">
                                 </div>
                             </div>
                         </div>
@@ -949,7 +1537,8 @@
                                 </div>
                             </div>
                         </div>
-                        <button class="btn btn-primary" style="margin-top: 1.5rem;" onclick="saveBranding()">Save Branding</button>
+                        <button class="btn btn-primary" style="margin-top: 1.5rem;" onclick="saveBranding()">Save
+                            Branding</button>
                     </div>
                 </div>
             </section>
@@ -978,16 +1567,19 @@
                         <div class="form-row">
                             <div class="form-group">
                                 <label class="form-label">Email Address</label>
-                                <input type="email" class="form-input" id="contactEmail" placeholder="info@kjassociates.co.tz">
+                                <input type="email" class="form-input" id="contactEmail"
+                                    placeholder="info@kjassociates.co.tz">
                             </div>
                             <div class="form-group">
                                 <label class="form-label">Secondary Email</label>
-                                <input type="email" class="form-input" id="contactEmail2" placeholder="sales@kjassociates.co.tz">
+                                <input type="email" class="form-input" id="contactEmail2"
+                                    placeholder="sales@kjassociates.co.tz">
                             </div>
                         </div>
                         <div class="form-group">
                             <label class="form-label">Office Address</label>
-                            <textarea class="form-textarea" id="contactAddress" placeholder="Full office address..."></textarea>
+                            <textarea class="form-textarea" id="contactAddress"
+                                placeholder="Full office address..."></textarea>
                         </div>
                         <div class="form-row">
                             <div class="form-group">
@@ -1001,35 +1593,42 @@
                         </div>
                         <div class="form-group">
                             <label class="form-label">Office Hours</label>
-                            <textarea class="form-textarea" id="contactHours" placeholder="Monday - Friday: 8:00 AM - 5:00 PM&#10;Saturday: 9:00 AM - 1:00 PM&#10;Sunday: Closed"></textarea>
+                            <textarea class="form-textarea" id="contactHours"
+                                placeholder="Monday - Friday: 8:00 AM - 5:00 PM&#10;Saturday: 9:00 AM - 1:00 PM&#10;Sunday: Closed"></textarea>
                         </div>
                         <div class="form-group">
                             <label class="form-label">Google Maps Embed URL</label>
-                            <input type="url" class="form-input" id="contactMap" placeholder="https://www.google.com/maps/embed?...">
+                            <input type="url" class="form-input" id="contactMap"
+                                placeholder="https://www.google.com/maps/embed?...">
                             <p class="form-hint">Get embed URL from Google Maps</p>
                         </div>
                         <h4 style="margin: 1.5rem 0 1rem; font-size: 1rem;">Social Media Links</h4>
                         <div class="form-row">
                             <div class="form-group">
                                 <label class="form-label">LinkedIn</label>
-                                <input type="url" class="form-input" id="socialLinkedin" placeholder="https://linkedin.com/company/...">
+                                <input type="url" class="form-input" id="socialLinkedin"
+                                    placeholder="https://linkedin.com/company/...">
                             </div>
                             <div class="form-group">
                                 <label class="form-label">Facebook</label>
-                                <input type="url" class="form-input" id="socialFacebook" placeholder="https://facebook.com/...">
+                                <input type="url" class="form-input" id="socialFacebook"
+                                    placeholder="https://facebook.com/...">
                             </div>
                         </div>
                         <div class="form-row">
                             <div class="form-group">
                                 <label class="form-label">Twitter / X</label>
-                                <input type="url" class="form-input" id="socialTwitter" placeholder="https://twitter.com/...">
+                                <input type="url" class="form-input" id="socialTwitter"
+                                    placeholder="https://twitter.com/...">
                             </div>
                             <div class="form-group">
                                 <label class="form-label">Instagram</label>
-                                <input type="url" class="form-input" id="socialInstagram" placeholder="https://instagram.com/...">
+                                <input type="url" class="form-input" id="socialInstagram"
+                                    placeholder="https://instagram.com/...">
                             </div>
                         </div>
-                        <button class="btn btn-primary" style="margin-top: 1rem;" onclick="saveContact()">Save Contact Info</button>
+                        <button class="btn btn-primary" style="margin-top: 1rem;" onclick="saveContact()">Save Contact
+                            Info</button>
                     </div>
                 </div>
             </section>
@@ -1046,16 +1645,19 @@
                     <div class="card-body">
                         <div class="form-group">
                             <label class="form-label">Site Title</label>
-                            <input type="text" class="form-input" id="seoTitle" placeholder="KJ & Associates Consultancy Ltd">
+                            <input type="text" class="form-input" id="seoTitle"
+                                placeholder="KJ & Associates Consultancy Ltd">
                         </div>
                         <div class="form-group">
                             <label class="form-label">Site Description</label>
-                            <textarea class="form-textarea" id="seoDescription" placeholder="Professional quantity surveying and construction project management services..."></textarea>
+                            <textarea class="form-textarea" id="seoDescription"
+                                placeholder="Professional quantity surveying and construction project management services..."></textarea>
                             <p class="form-hint">Recommended: 150-160 characters</p>
                         </div>
                         <div class="form-group">
                             <label class="form-label">Keywords</label>
-                            <input type="text" class="form-input" id="seoKeywords" placeholder="quantity surveyor, construction, Tanzania, cost control...">
+                            <input type="text" class="form-input" id="seoKeywords"
+                                placeholder="quantity surveyor, construction, Tanzania, cost control...">
                             <p class="form-hint">Comma-separated keywords</p>
                         </div>
                         <div class="form-group">
@@ -1063,7 +1665,8 @@
                             <input type="url" class="form-input" id="seoOgImage" placeholder="https://...">
                             <p class="form-hint">Image shown when sharing on social media (1200x630px)</p>
                         </div>
-                        <button class="btn btn-primary" style="margin-top: 1rem;" onclick="saveSEO()">Save SEO Settings</button>
+                        <button class="btn btn-primary" style="margin-top: 1rem;" onclick="saveSEO()">Save SEO
+                            Settings</button>
                     </div>
                 </div>
             </section>
@@ -1076,114 +1679,192 @@
                         <p class="text-gray-600">Choose your website's look and feel</p>
                     </div>
                 </div>
-                
+
                 <div class="card">
                     <div class="card-header flex flex-row justify-between items-center">
                         <h3 class="card-title">Select Theme</h3>
                         <span id="currentThemeBadge" class="badge badge-success">Classic Green</span>
                     </div>
                     <div class="card-content">
-                        <p class="text-gray-600 mb-6">Choose a theme for your website. Each theme has unique colors and layout styles. The selected theme will be applied to all pages.</p>
-                        
+                        <p class="text-gray-600 mb-6">Choose a theme for your website. Each theme has unique colors and
+                            layout styles. The selected theme will be applied to all pages.</p>
+
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                            
+
                             <!-- Classic Green Theme -->
-                            <div class="theme-card" data-theme="classic-green" onclick="selectTheme('classic-green')" style="border: 3px solid var(--gray-200); border-radius: 12px; overflow: hidden; cursor: pointer; transition: all 0.3s;">
+                            <div class="theme-card" data-theme="classic-green" onclick="selectTheme('classic-green')"
+                                style="border: 3px solid var(--gray-200); border-radius: 12px; overflow: hidden; cursor: pointer; transition: all 0.3s;">
                                 <div class="theme-preview" style="height: 140px; position: relative; overflow: hidden;">
                                     <!-- Mini preview of the theme -->
-                                    <div style="position: absolute; inset: 0; background: linear-gradient(135deg, #0d4d2c 0%, #1a7a47 100%);"></div>
-                                    <div style="position: absolute; bottom: 0; left: 0; right: 0; height: 50%; background: #ffffff;"></div>
-                                    <div style="position: absolute; top: 10px; left: 10px; right: 10px; height: 24px; background: rgba(255,255,255,0.1); border-radius: 4px;"></div>
-                                    <div style="position: absolute; bottom: 20px; left: 20px; width: 60px; height: 8px; background: #0d4d2c; border-radius: 4px;"></div>
-                                    <div style="position: absolute; bottom: 20px; left: 90px; width: 40px; height: 8px; background: #d4a855; border-radius: 4px;"></div>
-                                    <div style="position: absolute; bottom: 35px; left: 20px; width: 100px; height: 6px; background: #e5e7eb; border-radius: 3px;"></div>
+                                    <div
+                                        style="position: absolute; inset: 0; background: linear-gradient(135deg, #0d4d2c 0%, #1a7a47 100%);">
+                                    </div>
+                                    <div
+                                        style="position: absolute; bottom: 0; left: 0; right: 0; height: 50%; background: #ffffff;">
+                                    </div>
+                                    <div
+                                        style="position: absolute; top: 10px; left: 10px; right: 10px; height: 24px; background: rgba(255,255,255,0.1); border-radius: 4px;">
+                                    </div>
+                                    <div
+                                        style="position: absolute; bottom: 20px; left: 20px; width: 60px; height: 8px; background: #0d4d2c; border-radius: 4px;">
+                                    </div>
+                                    <div
+                                        style="position: absolute; bottom: 20px; left: 90px; width: 40px; height: 8px; background: #d4a855; border-radius: 4px;">
+                                    </div>
+                                    <div
+                                        style="position: absolute; bottom: 35px; left: 20px; width: 100px; height: 6px; background: #e5e7eb; border-radius: 3px;">
+                                    </div>
                                 </div>
                                 <div style="padding: 1rem;">
-                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                                    <div
+                                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
                                         <h4 style="font-size: 1rem; font-weight: 600; margin: 0;">Classic Green</h4>
-                                        <div class="theme-check" style="width: 24px; height: 24px; border-radius: 50%; background: var(--primary); display: none; align-items: center; justify-content: center; color: white; font-size: 14px;">✓</div>
+                                        <div class="theme-check"
+                                            style="width: 24px; height: 24px; border-radius: 50%; background: var(--primary); display: none; align-items: center; justify-content: center; color: white; font-size: 14px;">
+                                            ✓</div>
                                     </div>
-                                    <p style="font-size: 0.85rem; color: var(--gray-500); margin: 0;">Professional forest green with gold accents. Clean and corporate.</p>
+                                    <p style="font-size: 0.85rem; color: var(--gray-500); margin: 0;">Professional
+                                        forest green with gold accents. Clean and corporate.</p>
                                     <div style="display: flex; gap: 6px; margin-top: 0.75rem;">
-                                        <span style="width: 20px; height: 20px; border-radius: 50%; background: #0d4d2c; border: 2px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.2);"></span>
-                                        <span style="width: 20px; height: 20px; border-radius: 50%; background: #1a7a47; border: 2px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.2);"></span>
-                                        <span style="width: 20px; height: 20px; border-radius: 50%; background: #d4a855; border: 2px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.2);"></span>
-                                        <span style="width: 20px; height: 20px; border-radius: 50%; background: #ffffff; border: 2px solid #e5e7eb; box-shadow: 0 1px 3px rgba(0,0,0,0.2);"></span>
+                                        <span
+                                            style="width: 20px; height: 20px; border-radius: 50%; background: #0d4d2c; border: 2px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.2);"></span>
+                                        <span
+                                            style="width: 20px; height: 20px; border-radius: 50%; background: #1a7a47; border: 2px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.2);"></span>
+                                        <span
+                                            style="width: 20px; height: 20px; border-radius: 50%; background: #d4a855; border: 2px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.2);"></span>
+                                        <span
+                                            style="width: 20px; height: 20px; border-radius: 50%; background: #ffffff; border: 2px solid #e5e7eb; box-shadow: 0 1px 3px rgba(0,0,0,0.2);"></span>
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <!-- Professional Dark Theme -->
-                            <div class="theme-card" data-theme="professional-dark" onclick="selectTheme('professional-dark')" style="border: 3px solid var(--gray-200); border-radius: 12px; overflow: hidden; cursor: pointer; transition: all 0.3s;">
+                            <div class="theme-card" data-theme="professional-dark"
+                                onclick="selectTheme('professional-dark')"
+                                style="border: 3px solid var(--gray-200); border-radius: 12px; overflow: hidden; cursor: pointer; transition: all 0.3s;">
                                 <div class="theme-preview" style="height: 140px; position: relative; overflow: hidden;">
-                                    <div style="position: absolute; inset: 0; background: linear-gradient(135deg, #10b981 0%, #059669 100%);"></div>
-                                    <div style="position: absolute; bottom: 0; left: 0; right: 0; height: 50%; background: #0f0f1a;"></div>
-                                    <div style="position: absolute; top: 10px; left: 10px; right: 10px; height: 24px; background: rgba(0,0,0,0.3); border-radius: 4px;"></div>
-                                    <div style="position: absolute; bottom: 20px; left: 20px; width: 60px; height: 8px; background: #10b981; border-radius: 4px;"></div>
-                                    <div style="position: absolute; bottom: 20px; left: 90px; width: 40px; height: 8px; background: #f59e0b; border-radius: 4px;"></div>
-                                    <div style="position: absolute; bottom: 35px; left: 20px; width: 100px; height: 6px; background: #2a2a40; border-radius: 3px;"></div>
+                                    <div
+                                        style="position: absolute; inset: 0; background: linear-gradient(135deg, #10b981 0%, #059669 100%);">
+                                    </div>
+                                    <div
+                                        style="position: absolute; bottom: 0; left: 0; right: 0; height: 50%; background: #0f0f1a;">
+                                    </div>
+                                    <div
+                                        style="position: absolute; top: 10px; left: 10px; right: 10px; height: 24px; background: rgba(0,0,0,0.3); border-radius: 4px;">
+                                    </div>
+                                    <div
+                                        style="position: absolute; bottom: 20px; left: 20px; width: 60px; height: 8px; background: #10b981; border-radius: 4px;">
+                                    </div>
+                                    <div
+                                        style="position: absolute; bottom: 20px; left: 90px; width: 40px; height: 8px; background: #f59e0b; border-radius: 4px;">
+                                    </div>
+                                    <div
+                                        style="position: absolute; bottom: 35px; left: 20px; width: 100px; height: 6px; background: #2a2a40; border-radius: 3px;">
+                                    </div>
                                 </div>
                                 <div style="padding: 1rem;">
-                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                                    <div
+                                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
                                         <h4 style="font-size: 1rem; font-weight: 600; margin: 0;">Professional Dark</h4>
-                                        <div class="theme-check" style="width: 24px; height: 24px; border-radius: 50%; background: var(--primary); display: none; align-items: center; justify-content: center; color: white; font-size: 14px;">✓</div>
+                                        <div class="theme-check"
+                                            style="width: 24px; height: 24px; border-radius: 50%; background: var(--primary); display: none; align-items: center; justify-content: center; color: white; font-size: 14px;">
+                                            ✓</div>
                                     </div>
-                                    <p style="font-size: 0.85rem; color: var(--gray-500); margin: 0;">Elegant dark mode with emerald and gold highlights. Modern and sleek.</p>
+                                    <p style="font-size: 0.85rem; color: var(--gray-500); margin: 0;">Elegant dark mode
+                                        with emerald and gold highlights. Modern and sleek.</p>
                                     <div style="display: flex; gap: 6px; margin-top: 0.75rem;">
-                                        <span style="width: 20px; height: 20px; border-radius: 50%; background: #0f0f1a; border: 2px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.2);"></span>
-                                        <span style="width: 20px; height: 20px; border-radius: 50%; background: #10b981; border: 2px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.2);"></span>
-                                        <span style="width: 20px; height: 20px; border-radius: 50%; background: #f59e0b; border: 2px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.2);"></span>
-                                        <span style="width: 20px; height: 20px; border-radius: 50%; background: #1a1a2e; border: 2px solid #3a3a52; box-shadow: 0 1px 3px rgba(0,0,0,0.2);"></span>
+                                        <span
+                                            style="width: 20px; height: 20px; border-radius: 50%; background: #0f0f1a; border: 2px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.2);"></span>
+                                        <span
+                                            style="width: 20px; height: 20px; border-radius: 50%; background: #10b981; border: 2px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.2);"></span>
+                                        <span
+                                            style="width: 20px; height: 20px; border-radius: 50%; background: #f59e0b; border: 2px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.2);"></span>
+                                        <span
+                                            style="width: 20px; height: 20px; border-radius: 50%; background: #1a1a2e; border: 2px solid #3a3a52; box-shadow: 0 1px 3px rgba(0,0,0,0.2);"></span>
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <!-- Earth Warm Theme -->
-                            <div class="theme-card" data-theme="earth-warm" onclick="selectTheme('earth-warm')" style="border: 3px solid var(--gray-200); border-radius: 12px; overflow: hidden; cursor: pointer; transition: all 0.3s;">
+                            <div class="theme-card" data-theme="earth-warm" onclick="selectTheme('earth-warm')"
+                                style="border: 3px solid var(--gray-200); border-radius: 12px; overflow: hidden; cursor: pointer; transition: all 0.3s;">
                                 <div class="theme-preview" style="height: 140px; position: relative; overflow: hidden;">
-                                    <div style="position: absolute; inset: 0; background: linear-gradient(135deg, #a0522d 0%, #cd853f 100%);"></div>
-                                    <div style="position: absolute; bottom: 0; left: 0; right: 0; height: 50%; background: #faf6f1;"></div>
-                                    <div style="position: absolute; top: 10px; left: 10px; right: 10px; height: 24px; background: rgba(255,255,255,0.15); border-radius: 4px;"></div>
-                                    <div style="position: absolute; bottom: 20px; left: 20px; width: 60px; height: 8px; background: #a0522d; border-radius: 8px;"></div>
-                                    <div style="position: absolute; bottom: 20px; left: 90px; width: 40px; height: 8px; background: #daa520; border-radius: 8px;"></div>
-                                    <div style="position: absolute; bottom: 35px; left: 20px; width: 100px; height: 6px; background: #ddd2c2; border-radius: 6px;"></div>
+                                    <div
+                                        style="position: absolute; inset: 0; background: linear-gradient(135deg, #a0522d 0%, #cd853f 100%);">
+                                    </div>
+                                    <div
+                                        style="position: absolute; bottom: 0; left: 0; right: 0; height: 50%; background: #faf6f1;">
+                                    </div>
+                                    <div
+                                        style="position: absolute; top: 10px; left: 10px; right: 10px; height: 24px; background: rgba(255,255,255,0.15); border-radius: 4px;">
+                                    </div>
+                                    <div
+                                        style="position: absolute; bottom: 20px; left: 20px; width: 60px; height: 8px; background: #a0522d; border-radius: 8px;">
+                                    </div>
+                                    <div
+                                        style="position: absolute; bottom: 20px; left: 90px; width: 40px; height: 8px; background: #daa520; border-radius: 8px;">
+                                    </div>
+                                    <div
+                                        style="position: absolute; bottom: 35px; left: 20px; width: 100px; height: 6px; background: #ddd2c2; border-radius: 6px;">
+                                    </div>
                                 </div>
                                 <div style="padding: 1rem;">
-                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+                                    <div
+                                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
                                         <h4 style="font-size: 1rem; font-weight: 600; margin: 0;">Earth Warm</h4>
-                                        <div class="theme-check" style="width: 24px; height: 24px; border-radius: 50%; background: var(--primary); display: none; align-items: center; justify-content: center; color: white; font-size: 14px;">✓</div>
+                                        <div class="theme-check"
+                                            style="width: 24px; height: 24px; border-radius: 50%; background: var(--primary); display: none; align-items: center; justify-content: center; color: white; font-size: 14px;">
+                                            ✓</div>
                                     </div>
-                                    <p style="font-size: 0.85rem; color: var(--gray-500); margin: 0;">Terracotta and warm browns. Natural, organic feel with soft edges.</p>
+                                    <p style="font-size: 0.85rem; color: var(--gray-500); margin: 0;">Terracotta and
+                                        warm browns. Natural, organic feel with soft edges.</p>
                                     <div style="display: flex; gap: 6px; margin-top: 0.75rem;">
-                                        <span style="width: 20px; height: 20px; border-radius: 50%; background: #a0522d; border: 2px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.2);"></span>
-                                        <span style="width: 20px; height: 20px; border-radius: 50%; background: #cd853f; border: 2px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.2);"></span>
-                                        <span style="width: 20px; height: 20px; border-radius: 50%; background: #daa520; border: 2px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.2);"></span>
-                                        <span style="width: 20px; height: 20px; border-radius: 50%; background: #faf6f1; border: 2px solid #ddd2c2; box-shadow: 0 1px 3px rgba(0,0,0,0.2);"></span>
+                                        <span
+                                            style="width: 20px; height: 20px; border-radius: 50%; background: #a0522d; border: 2px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.2);"></span>
+                                        <span
+                                            style="width: 20px; height: 20px; border-radius: 50%; background: #cd853f; border: 2px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.2);"></span>
+                                        <span
+                                            style="width: 20px; height: 20px; border-radius: 50%; background: #daa520; border: 2px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.2);"></span>
+                                        <span
+                                            style="width: 20px; height: 20px; border-radius: 50%; background: #faf6f1; border: 2px solid #ddd2c2; box-shadow: 0 1px 3px rgba(0,0,0,0.2);"></span>
                                     </div>
                                 </div>
                             </div>
-                            
+
                         </div>
-                        
+
                         <div style="margin-top: 2rem; padding-top: 1.5rem; border-top: 1px solid var(--gray-200);">
                             <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
                                 <button class="btn btn-primary" onclick="saveTheme()">
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z" />
+                                        <polyline points="17 21 17 13 7 13 7 21" />
+                                        <polyline points="7 3 7 8 15 8" />
+                                    </svg>
                                     Save Theme
                                 </button>
                                 <button class="btn btn-secondary" onclick="previewTheme()">
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/></svg>
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <path
+                                            d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3" />
+                                    </svg>
                                     Preview Selected Theme
                                 </button>
                                 <a href="../index.html" target="_blank" class="btn btn-secondary">
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3"/></svg>
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <path
+                                            d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6M15 3h6v6M10 14L21 3" />
+                                    </svg>
                                     View Saved Theme
                                 </a>
                             </div>
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="card" style="margin-top: 1.5rem;">
                     <div class="card-header">
                         <h3 class="card-title">Theme Features</h3>
@@ -1191,16 +1872,25 @@
                     <div class="card-body">
                         <div class="grid grid-3" style="gap: 1rem;">
                             <div style="padding: 1rem; background: var(--gray-50); border-radius: 8px;">
-                                <h4 style="font-size: 0.9rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--gray-800);">🎨 Color Scheme</h4>
-                                <p style="font-size: 0.85rem; color: var(--gray-600); margin: 0;">Each theme has a unique color palette that affects all elements across the site.</p>
+                                <h4
+                                    style="font-size: 0.9rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--gray-800);">
+                                    🎨 Color Scheme</h4>
+                                <p style="font-size: 0.85rem; color: var(--gray-600); margin: 0;">Each theme has a
+                                    unique color palette that affects all elements across the site.</p>
                             </div>
                             <div style="padding: 1rem; background: var(--gray-50); border-radius: 8px;">
-                                <h4 style="font-size: 0.9rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--gray-800);">📐 Layout Style</h4>
-                                <p style="font-size: 0.85rem; color: var(--gray-600); margin: 0;">Themes include different border radius, shadows, and component styling.</p>
+                                <h4
+                                    style="font-size: 0.9rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--gray-800);">
+                                    📐 Layout Style</h4>
+                                <p style="font-size: 0.85rem; color: var(--gray-600); margin: 0;">Themes include
+                                    different border radius, shadows, and component styling.</p>
                             </div>
                             <div style="padding: 1rem; background: var(--gray-50); border-radius: 8px;">
-                                <h4 style="font-size: 0.9rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--gray-800);">⚡ Instant Apply</h4>
-                                <p style="font-size: 0.85rem; color: var(--gray-600); margin: 0;">Changes apply instantly to your website with smooth transitions.</p>
+                                <h4
+                                    style="font-size: 0.9rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--gray-800);">
+                                    ⚡ Instant Apply</h4>
+                                <p style="font-size: 0.85rem; color: var(--gray-600); margin: 0;">Changes apply
+                                    instantly to your website with smooth transitions.</p>
                             </div>
                         </div>
                     </div>
@@ -1210,11 +1900,14 @@
     </div>
 
     <!-- Slide Modal -->
-    <div class="modal-overlay fixed inset-0 z-50 bg-black/50 backdrop-blur-sm hidden" id="slideModal" onclick="if(event.target===this) closeSlideModal()">
+    <div class="modal-overlay fixed inset-0 z-50 bg-black/50 backdrop-blur-sm hidden" id="slideModal"
+        onclick="if(event.target===this) closeSlideModal()">
         <div class="modal-content max-w-lg" onclick="event.stopPropagation()">
             <div class="modal-header">
                 <h3 class="modal-title" id="slideModalTitle">Add Slide</h3>
-                <button class="absolute right-4 top-4 rounded-sm opacity-70 hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring" onclick="closeSlideModal()">&times;</button>
+                <button
+                    class="absolute right-4 top-4 rounded-sm opacity-70 hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring"
+                    onclick="closeSlideModal()">&times;</button>
             </div>
             <div class="space-y-4">
                 <input type="hidden" id="slideId">
@@ -1229,7 +1922,8 @@
                     </div>
                     <div class="form-group">
                         <label class="form-label">Title Highlight</label>
-                        <input type="text" class="form-input" id="slideTitleHighlight" placeholder="e.g., Digital Tools.">
+                        <input type="text" class="form-input" id="slideTitleHighlight"
+                            placeholder="e.g., Digital Tools.">
                     </div>
                 </div>
                 <div class="grid grid-cols-2 gap-4">
@@ -1245,16 +1939,22 @@
                 <div class="form-group">
                     <label class="form-label">Slide Image</label>
                     <div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem;">
-                        <input type="file" class="form-input" id="slideImageUpload" accept="image/*" style="flex: 1;" onchange="handleImageUpload(this, 'slideImage', 'slideImagePreview')">
-                        <button type="button" class="btn btn-secondary" onclick="document.getElementById('slideImageUpload').click()" style="white-space: nowrap;">Choose File</button>
+                        <input type="file" class="form-input" id="slideImageUpload" accept="image/*" style="flex: 1;"
+                            onchange="handleImageUpload(this, 'slideImage', 'slideImagePreview')">
+                        <button type="button" class="btn btn-secondary"
+                            onclick="document.getElementById('slideImageUpload').click()"
+                            style="white-space: nowrap;">Choose File</button>
                     </div>
-                    <input type="url" class="form-input" id="slideImage" placeholder="Or enter image URL: https://..." style="margin-top: 0.5rem;" oninput="previewSlideImage()">
+                    <input type="url" class="form-input" id="slideImage" placeholder="Or enter image URL: https://..."
+                        style="margin-top: 0.5rem;" oninput="previewSlideImage()">
                     <p class="form-hint">Upload an image file or enter image URL. Recommended size: 1920x1080px</p>
-                    <div class="mt-2" id="slideImagePreview" style="display: none;"><img id="slidePreviewImg" src="" alt="Preview" class="w-full rounded-md" style="max-height: 200px; object-fit: cover;"></div>
+                    <div class="mt-2" id="slideImagePreview" style="display: none;"><img id="slidePreviewImg" src=""
+                            alt="Preview" class="w-full rounded-md" style="max-height: 200px; object-fit: cover;"></div>
                 </div>
                 <div class="form-group">
                     <label class="flex items-center gap-2 cursor-pointer">
-                        <input type="checkbox" id="slideActive" checked class="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary">
+                        <input type="checkbox" id="slideActive" checked
+                            class="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary">
                         <span>Active</span>
                     </label>
                 </div>
@@ -1282,11 +1982,13 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label class="form-label">Client</label>
-                        <input type="text" class="form-input" id="projectClient" placeholder="e.g., Morogoro Municipal Council">
+                        <input type="text" class="form-input" id="projectClient"
+                            placeholder="e.g., Morogoro Municipal Council">
                     </div>
                     <div class="form-group">
                         <label class="form-label">Location</label>
-                        <input type="text" class="form-input" id="projectLocation" placeholder="e.g., Morogoro, Tanzania">
+                        <input type="text" class="form-input" id="projectLocation"
+                            placeholder="e.g., Morogoro, Tanzania">
                     </div>
                 </div>
                 <div class="form-row">
@@ -1306,7 +2008,8 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label class="form-label">Funding Source</label>
-                        <input type="text" class="form-input" id="projectFunding" placeholder="e.g., World Bank, Private, Government">
+                        <input type="text" class="form-input" id="projectFunding"
+                            placeholder="e.g., World Bank, Private, Government">
                     </div>
                     <div class="form-group"></div>
                 </div>
@@ -1339,29 +2042,43 @@
                         <input type="number" class="form-input" id="projectDuration" placeholder="e.g., 24">
                     </div>
                 </div>
-                <div class="form-group" style="background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary) 100%); padding: 1rem; border-radius: 8px; margin-top: 0.5rem;">
+                <div class="form-group"
+                    style="background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary) 100%); padding: 1rem; border-radius: 8px; margin-top: 0.5rem;">
                     <label style="display: flex; align-items: center; gap: 0.75rem; cursor: pointer; color: white;">
-                        <input type="checkbox" id="projectFeatured" style="width: 20px; height: 20px; accent-color: white;">
+                        <input type="checkbox" id="projectFeatured"
+                            style="width: 20px; height: 20px; accent-color: white;">
                         <span style="font-weight: 600;">⭐ Feature on Home Page</span>
                     </label>
-                    <p style="font-size: 0.8rem; color: rgba(255,255,255,0.9); margin: 0.5rem 0 0 2rem;">This project will appear in the Featured Projects section on the home page</p>
+                    <p style="font-size: 0.8rem; color: rgba(255,255,255,0.9); margin: 0.5rem 0 0 2rem;">This project
+                        will appear in the Featured Projects section on the home page</p>
                 </div>
                 <div class="form-group">
                     <label class="form-label">Description</label>
-                    <textarea class="form-textarea" id="projectDescription" placeholder="Brief project description..."></textarea>
+                    <textarea class="form-textarea" id="projectDescription"
+                        placeholder="Brief project description..."></textarea>
                 </div>
                 <div class="form-group">
-                    <label class="form-label">Project Images <span style="font-weight: normal; color: var(--gray-500);">(Multiple images supported)</span></label>
+                    <label class="form-label">Project Images <span
+                            style="font-weight: normal; color: var(--gray-500);">(Multiple images
+                            supported)</span></label>
                     <div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem;">
-                        <input type="file" class="form-input" id="projectImageUpload" accept="image/*" multiple style="flex: 1;" onchange="handleMultipleImageUpload(this, 'projectImages')">
-                        <button type="button" class="btn btn-secondary" onclick="document.getElementById('projectImageUpload').click()" style="white-space: nowrap;">Add Images</button>
+                        <input type="file" class="form-input" id="projectImageUpload" accept="image/*" multiple
+                            style="flex: 1;" onchange="handleMultipleImageUpload(this, 'projectImages')">
+                        <button type="button" class="btn btn-secondary"
+                            onclick="document.getElementById('projectImageUpload').click()"
+                            style="white-space: nowrap;">Add Images</button>
                     </div>
-                    <input type="url" class="form-input" id="projectImage" placeholder="Or enter image URL and press Enter..." style="margin-top: 0.5rem;" onkeypress="addImageUrl(event)">
-                    <p class="form-hint">Upload multiple images or add URLs one at a time. First image will be the main/cover image.</p>
-                    
+                    <input type="url" class="form-input" id="projectImage"
+                        placeholder="Or enter image URL and press Enter..." style="margin-top: 0.5rem;"
+                        onkeypress="addImageUrl(event)">
+                    <p class="form-hint">Upload multiple images or add URLs one at a time. First image will be the
+                        main/cover image.</p>
+
                     <!-- Image Gallery Preview -->
                     <div id="projectImagesGallery" class="images-gallery" style="display: none; margin-top: 1rem;">
-                        <div class="gallery-grid" id="projectImagesGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 0.75rem;"></div>
+                        <div class="gallery-grid" id="projectImagesGrid"
+                            style="display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 0.75rem;">
+                        </div>
                     </div>
                 </div>
                 <style>
@@ -1373,16 +2090,19 @@
                         border: 2px solid var(--gray-200);
                         background: var(--gray-100);
                     }
+
                     .gallery-item.main {
                         border-color: var(--primary);
                         box-shadow: 0 0 0 2px rgba(26, 122, 71, 0.2);
                     }
+
                     .gallery-item img {
                         width: 100%;
                         height: 100%;
                         object-fit: contain;
                         background: var(--gray-50);
                     }
+
                     .gallery-item .remove-btn {
                         position: absolute;
                         top: 4px;
@@ -1400,6 +2120,7 @@
                         align-items: center;
                         justify-content: center;
                     }
+
                     .gallery-item .main-badge {
                         position: absolute;
                         bottom: 4px;
@@ -1411,11 +2132,12 @@
                         border-radius: 4px;
                         font-weight: 600;
                     }
+
                     .gallery-item .set-main-btn {
                         position: absolute;
                         bottom: 4px;
                         left: 4px;
-                        background: rgba(0,0,0,0.6);
+                        background: rgba(0, 0, 0, 0.6);
                         color: white;
                         font-size: 10px;
                         padding: 2px 6px;
@@ -1425,13 +2147,15 @@
                         opacity: 0;
                         transition: opacity 0.2s;
                     }
+
                     .gallery-item:hover .set-main-btn {
                         opacity: 1;
                     }
                 </style>
                 <div class="form-group">
                     <label class="form-label">Services Provided</label>
-                    <input type="text" class="form-input" id="projectServices" placeholder="e.g., Pre-contract QS, Post-contract QS">
+                    <input type="text" class="form-input" id="projectServices"
+                        placeholder="e.g., Pre-contract QS, Post-contract QS">
                     <p class="form-hint">Comma-separated list</p>
                 </div>
             </div>
@@ -1467,7 +2191,8 @@
                 </div>
                 <div class="form-group">
                     <label class="form-label">Qualifications</label>
-                    <input type="text" class="form-input" id="teamQualifications" placeholder="e.g., Registered Quantity Surveyor">
+                    <input type="text" class="form-input" id="teamQualifications"
+                        placeholder="e.g., Registered Quantity Surveyor">
                 </div>
                 <div class="form-group">
                     <label class="form-label">Bio</label>
@@ -1476,13 +2201,19 @@
                 <div class="form-group">
                     <label class="form-label">Photo</label>
                     <div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem;">
-                        <input type="file" class="form-input" id="teamPhotoUpload" accept="image/*" style="flex: 1;" onchange="handleImageUpload(this, 'teamPhoto', 'teamPhotoPreview')">
-                        <button type="button" class="btn btn-secondary" onclick="document.getElementById('teamPhotoUpload').click()" style="white-space: nowrap;">Choose File</button>
+                        <input type="file" class="form-input" id="teamPhotoUpload" accept="image/*" style="flex: 1;"
+                            onchange="handleImageUpload(this, 'teamPhoto', 'teamPhotoPreview')">
+                        <button type="button" class="btn btn-secondary"
+                            onclick="document.getElementById('teamPhotoUpload').click()"
+                            style="white-space: nowrap;">Choose File</button>
                     </div>
-                    <input type="url" class="form-input" id="teamPhoto" placeholder="Or enter image URL: https://... or /images/team/filename.jpg" style="margin-top: 0.5rem;">
+                    <input type="url" class="form-input" id="teamPhoto"
+                        placeholder="Or enter image URL: https://... or /images/team/filename.jpg"
+                        style="margin-top: 0.5rem;">
                     <p class="form-hint">Upload an image file or enter image URL. Recommended size: 400x400px</p>
                     <div class="image-preview" id="teamPhotoPreview" style="display: none; margin-top: 0.75rem;">
-                        <img id="teamPhotoPreviewImg" src="" alt="Preview" style="width: 150px; height: 150px; object-fit: cover; border-radius: 8px; border: 2px solid var(--gray-200);">
+                        <img id="teamPhotoPreviewImg" src="" alt="Preview"
+                            style="width: 150px; height: 150px; object-fit: cover; border-radius: 8px; border: 2px solid var(--gray-200);">
                     </div>
                 </div>
                 <div class="form-group">
@@ -1500,7 +2231,8 @@
                     </div>
                     <div class="form-group">
                         <label class="form-label">LinkedIn</label>
-                        <input type="url" class="form-input" id="teamLinkedin" placeholder="https://linkedin.com/in/...">
+                        <input type="url" class="form-input" id="teamLinkedin"
+                            placeholder="https://linkedin.com/in/...">
                     </div>
                 </div>
             </div>
@@ -1527,7 +2259,8 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label class="form-label">Role</label>
-                        <input type="text" class="form-input" id="boardRole" placeholder="e.g., Board Chairman, Board Member">
+                        <input type="text" class="form-input" id="boardRole"
+                            placeholder="e.g., Board Chairman, Board Member">
                     </div>
                     <div class="form-group">
                         <label class="form-label">Years of Experience</label>
@@ -1536,7 +2269,8 @@
                 </div>
                 <div class="form-group">
                     <label class="form-label">Qualifications</label>
-                    <input type="text" class="form-input" id="boardQualifications" placeholder="e.g., Registered Quantity Surveyor">
+                    <input type="text" class="form-input" id="boardQualifications"
+                        placeholder="e.g., Registered Quantity Surveyor">
                 </div>
                 <div class="form-group">
                     <label class="form-label">Bio</label>
@@ -1545,18 +2279,25 @@
                 <div class="form-group">
                     <label class="form-label">Photo</label>
                     <div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem;">
-                        <input type="file" class="form-input" id="boardPhotoUpload" accept="image/*" style="flex: 1;" onchange="handleImageUpload(this, 'boardPhoto', 'boardPhotoPreview')">
-                        <button type="button" class="btn btn-secondary" onclick="document.getElementById('boardPhotoUpload').click()" style="white-space: nowrap;">Choose File</button>
+                        <input type="file" class="form-input" id="boardPhotoUpload" accept="image/*" style="flex: 1;"
+                            onchange="handleImageUpload(this, 'boardPhoto', 'boardPhotoPreview')">
+                        <button type="button" class="btn btn-secondary"
+                            onclick="document.getElementById('boardPhotoUpload').click()"
+                            style="white-space: nowrap;">Choose File</button>
                     </div>
-                    <input type="url" class="form-input" id="boardPhoto" placeholder="Or enter image URL: https://... or /images/team/filename.jpg" style="margin-top: 0.5rem;">
+                    <input type="url" class="form-input" id="boardPhoto"
+                        placeholder="Or enter image URL: https://... or /images/team/filename.jpg"
+                        style="margin-top: 0.5rem;">
                     <p class="form-hint">Upload an image file or enter image URL. Recommended size: 400x400px</p>
                     <div class="image-preview" id="boardPhotoPreview" style="display: none; margin-top: 0.75rem;">
-                        <img id="boardPhotoPreviewImg" src="" alt="Preview" style="width: 150px; height: 150px; object-fit: cover; border-radius: 8px; border: 2px solid var(--gray-200);">
+                        <img id="boardPhotoPreviewImg" src="" alt="Preview"
+                            style="width: 150px; height: 150px; object-fit: cover; border-radius: 8px; border: 2px solid var(--gray-200);">
                     </div>
                 </div>
                 <div class="form-group">
                     <label class="flex items-center gap-2 cursor-pointer">
-                        <input type="checkbox" id="boardIsChairman" class="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary">
+                        <input type="checkbox" id="boardIsChairman"
+                            class="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary">
                         <span>Board Chairman</span>
                     </label>
                 </div>
@@ -1593,13 +2334,18 @@
                 <div class="form-group">
                     <label class="form-label">Logo</label>
                     <div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem;">
-                        <input type="file" class="form-input" id="clientLogoUpload" accept="image/*" style="flex: 1;" onchange="handleImageUpload(this, 'clientLogo', 'clientLogoPreview')">
-                        <button type="button" class="btn btn-secondary" onclick="document.getElementById('clientLogoUpload').click()" style="white-space: nowrap;">Choose File</button>
+                        <input type="file" class="form-input" id="clientLogoUpload" accept="image/*" style="flex: 1;"
+                            onchange="handleImageUpload(this, 'clientLogo', 'clientLogoPreview')">
+                        <button type="button" class="btn btn-secondary"
+                            onclick="document.getElementById('clientLogoUpload').click()"
+                            style="white-space: nowrap;">Choose File</button>
                     </div>
-                    <input type="url" class="form-input" id="clientLogo" placeholder="Or enter logo URL: https://..." style="margin-top: 0.5rem;">
+                    <input type="url" class="form-input" id="clientLogo" placeholder="Or enter logo URL: https://..."
+                        style="margin-top: 0.5rem;">
                     <p class="form-hint">Upload a logo file or enter logo URL. Recommended size: 200x100px</p>
                     <div class="image-preview" id="clientLogoPreview" style="display: none; margin-top: 0.75rem;">
-                        <img id="clientLogoPreviewImg" src="" alt="Preview" style="max-width: 200px; max-height: 100px; object-fit: contain; border-radius: 8px; border: 2px solid var(--gray-200);">
+                        <img id="clientLogoPreviewImg" src="" alt="Preview"
+                            style="max-width: 200px; max-height: 100px; object-fit: contain; border-radius: 8px; border: 2px solid var(--gray-200);">
                     </div>
                 </div>
                 <div class="form-group">
@@ -1630,27 +2376,36 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label class="form-label">Position</label>
-                        <input type="text" class="form-input" id="testimonialPosition" placeholder="e.g., Project Manager">
+                        <input type="text" class="form-input" id="testimonialPosition"
+                            placeholder="e.g., Project Manager">
                     </div>
                     <div class="form-group">
                         <label class="form-label">Company</label>
-                        <input type="text" class="form-input" id="testimonialCompany" placeholder="e.g., ABC Construction">
+                        <input type="text" class="form-input" id="testimonialCompany"
+                            placeholder="e.g., ABC Construction">
                     </div>
                 </div>
                 <div class="form-group">
                     <label class="form-label">Testimonial</label>
-                    <textarea class="form-textarea" id="testimonialText" placeholder="What the client said..." style="min-height: 120px;"></textarea>
+                    <textarea class="form-textarea" id="testimonialText" placeholder="What the client said..."
+                        style="min-height: 120px;"></textarea>
                 </div>
                 <div class="form-group">
                     <label class="form-label">Photo</label>
                     <div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem;">
-                        <input type="file" class="form-input" id="testimonialPhotoUpload" accept="image/*" style="flex: 1;" onchange="handleImageUpload(this, 'testimonialPhoto', 'testimonialPhotoPreview')">
-                        <button type="button" class="btn btn-secondary" onclick="document.getElementById('testimonialPhotoUpload').click()" style="white-space: nowrap;">Choose File</button>
+                        <input type="file" class="form-input" id="testimonialPhotoUpload" accept="image/*"
+                            style="flex: 1;"
+                            onchange="handleImageUpload(this, 'testimonialPhoto', 'testimonialPhotoPreview')">
+                        <button type="button" class="btn btn-secondary"
+                            onclick="document.getElementById('testimonialPhotoUpload').click()"
+                            style="white-space: nowrap;">Choose File</button>
                     </div>
-                    <input type="url" class="form-input" id="testimonialPhoto" placeholder="Or enter photo URL: https://..." style="margin-top: 0.5rem;">
+                    <input type="url" class="form-input" id="testimonialPhoto"
+                        placeholder="Or enter photo URL: https://..." style="margin-top: 0.5rem;">
                     <p class="form-hint">Upload an image file or enter photo URL. Recommended size: 400x400px</p>
                     <div class="image-preview" id="testimonialPhotoPreview" style="display: none; margin-top: 0.75rem;">
-                        <img id="testimonialPhotoPreviewImg" src="" alt="Preview" style="width: 150px; height: 150px; object-fit: cover; border-radius: 8px; border: 2px solid var(--gray-200);">
+                        <img id="testimonialPhotoPreviewImg" src="" alt="Preview"
+                            style="width: 150px; height: 150px; object-fit: cover; border-radius: 8px; border: 2px solid var(--gray-200);">
                     </div>
                 </div>
                 <div class="form-group">
@@ -1680,7 +2435,8 @@
                 <input type="hidden" id="serviceId">
                 <div class="form-group">
                     <label class="form-label">Service Title</label>
-                    <input type="text" class="form-input" id="serviceTitle" placeholder="e.g., Pre-Contract Cost Control">
+                    <input type="text" class="form-input" id="serviceTitle"
+                        placeholder="e.g., Pre-Contract Cost Control">
                 </div>
                 <div class="form-row">
                     <div class="form-group">
@@ -1703,7 +2459,8 @@
                 </div>
                 <div class="form-group">
                     <label class="form-label">Key Features (one per line)</label>
-                    <textarea class="form-textarea" id="serviceFeatures" placeholder="Feature 1&#10;Feature 2&#10;Feature 3"></textarea>
+                    <textarea class="form-textarea" id="serviceFeatures"
+                        placeholder="Feature 1&#10;Feature 2&#10;Feature 3"></textarea>
                 </div>
             </div>
             <div class="modal-footer">
@@ -1724,7 +2481,8 @@
                 <input type="hidden" id="blogId">
                 <div class="form-group">
                     <label class="form-label">Post Title</label>
-                    <input type="text" class="form-input" id="blogTitle" placeholder="e.g., Understanding Cost Escalation in Construction">
+                    <input type="text" class="form-input" id="blogTitle"
+                        placeholder="e.g., Understanding Cost Escalation in Construction">
                 </div>
                 <div class="form-row">
                     <div class="form-group">
@@ -1745,28 +2503,37 @@
                 </div>
                 <div class="form-group">
                     <label class="form-label">Excerpt / Summary</label>
-                    <textarea class="form-textarea" id="blogExcerpt" placeholder="Brief summary for listing pages (150-200 characters)..."></textarea>
+                    <textarea class="form-textarea" id="blogExcerpt"
+                        placeholder="Brief summary for listing pages (150-200 characters)..."></textarea>
                 </div>
                 <div class="form-group">
                     <label class="form-label">Content (HTML supported)</label>
-                    <textarea class="form-textarea" id="blogContent" placeholder="Full article content... Use &lt;h2&gt;, &lt;h3&gt;, &lt;p&gt;, &lt;ul&gt;, &lt;blockquote&gt; for formatting." style="min-height: 200px;"></textarea>
+                    <textarea class="form-textarea" id="blogContent"
+                        placeholder="Full article content... Use &lt;h2&gt;, &lt;h3&gt;, &lt;p&gt;, &lt;ul&gt;, &lt;blockquote&gt; for formatting."
+                        style="min-height: 200px;"></textarea>
                 </div>
                 <div class="form-group">
                     <label class="form-label">Featured Image</label>
                     <div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem;">
-                        <input type="file" class="form-input" id="blogImageUpload" accept="image/*" style="flex: 1;" onchange="handleImageUpload(this, 'blogImage', 'blogImagePreview')">
-                        <button type="button" class="btn btn-secondary" onclick="document.getElementById('blogImageUpload').click()" style="white-space: nowrap;">Choose File</button>
+                        <input type="file" class="form-input" id="blogImageUpload" accept="image/*" style="flex: 1;"
+                            onchange="handleImageUpload(this, 'blogImage', 'blogImagePreview')">
+                        <button type="button" class="btn btn-secondary"
+                            onclick="document.getElementById('blogImageUpload').click()"
+                            style="white-space: nowrap;">Choose File</button>
                     </div>
-                    <input type="url" class="form-input" id="blogImage" placeholder="Or enter image URL: https://..." style="margin-top: 0.5rem;">
+                    <input type="url" class="form-input" id="blogImage" placeholder="Or enter image URL: https://..."
+                        style="margin-top: 0.5rem;">
                     <p class="form-hint">Upload an image file or enter image URL. Recommended size: 1200x630px</p>
                     <div class="image-preview" id="blogImagePreview" style="display: none; margin-top: 0.75rem;">
-                        <img id="blogImagePreviewImg" src="" alt="Preview" style="width: 100%; max-height: 200px; object-fit: cover; border-radius: 8px; border: 2px solid var(--gray-200);">
+                        <img id="blogImagePreviewImg" src="" alt="Preview"
+                            style="width: 100%; max-height: 200px; object-fit: cover; border-radius: 8px; border: 2px solid var(--gray-200);">
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="form-group">
                         <label class="form-label">Author Name</label>
-                        <input type="text" class="form-input" id="blogAuthor" placeholder="e.g., QS Kashebo J. Rwezaula">
+                        <input type="text" class="form-input" id="blogAuthor"
+                            placeholder="e.g., QS Kashebo J. Rwezaula">
                     </div>
                     <div class="form-group">
                         <label class="form-label">Author Role</label>
@@ -1776,13 +2543,19 @@
                 <div class="form-group">
                     <label class="form-label">Author Photo</label>
                     <div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem;">
-                        <input type="file" class="form-input" id="blogAuthorPhotoUpload" accept="image/*" style="flex: 1;" onchange="handleImageUpload(this, 'blogAuthorPhoto', 'blogAuthorPhotoPreview')">
-                        <button type="button" class="btn btn-secondary" onclick="document.getElementById('blogAuthorPhotoUpload').click()" style="white-space: nowrap;">Choose File</button>
+                        <input type="file" class="form-input" id="blogAuthorPhotoUpload" accept="image/*"
+                            style="flex: 1;"
+                            onchange="handleImageUpload(this, 'blogAuthorPhoto', 'blogAuthorPhotoPreview')">
+                        <button type="button" class="btn btn-secondary"
+                            onclick="document.getElementById('blogAuthorPhotoUpload').click()"
+                            style="white-space: nowrap;">Choose File</button>
                     </div>
-                    <input type="url" class="form-input" id="blogAuthorPhoto" placeholder="Or enter photo URL: https://..." style="margin-top: 0.5rem;">
+                    <input type="url" class="form-input" id="blogAuthorPhoto"
+                        placeholder="Or enter photo URL: https://..." style="margin-top: 0.5rem;">
                     <p class="form-hint">Upload an image file or enter photo URL. Recommended size: 400x400px</p>
                     <div class="image-preview" id="blogAuthorPhotoPreview" style="display: none; margin-top: 0.75rem;">
-                        <img id="blogAuthorPhotoPreviewImg" src="" alt="Preview" style="width: 150px; height: 150px; object-fit: cover; border-radius: 8px; border: 2px solid var(--gray-200);">
+                        <img id="blogAuthorPhotoPreviewImg" src="" alt="Preview"
+                            style="width: 150px; height: 150px; object-fit: cover; border-radius: 8px; border: 2px solid var(--gray-200);">
                     </div>
                 </div>
                 <div class="form-group">
@@ -1791,11 +2564,13 @@
                 </div>
                 <div class="form-group">
                     <label class="form-label">Author Bio</label>
-                    <textarea class="form-textarea" id="blogAuthorBio" placeholder="Brief author biography..." style="min-height: 80px;"></textarea>
+                    <textarea class="form-textarea" id="blogAuthorBio" placeholder="Brief author biography..."
+                        style="min-height: 80px;"></textarea>
                 </div>
                 <div class="form-group">
                     <label class="form-label">Tags (comma-separated)</label>
-                    <input type="text" class="form-input" id="blogTags" placeholder="e.g., Cost Management, Construction, Tanzania">
+                    <input type="text" class="form-input" id="blogTags"
+                        placeholder="e.g., Cost Management, Construction, Tanzania">
                 </div>
                 <div class="form-row">
                     <div class="form-group">
@@ -1830,11 +2605,13 @@
                 <input type="hidden" id="certificationId">
                 <div class="form-group">
                     <label class="form-label">Certificate Title *</label>
-                    <input type="text" class="form-input" id="certificationTitle" placeholder="e.g., AQRB Practising Certificate">
+                    <input type="text" class="form-input" id="certificationTitle"
+                        placeholder="e.g., AQRB Practising Certificate">
                 </div>
                 <div class="form-group">
                     <label class="form-label">Issuing Authority</label>
-                    <input type="text" class="form-input" id="certificationIssuer" placeholder="e.g., Architects and Quantity Surveyors Registration Board">
+                    <input type="text" class="form-input" id="certificationIssuer"
+                        placeholder="e.g., Architects and Quantity Surveyors Registration Board">
                 </div>
                 <div class="form-row">
                     <div class="form-group">
@@ -1853,18 +2630,26 @@
                 </div>
                 <div class="form-group">
                     <label class="form-label">Description</label>
-                    <textarea class="form-textarea" id="certificationDescription" placeholder="Brief description of the certification..."></textarea>
+                    <textarea class="form-textarea" id="certificationDescription"
+                        placeholder="Brief description of the certification..."></textarea>
                 </div>
                 <div class="form-group">
                     <label class="form-label">Certificate Image</label>
                     <div style="display: flex; gap: 0.5rem; margin-bottom: 0.5rem;">
-                        <input type="file" class="form-input" id="certificationImageUpload" accept="image/*" style="flex: 1;" onchange="handleImageUpload(this, 'certificationImage', 'certificationImagePreview')">
-                        <button type="button" class="btn btn-secondary" onclick="document.getElementById('certificationImageUpload').click()" style="white-space: nowrap;">Choose File</button>
+                        <input type="file" class="form-input" id="certificationImageUpload" accept="image/*"
+                            style="flex: 1;"
+                            onchange="handleImageUpload(this, 'certificationImage', 'certificationImagePreview')">
+                        <button type="button" class="btn btn-secondary"
+                            onclick="document.getElementById('certificationImageUpload').click()"
+                            style="white-space: nowrap;">Choose File</button>
                     </div>
-                    <input type="url" class="form-input" id="certificationImage" placeholder="Or enter image URL: https://..." style="margin-top: 0.5rem;">
+                    <input type="url" class="form-input" id="certificationImage"
+                        placeholder="Or enter image URL: https://..." style="margin-top: 0.5rem;">
                     <p class="form-hint">Upload an image of the certificate. Recommended: Clear scan or photo</p>
-                    <div class="image-preview" id="certificationImagePreview" style="display: none; margin-top: 0.75rem;">
-                        <img id="certificationImagePreviewImg" src="" alt="Preview" style="width: 100%; max-height: 300px; object-fit: contain; border-radius: 8px; border: 2px solid var(--gray-200);">
+                    <div class="image-preview" id="certificationImagePreview"
+                        style="display: none; margin-top: 0.75rem;">
+                        <img id="certificationImagePreviewImg" src="" alt="Preview"
+                            style="width: 100%; max-height: 300px; object-fit: contain; border-radius: 8px; border: 2px solid var(--gray-200);">
                     </div>
                 </div>
             </div>
@@ -1900,18 +2685,19 @@
     <!-- API Client and Config -->
     <!-- Supabase Client -->
     <script src="../js/supabase-client.js"></script>
-    
+
     <!-- Auth: Simple password protection -->
     <script>
         window.supabaseClient = null;
-        window.logout = function() {
+        window.logout = function () {
             localStorage.removeItem('cms_token');
             localStorage.removeItem('cms_user');
             localStorage.removeItem('kj_cms_auth');
             window.location.reload();
         };
     </script>
-    
+
     <script src="cms-data.js"></script>
 </body>
+
 </html>

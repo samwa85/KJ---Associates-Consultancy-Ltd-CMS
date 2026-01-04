@@ -10,18 +10,22 @@ if (typeof window.cmsData === 'undefined') {
     window.cmsData = null;
 }
 
-document.addEventListener('DOMContentLoaded', async function() {
-    
+document.addEventListener('DOMContentLoaded', async function () {
+
     // ==================== CMS DATA LOADER ====================
-    // Check if we should use API
-    const useAPI = window.USE_API !== false && typeof window.API_BASE_URL !== 'undefined';
-    
+    // Check if we should use API from centralized config
+    const useAPI = window.API_CONFIG?.useApi !== false;
+
     async function loadCMSDataFromAPI() {
-        if (!useAPI) return null;
-        
+        if (!useAPI) {
+            console.log('[Main] API disabled in config');
+            return null;
+        }
+
         try {
-            const baseURL = window.API_BASE_URL || 'http://localhost:3001/api';
-            
+            const baseURL = window.API_CONFIG?.apiBaseUrl || window.API_BASE_URL || 'http://localhost:3001/api';
+            console.log(`[Main] Loading CMS data from API: ${baseURL}`);
+
             // Fetch all data in parallel
             const [
                 settingsRes,
@@ -38,7 +42,7 @@ document.addEventListener('DOMContentLoaded', async function() {
                 fetch(`${baseURL}/team`).then(r => r.ok ? r.json() : null).catch(() => null),
                 fetch(`${baseURL}/slides/active`).then(r => r.ok ? r.json() : null).catch(() => null)
             ]);
-            
+
             // Combine into CMS data format
             const apiData = {
                 branding: settingsRes?.data?.branding || null,
@@ -51,25 +55,25 @@ document.addEventListener('DOMContentLoaded', async function() {
                 team: teamRes?.data || [],
                 slides: slidesRes?.data || []
             };
-            
+
             // Cache in localStorage for offline use
             if (
-                apiData.projects.length > 0 || 
-                apiData.clients.length > 0 || 
-                apiData.slides.length > 0 || 
+                apiData.projects.length > 0 ||
+                apiData.clients.length > 0 ||
+                apiData.slides.length > 0 ||
                 apiData.testimonials.length > 0
             ) {
                 localStorage.setItem('kj_cms_data', JSON.stringify(apiData));
                 console.log('[Main] Data loaded from API and cached');
             }
-            
+
             return apiData;
         } catch (error) {
             console.warn('[Main] API load failed:', error.message);
             return null;
         }
     }
-    
+
     function loadCMSDataFromLocalStorage() {
         const savedData = localStorage.getItem('kj_cms_data');
         if (savedData) {
@@ -81,7 +85,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         }
         return null;
     }
-    
+
     // Try API first, then fall back to localStorage
     // Only fall back if API call itself failed (returned null), not based on content
     let cmsData = await loadCMSDataFromAPI();
@@ -107,7 +111,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     function loadTheme() {
         // Check for preview theme in sessionStorage first (for admin preview)
         let theme = sessionStorage.getItem('kj_theme_preview');
-        
+
         // If no preview theme, get from CMS data or default to classic-green
         if (!theme) {
             theme = 'classic-green';
@@ -115,24 +119,24 @@ document.addEventListener('DOMContentLoaded', async function() {
                 theme = cmsData.theme;
             }
         }
-        
+
         // Clear preview theme after use (one-time preview)
         sessionStorage.removeItem('kj_theme_preview');
-        
+
         applyTheme(theme);
     }
 
     function applyTheme(themeName) {
         // Valid themes
         const validThemes = ['classic-green', 'professional-dark', 'earth-warm'];
-        
+
         if (!validThemes.includes(themeName)) {
             themeName = 'classic-green';
         }
-        
+
         // Apply theme to HTML element
         document.documentElement.setAttribute('data-theme', themeName);
-        
+
         // Store in a global for reference
         window.currentTheme = themeName;
     }
@@ -147,39 +151,39 @@ document.addEventListener('DOMContentLoaded', async function() {
      */
     function getBasePath() {
         const currentPath = window.location.pathname;
-        
+
         // Check known subdirectories
-        if (currentPath.includes('/projects/') || 
-            currentPath.includes('/services/') || 
+        if (currentPath.includes('/projects/') ||
+            currentPath.includes('/services/') ||
             currentPath.includes('/blog/') ||
             currentPath.includes('/admin/')) {
             return '../';
         }
         return '';
     }
-    
+
     /**
      * Resolve path to uploads folder
      */
     function resolveRelativePath(rootRelativePath) {
         if (!rootRelativePath || rootRelativePath.trim() === '') return '';
-        
+
         // If it's already a full URL, return as-is
         if (rootRelativePath.startsWith('http://') || rootRelativePath.startsWith('https://') || rootRelativePath.startsWith('data:')) {
             return rootRelativePath;
         }
-        
+
         // For file:// protocol, convert root-relative paths
         if (window.location.protocol === 'file:') {
             // Remove leading slash and add base path
             const cleanPath = rootRelativePath.startsWith('/') ? rootRelativePath.substring(1) : rootRelativePath;
             return getBasePath() + cleanPath;
         }
-        
+
         // For web server, keep root-relative paths
         return rootRelativePath;
     }
-    
+
     // Backward compatibility wrapper
     function normalizeImagePath(path) {
         return resolveRelativePath(path);
@@ -202,7 +206,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     function applyBranding() {
         const branding = loadBrandingData();
         const logos = document.querySelectorAll('.logo');
-        
+
         if (logos.length === 0) {
             return;
         }
@@ -212,12 +216,12 @@ document.addEventListener('DOMContentLoaded', async function() {
             if (!path) return null;
             // Allow absolute and data URLs
             if (/^(https?:)?\/\//.test(path) || path.startsWith('data:')) return path;
-            
+
             const currentPath = window.location.pathname;
-            const isInSubdir = currentPath.includes('/projects/') || 
-                              currentPath.includes('/services/') || 
-                              currentPath.includes('/blog/') ||
-                              currentPath.includes('/admin/');
+            const isInSubdir = currentPath.includes('/projects/') ||
+                currentPath.includes('/services/') ||
+                currentPath.includes('/blog/') ||
+                currentPath.includes('/admin/');
 
             // Root-relative path
             if (path.startsWith('/')) return path;
@@ -229,23 +233,23 @@ document.addEventListener('DOMContentLoaded', async function() {
 
         logos.forEach(logo => {
             const currentPath = window.location.pathname;
-            const isInSubdir = currentPath.includes('/projects/') || 
-                              currentPath.includes('/services/') || 
-                              currentPath.includes('/blog/') ||
-                              currentPath.includes('/admin/');
+            const isInSubdir = currentPath.includes('/projects/') ||
+                currentPath.includes('/services/') ||
+                currentPath.includes('/blog/') ||
+                currentPath.includes('/admin/');
 
             const fallbackPath = isInSubdir ? '../uploads/logo_kj&.png' : 'uploads/logo_kj&.png';
             const primaryPath = resolveLogoPath(branding.logoImageUrl) || fallbackPath;
-            
+
             // Create image element
             const img = document.createElement('img');
             img.className = 'logo-image';
             img.src = primaryPath;
             img.alt = branding.logoText || 'KJ & Associates';
-            
+
             // Handle load errors - try alternative path then fallback to text
             let hasRetried = false;
-            img.onerror = function() {
+            img.onerror = function () {
                 if (!hasRetried) {
                     hasRetried = true;
                     // Try fallback path
@@ -263,7 +267,7 @@ document.addEventListener('DOMContentLoaded', async function() {
                     logo.appendChild(subEl);
                 }
             };
-            
+
             // Clear logo and add image
             logo.innerHTML = '';
             logo.appendChild(img);
@@ -303,7 +307,7 @@ document.addEventListener('DOMContentLoaded', async function() {
 
     // ==================== BACK TO TOP BUTTON ====================
     const backToTopBtn = document.getElementById('backToTop');
-    
+
     if (backToTopBtn) {
         window.addEventListener('scroll', () => {
             if (window.scrollY > 500) {
@@ -349,10 +353,10 @@ document.addEventListener('DOMContentLoaded', async function() {
         slider.innerHTML = testimonials.map((t, index) => `
             <div class="testimonial-card ${index === 0 ? 'active' : ''}" data-index="${index}">
                 <div class="testimonial-content">
-                    ${t.photo ? 
-                        `<img src="${t.photo}" alt="${t.name}" class="testimonial-avatar" onerror="this.outerHTML='<div class=\\'testimonial-avatar-placeholder\\'>${t.name.charAt(0)}</div>'">` : 
-                        `<div class="testimonial-avatar-placeholder">${t.name.charAt(0)}</div>`
-                    }
+                    ${t.photo ?
+                `<img src="${t.photo}" alt="${t.name}" class="testimonial-avatar" onerror="this.outerHTML='<div class=\\'testimonial-avatar-placeholder\\'>${t.name.charAt(0)}</div>'">` :
+                `<div class="testimonial-avatar-placeholder">${t.name.charAt(0)}</div>`
+            }
                     <div class="testimonial-body">
                         <div class="testimonial-rating">${'★'.repeat(t.rating || 5)}</div>
                         <p class="testimonial-text">${t.text}</p>
@@ -381,10 +385,10 @@ document.addEventListener('DOMContentLoaded', async function() {
         function showTestimonial(index) {
             if (index >= cards.length) index = 0;
             if (index < 0) index = cards.length - 1;
-            
+
             cards.forEach(card => card.classList.remove('active'));
             dots.forEach(dot => dot.classList.remove('active'));
-            
+
             cards[index].classList.add('active');
             dots[index].classList.add('active');
             currentIndex = index;
@@ -463,7 +467,7 @@ document.addEventListener('DOMContentLoaded', async function() {
                 }
             };
         }
-        
+
         // Default data if no CMS data exists
         return {
             slides: [
@@ -530,12 +534,12 @@ document.addEventListener('DOMContentLoaded', async function() {
     function generateSlidesHTML(data) {
         const slidesContainer = document.querySelector('.slides-container');
         const indicatorsContainer = document.querySelector('.slide-indicators');
-        
+
         if (!slidesContainer || !indicatorsContainer) return;
 
         // Filter only active slides
         const activeSlides = data.slides.filter(slide => slide.active);
-        
+
         // Generate slides HTML
         slidesContainer.innerHTML = activeSlides.map((slide, index) => `
             <div class="slide ${index === 0 ? 'active' : ''}" data-slide="${index + 1}">
@@ -562,7 +566,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         // Update references
         slides = document.querySelectorAll('.slide');
         indicators = document.querySelectorAll('.indicator');
-        
+
         // Apply settings
         intervalTime = data.settings.interval || 6000;
         autoPlay = data.settings.autoPlay !== false;
@@ -571,11 +575,11 @@ document.addEventListener('DOMContentLoaded', async function() {
 
     function showSlide(index) {
         if (slides.length === 0) return;
-        
+
         // Handle wrap around
         if (index >= slides.length) index = 0;
         if (index < 0) index = slides.length - 1;
-        
+
         // Update slides
         slides.forEach((slide, i) => {
             slide.classList.remove('active');
@@ -583,7 +587,7 @@ document.addEventListener('DOMContentLoaded', async function() {
                 slide.classList.add('active');
             }
         });
-        
+
         // Update indicators
         indicators.forEach((indicator, i) => {
             indicator.classList.remove('active');
@@ -591,7 +595,7 @@ document.addEventListener('DOMContentLoaded', async function() {
                 indicator.classList.add('active');
             }
         });
-        
+
         currentSlide = index;
     }
 
@@ -631,7 +635,7 @@ document.addEventListener('DOMContentLoaded', async function() {
                 startSlideshow();
             });
         }
-        
+
         if (prevBtn) {
             prevBtn.addEventListener('click', () => {
                 stopSlideshow();
@@ -639,7 +643,7 @@ document.addEventListener('DOMContentLoaded', async function() {
                 startSlideshow();
             });
         }
-        
+
         // Indicator navigation
         document.querySelector('.slide-indicators').addEventListener('click', (e) => {
             if (e.target.classList.contains('indicator')) {
@@ -649,7 +653,7 @@ document.addEventListener('DOMContentLoaded', async function() {
                 startSlideshow();
             }
         });
-        
+
         // Keyboard navigation
         document.addEventListener('keydown', (e) => {
             if (e.key === 'ArrowLeft') {
@@ -662,33 +666,33 @@ document.addEventListener('DOMContentLoaded', async function() {
                 startSlideshow();
             }
         });
-        
+
         // Pause on hover
         if (pauseOnHover) {
             heroSlideshow.addEventListener('mouseenter', stopSlideshow);
             heroSlideshow.addEventListener('mouseleave', startSlideshow);
         }
-        
+
         // Touch/swipe support
         let touchStartX = 0;
         let touchEndX = 0;
-        
+
         const slidesContainer = document.querySelector('.slides-container');
         if (slidesContainer) {
             slidesContainer.addEventListener('touchstart', (e) => {
                 touchStartX = e.changedTouches[0].screenX;
             }, { passive: true });
-            
+
             slidesContainer.addEventListener('touchend', (e) => {
                 touchEndX = e.changedTouches[0].screenX;
                 handleSwipe();
             }, { passive: true });
         }
-        
+
         function handleSwipe() {
             const swipeThreshold = 50;
             const diff = touchStartX - touchEndX;
-            
+
             if (Math.abs(diff) > swipeThreshold) {
                 stopSlideshow();
                 if (diff > 0) {
@@ -699,21 +703,21 @@ document.addEventListener('DOMContentLoaded', async function() {
                 startSlideshow();
             }
         }
-        
+
         // Start automatic slideshow
         startSlideshow();
     }
 
     // ==================== STATS COUNTER ANIMATION ====================
     const statNumbers = document.querySelectorAll('.stat-number[data-target]');
-    
+
     function animateStats() {
         statNumbers.forEach(stat => {
             const target = parseInt(stat.getAttribute('data-target'));
             const duration = 2000;
             const increment = target / (duration / 16);
             let current = 0;
-            
+
             const updateCounter = () => {
                 current += increment;
                 if (current < target) {
@@ -723,11 +727,11 @@ document.addEventListener('DOMContentLoaded', async function() {
                     stat.textContent = target;
                 }
             };
-            
+
             updateCounter();
         });
     }
-    
+
     // Observe stats bar for animation trigger
     const statsBar = document.querySelector('.stats-bar');
     if (statsBar) {
@@ -739,7 +743,7 @@ document.addEventListener('DOMContentLoaded', async function() {
                 }
             });
         }, { threshold: 0.5 });
-        
+
         statsObserver.observe(statsBar);
     }
 
@@ -751,17 +755,17 @@ document.addEventListener('DOMContentLoaded', async function() {
     // Create backdrop overlay for mobile menu
     let backdrop = null;
     let mobileCloseBtn = null;
-    
+
     if (mobileMenuToggle && navMenu) {
         // Create backdrop - must be LOWER z-index than nav-menu (1001)
         backdrop = document.createElement('div');
         backdrop.className = 'mobile-menu-backdrop';
         backdrop.style.cssText = 'position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 999; opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0.3s ease;';
         document.body.appendChild(backdrop);
-        
+
         // Ensure nav-menu has higher z-index
         navMenu.style.zIndex = '1001';
-        
+
         // Create close button inside nav menu
         mobileCloseBtn = document.createElement('button');
         mobileCloseBtn.className = 'mobile-menu-close';
@@ -794,18 +798,18 @@ document.addEventListener('DOMContentLoaded', async function() {
             backdrop.style.pointerEvents = 'all';
         }
     }
-    
+
     // Navigate to URL programmatically
     function navigateTo(url) {
         closeMobileMenu();
-        setTimeout(function() {
+        setTimeout(function () {
             window.location.href = url;
         }, 100);
     }
 
     if (mobileMenuToggle && navMenu) {
         // Toggle button click
-        mobileMenuToggle.addEventListener('click', function(e) {
+        mobileMenuToggle.addEventListener('click', function (e) {
             e.preventDefault();
             e.stopPropagation();
             if (navMenu.classList.contains('active')) {
@@ -817,7 +821,7 @@ document.addEventListener('DOMContentLoaded', async function() {
 
         // Close button inside menu
         if (mobileCloseBtn) {
-            mobileCloseBtn.addEventListener('click', function(e) {
+            mobileCloseBtn.addEventListener('click', function (e) {
                 e.preventDefault();
                 e.stopPropagation();
                 closeMobileMenu();
@@ -826,27 +830,27 @@ document.addEventListener('DOMContentLoaded', async function() {
 
         // Backdrop click
         if (backdrop) {
-            backdrop.addEventListener('click', function(e) {
+            backdrop.addEventListener('click', function (e) {
                 e.preventDefault();
                 closeMobileMenu();
             });
         }
 
         // Handle ALL clicks on nav menu links
-        navMenu.addEventListener('click', function(e) {
+        navMenu.addEventListener('click', function (e) {
             // Only handle on mobile
             if (window.innerWidth > 768) return;
-            
+
             const target = e.target;
             const link = target.closest('a');
-            
+
             if (!link) return;
-            
+
             const href = link.getAttribute('href');
             const parentLi = link.parentElement;
             const isDropdownParent = parentLi && parentLi.classList.contains('dropdown');
             const isInDropdownMenu = link.closest('.dropdown-menu');
-            
+
             // If clicking a link inside dropdown menu - navigate
             if (isInDropdownMenu && href) {
                 e.preventDefault();
@@ -854,15 +858,15 @@ document.addEventListener('DOMContentLoaded', async function() {
                 navigateTo(href);
                 return;
             }
-            
+
             // If clicking a dropdown toggle (About Us, Services)
             if (isDropdownParent && !isInDropdownMenu) {
                 e.preventDefault();
                 e.stopPropagation();
-                
+
                 const dropdown = parentLi;
                 const isOpen = dropdown.classList.contains('active');
-                
+
                 if (!isOpen) {
                     // Close other dropdowns and open this one
                     document.querySelectorAll('.dropdown').forEach(d => d.classList.remove('active'));
@@ -875,7 +879,7 @@ document.addEventListener('DOMContentLoaded', async function() {
                 }
                 return;
             }
-            
+
             // Regular link (Home, Projects, Clients, Blog, Contact)
             if (href && !isDropdownParent) {
                 e.preventDefault();
@@ -885,7 +889,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         });
 
         // Close mobile menu on window resize if it becomes desktop view
-        window.addEventListener('resize', function() {
+        window.addEventListener('resize', function () {
             if (window.innerWidth > 768 && navMenu.classList.contains('active')) {
                 closeMobileMenu();
             }
@@ -898,19 +902,19 @@ document.addEventListener('DOMContentLoaded', async function() {
 
     window.addEventListener('scroll', () => {
         const currentScroll = window.pageYOffset;
-        
+
         if (currentScroll > 50) {
             navbar.classList.add('scrolled');
         } else {
             navbar.classList.remove('scrolled');
         }
-        
+
         lastScroll = currentScroll;
     });
 
     // ==================== SMOOTH SCROLLING ====================
     document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        anchor.addEventListener('click', function(e) {
+        anchor.addEventListener('click', function (e) {
             const href = this.getAttribute('href');
             if (href !== '#' && href.length > 1) {
                 const target = document.querySelector(href);
@@ -918,7 +922,7 @@ document.addEventListener('DOMContentLoaded', async function() {
                     e.preventDefault();
                     const navHeight = navbar ? navbar.offsetHeight : 0;
                     const targetPosition = target.getBoundingClientRect().top + window.pageYOffset - navHeight - 20;
-                    
+
                     window.scrollTo({
                         top: targetPosition,
                         behavior: 'smooth'
@@ -970,9 +974,9 @@ document.addEventListener('DOMContentLoaded', async function() {
     const projectCards = document.querySelectorAll('.project-card[data-category]');
 
     filterButtons.forEach(button => {
-        button.addEventListener('click', function() {
+        button.addEventListener('click', function () {
             const filter = this.getAttribute('data-filter');
-            
+
             // Update active state
             filterButtons.forEach(btn => btn.classList.remove('active'));
             this.classList.add('active');
@@ -981,7 +985,7 @@ document.addEventListener('DOMContentLoaded', async function() {
             projectCards.forEach((card, index) => {
                 const categories = card.getAttribute('data-category');
                 const shouldShow = filter === 'all' || categories.includes(filter);
-                
+
                 if (shouldShow) {
                     card.style.display = 'block';
                     setTimeout(() => {
@@ -1002,24 +1006,24 @@ document.addEventListener('DOMContentLoaded', async function() {
     // ==================== CONTACT FORM ====================
     const contactForm = document.querySelector('#contact-form');
     if (contactForm) {
-        contactForm.addEventListener('submit', function(e) {
+        contactForm.addEventListener('submit', function (e) {
             e.preventDefault();
-            
+
             // Get form fields
             const name = document.getElementById('name');
             const email = document.getElementById('email');
             const message = document.getElementById('message');
-            
+
             // Basic validation
             let isValid = true;
-            
+
             if (!name.value.trim()) {
                 showError(name, 'Please enter your name');
                 isValid = false;
             } else {
                 clearError(name);
             }
-            
+
             if (!email.value.trim()) {
                 showError(email, 'Please enter your email');
                 isValid = false;
@@ -1029,7 +1033,7 @@ document.addEventListener('DOMContentLoaded', async function() {
             } else {
                 clearError(email);
             }
-            
+
             if (!message.value.trim()) {
                 showError(message, 'Please enter your message');
                 isValid = false;
@@ -1043,12 +1047,12 @@ document.addEventListener('DOMContentLoaded', async function() {
                 const originalText = submitBtn.textContent;
                 submitBtn.textContent = 'Sending...';
                 submitBtn.disabled = true;
-                
+
                 // Simulate form submission
                 setTimeout(() => {
                     submitBtn.textContent = 'Message Sent!';
                     submitBtn.style.background = '#22c55e';
-                    
+
                     setTimeout(() => {
                         contactForm.reset();
                         submitBtn.textContent = originalText;
@@ -1063,14 +1067,14 @@ document.addEventListener('DOMContentLoaded', async function() {
     function showError(input, message) {
         const formGroup = input.closest('.form-group');
         let errorEl = formGroup.querySelector('.error-message');
-        
+
         if (!errorEl) {
             errorEl = document.createElement('span');
             errorEl.className = 'error-message';
             errorEl.style.cssText = 'color: #ef4444; font-size: 0.85rem; margin-top: 0.25rem; display: block;';
             formGroup.appendChild(errorEl);
         }
-        
+
         errorEl.textContent = message;
         input.style.borderColor = '#ef4444';
     }
@@ -1090,12 +1094,12 @@ document.addEventListener('DOMContentLoaded', async function() {
 
     // ==================== CERTIFICATE LIGHTBOX ====================
     const certificateItems = document.querySelectorAll('.certificate-item');
-    
+
     certificateItems.forEach(item => {
-        item.addEventListener('click', function() {
+        item.addEventListener('click', function () {
             const img = this.querySelector('img');
             if (!img) return;
-            
+
             const lightbox = document.createElement('div');
             lightbox.className = 'lightbox';
             lightbox.innerHTML = `
@@ -1119,7 +1123,7 @@ document.addEventListener('DOMContentLoaded', async function() {
             lightbox.addEventListener('click', (e) => {
                 if (e.target === lightbox) closeLightbox();
             });
-            
+
             // Close on escape key
             document.addEventListener('keydown', function escHandler(e) {
                 if (e.key === 'Escape') {
@@ -1137,12 +1141,12 @@ document.addEventListener('DOMContentLoaded', async function() {
 
     // ==================== DROPDOWN HOVER FIX FOR TOUCH ====================
     const dropdowns = document.querySelectorAll('.dropdown');
-    
+
     dropdowns.forEach(dropdown => {
-        dropdown.addEventListener('touchstart', function(e) {
+        dropdown.addEventListener('touchstart', function (e) {
             const menu = this.querySelector('.dropdown-menu');
             const isVisible = menu.style.opacity === '1';
-            
+
             // Close all other dropdowns
             dropdowns.forEach(d => {
                 if (d !== this) {
@@ -1153,7 +1157,7 @@ document.addEventListener('DOMContentLoaded', async function() {
                     }
                 }
             });
-            
+
             if (!isVisible) {
                 e.preventDefault();
                 menu.style.opacity = '1';
