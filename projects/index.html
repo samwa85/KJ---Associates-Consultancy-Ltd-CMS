@@ -421,6 +421,9 @@
                 <button class="filter-btn" data-filter="private">Private</button>
                 <button class="filter-btn" data-filter="completed">Completed</button>
                 <button class="filter-btn" data-filter="ongoing">Ongoing</button>
+                <button class="filter-btn" id="refreshBtn"
+                    style="background: #f8f9fa; border-color: #dee2e6; color: #6c757d;"
+                    title="Force Reload Data">Refresh ↻</button>
             </div>
         </div>
     </section>
@@ -722,6 +725,17 @@
                     });
                 });
             });
+
+            // Refresh Button Logic
+            const refreshBtn = document.getElementById('refreshBtn');
+            if (refreshBtn) {
+                refreshBtn.addEventListener('click', () => {
+                    if (confirm('Reload data from server? This will clear the local cache.')) {
+                        localStorage.removeItem('kj_cms_data');
+                        window.location.reload();
+                    }
+                });
+            }
         });
 
         // Slideshow functions

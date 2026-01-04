@@ -27,6 +27,7 @@ document.addEventListener('DOMContentLoaded', async function () {
             console.log(`[Main] Loading CMS data from API: ${baseURL}`);
 
             // Fetch all data in parallel
+            const fetchOptions = { cache: 'no-store' };
             const [
                 settingsRes,
                 projectsRes,
@@ -35,12 +36,12 @@ document.addEventListener('DOMContentLoaded', async function () {
                 teamRes,
                 slidesRes
             ] = await Promise.all([
-                fetch(`${baseURL}/settings`).then(r => r.ok ? r.json() : null).catch(() => null),
-                fetch(`${baseURL}/projects`).then(r => r.ok ? r.json() : null).catch(() => null),
-                fetch(`${baseURL}/clients`).then(r => r.ok ? r.json() : null).catch(() => null),
-                fetch(`${baseURL}/testimonials`).then(r => r.ok ? r.json() : null).catch(() => null),
-                fetch(`${baseURL}/team`).then(r => r.ok ? r.json() : null).catch(() => null),
-                fetch(`${baseURL}/slides/active`).then(r => r.ok ? r.json() : null).catch(() => null)
+                fetch(`${baseURL}/settings`, fetchOptions).then(r => r.ok ? r.json() : null).catch(() => null),
+                fetch(`${baseURL}/projects`, fetchOptions).then(r => r.ok ? r.json() : null).catch(() => null),
+                fetch(`${baseURL}/clients`, fetchOptions).then(r => r.ok ? r.json() : null).catch(() => null),
+                fetch(`${baseURL}/testimonials`, fetchOptions).then(r => r.ok ? r.json() : null).catch(() => null),
+                fetch(`${baseURL}/team`, fetchOptions).then(r => r.ok ? r.json() : null).catch(() => null),
+                fetch(`${baseURL}/slides/active`, fetchOptions).then(r => r.ok ? r.json() : null).catch(() => null)
             ]);
 
             // Combine into CMS data format
