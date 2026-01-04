@@ -34,15 +34,27 @@ app.use(cors({
     // Allow requests with no origin (like mobile apps or curl requests)
     if (!origin) return callback(null, true);
 
-    if (allowedOrigins.indexOf(origin) !== -1 || process.env.NODE_ENV !== 'production') {
+    // Check if the origin is in the allowed list or if we're not in production
+    const isAllowed = allowedOrigins.some(o => origin.startsWith(o.trim())) ||
+      process.env.NODE_ENV !== 'production';
+
+    if (isAllowed) {
       callback(null, true);
     } else {
+      console.warn(`[CORS] Rejected origin: ${origin}`);
       callback(new Error('Not allowed by CORS'));
     }
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'X-Sync-Secret']
+  allowedHeaders: [
+    'Content-Type',
+    'Authorization',
+    'X-Requested-With',
+    'X-Sync-Secret',
+    'x-sync-secret'
+  ],
+  exposedHeaders: ['X-Sync-Secret']
 }));
 
 // Rate limiting
