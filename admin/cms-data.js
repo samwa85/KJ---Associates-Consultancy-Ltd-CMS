@@ -1334,6 +1334,8 @@ function saveSlide() {
         active: document.getElementById('slideActive').checked
     };
     
+    const isNew = !id;
+    
     if (id) {
         const index = CMS.data.slides.findIndex(s => s.id === parseInt(id));
         CMS.data.slides[index] = slide;
@@ -1341,7 +1343,22 @@ function saveSlide() {
         CMS.data.slides.push(slide);
     }
     
+    // Save to localStorage
     CMS.saveData();
+    
+    // Sync to API/database
+    if (typeof CMSSync !== 'undefined' && CMSSync.apiAvailable) {
+        CMSSync.saveSlide(slide, isNew).then(result => {
+            if (result.success) {
+                console.log('[CMS] Slide synced to database');
+            } else {
+                console.warn('[CMS] Failed to sync slide to database:', result.error);
+            }
+        }).catch(err => {
+            console.error('[CMS] Error syncing slide:', err);
+        });
+    }
+    
     CMS.renderSlides();
     CMS.updateStats();
     closeSlideModal();
@@ -1502,6 +1519,8 @@ function saveProject() {
     
     console.log('Saving project with featured:', project.featured, '- Title:', project.title);
     
+    const isNew = !id;
+    
     if (id) {
         const index = CMS.data.projects.findIndex(p => p.id === parseInt(id));
         CMS.data.projects[index] = project;
@@ -1509,7 +1528,22 @@ function saveProject() {
         CMS.data.projects.push(project);
     }
     
+    // Save to localStorage
     CMS.saveData();
+    
+    // Sync to API/database
+    if (typeof CMSSync !== 'undefined' && CMSSync.apiAvailable) {
+        CMSSync.saveProject(project, isNew).then(result => {
+            if (result.success) {
+                console.log('[CMS] Project synced to database');
+            } else {
+                console.warn('[CMS] Failed to sync project to database:', result.error);
+            }
+        }).catch(err => {
+            console.error('[CMS] Error syncing project:', err);
+        });
+    }
+    
     CMS.renderProjects();
     CMS.updateStats();
     closeProjectModal();
@@ -1630,6 +1664,8 @@ function saveTeamMember() {
         linkedin: document.getElementById('teamLinkedin').value.trim()
     };
     
+    const isNew = !id;
+    
     if (id) {
         const index = CMS.data.team.findIndex(m => m.id === parseInt(id));
         if (index >= 0) {
@@ -1639,7 +1675,22 @@ function saveTeamMember() {
         CMS.data.team.push(member);
     }
     
+    // Save to localStorage
     CMS.saveData();
+    
+    // Sync to API/database
+    if (typeof CMSSync !== 'undefined' && CMSSync.apiAvailable) {
+        CMSSync.saveTeamMember(member, isNew).then(result => {
+            if (result.success) {
+                console.log('[CMS] Team member synced to database');
+            } else {
+                console.warn('[CMS] Failed to sync team member to database:', result.error);
+            }
+        }).catch(err => {
+            console.error('[CMS] Error syncing team member:', err);
+        });
+    }
+    
     CMS.renderTeam();
     CMS.updateStats();
     closeTeamModal();
@@ -1755,6 +1806,7 @@ function saveBoardMember() {
         CMS.data.board = [];
     }
     
+    const isNew = !id;
     const index = CMS.data.board.findIndex(m => m.id === member.id);
     if (index >= 0) {
         CMS.data.board[index] = member;
@@ -1762,7 +1814,22 @@ function saveBoardMember() {
         CMS.data.board.push(member);
     }
     
+    // Save to localStorage
     CMS.saveData();
+    
+    // Sync to API/database
+    if (typeof CMSSync !== 'undefined' && CMSSync.apiAvailable) {
+        CMSSync.saveBoardMember(member, isNew).then(result => {
+            if (result.success) {
+                console.log('[CMS] Board member synced to database');
+            } else {
+                console.warn('[CMS] Failed to sync board member to database:', result.error);
+            }
+        }).catch(err => {
+            console.error('[CMS] Error syncing board member:', err);
+        });
+    }
+    
     CMS.renderBoard();
     closeBoardModal();
     showNotification('Board member saved successfully', 'success');
@@ -1876,6 +1943,8 @@ function saveClient() {
         website: document.getElementById('clientWebsite').value
     };
     
+    const isNew = !id;
+    
     if (id) {
         const index = CMS.data.clients.findIndex(c => c.id === parseInt(id));
         CMS.data.clients[index] = client;
@@ -1883,7 +1952,22 @@ function saveClient() {
         CMS.data.clients.push(client);
     }
     
+    // Save to localStorage
     CMS.saveData();
+    
+    // Sync to API/database
+    if (typeof CMSSync !== 'undefined' && CMSSync.apiAvailable) {
+        CMSSync.saveClient(client, isNew).then(result => {
+            if (result.success) {
+                console.log('[CMS] Client synced to database');
+            } else {
+                console.warn('[CMS] Failed to sync client to database:', result.error);
+            }
+        }).catch(err => {
+            console.error('[CMS] Error syncing client:', err);
+        });
+    }
+    
     CMS.renderClients();
     closeClientModal();
     showNotification('Client saved successfully', 'success');
@@ -1968,6 +2052,8 @@ function saveTestimonial() {
         rating: parseInt(document.getElementById('testimonialRating').value)
     };
     
+    const isNew = !id;
+    
     if (id) {
         const index = CMS.data.testimonials.findIndex(t => t.id === parseInt(id));
         CMS.data.testimonials[index] = testimonial;
@@ -1975,7 +2061,22 @@ function saveTestimonial() {
         CMS.data.testimonials.push(testimonial);
     }
     
+    // Save to localStorage
     CMS.saveData();
+    
+    // Sync to API/database
+    if (typeof CMSSync !== 'undefined' && CMSSync.apiAvailable) {
+        CMSSync.saveTestimonial(testimonial, isNew).then(result => {
+            if (result.success) {
+                console.log('[CMS] Testimonial synced to database');
+            } else {
+                console.warn('[CMS] Failed to sync testimonial to database:', result.error);
+            }
+        }).catch(err => {
+            console.error('[CMS] Error syncing testimonial:', err);
+        });
+    }
+    
     CMS.renderTestimonials();
     CMS.updateStats();
     closeTestimonialModal();
@@ -2192,6 +2293,8 @@ function saveBlogPost() {
         CMS.data.blog = [];
     }
     
+    const isNew = !id;
+    
     if (id) {
         const index = CMS.data.blog.findIndex(p => p.id === parseInt(id));
         CMS.data.blog[index] = post;
@@ -2199,10 +2302,26 @@ function saveBlogPost() {
         CMS.data.blog.push(post);
     }
     
+    // Save to localStorage
     CMS.saveData();
+    
+    // Sync to API/database
+    if (typeof CMSSync !== 'undefined' && CMSSync.apiAvailable) {
+        CMSSync.saveBlogPost(post, isNew).then(result => {
+            if (result.success) {
+                console.log('[CMS] Blog post synced to database');
+            } else {
+                console.warn('[CMS] Failed to sync blog post to database:', result.error);
+            }
+        }).catch(err => {
+            console.error('[CMS] Error syncing blog post:', err);
+        });
+    }
+    
     CMS.renderBlog();
     CMS.updateStats();
     closeBlogModal();
+    showNotification('Blog post saved successfully', 'success');
 }
 
 function editBlogPost(id) {
@@ -2308,6 +2427,8 @@ function saveCertification() {
         CMS.data.certifications = [];
     }
     
+    const isNew = !id;
+    
     if (id) {
         const index = CMS.data.certifications.findIndex(c => c.id === parseInt(id));
         if (index >= 0) {
@@ -2317,7 +2438,22 @@ function saveCertification() {
         CMS.data.certifications.push(certification);
     }
     
+    // Save to localStorage
     CMS.saveData();
+    
+    // Sync to API/database
+    if (typeof CMSSync !== 'undefined' && CMSSync.apiAvailable) {
+        CMSSync.saveCertification(certification, isNew).then(result => {
+            if (result.success) {
+                console.log('[CMS] Certification synced to database');
+            } else {
+                console.warn('[CMS] Failed to sync certification to database:', result.error);
+            }
+        }).catch(err => {
+            console.error('[CMS] Error syncing certification:', err);
+        });
+    }
+    
     CMS.renderCertifications();
     CMS.updateStats();
     closeCertificationModal();

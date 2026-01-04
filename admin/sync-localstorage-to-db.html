@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sync localStorage to Database</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 { margin-bottom: 10px; color: #333; }
+        .subtitle { color: #666; margin-bottom: 30px; }
+        .section { margin-bottom: 30px; padding: 20px; background: #f9f9f9; border-radius: 6px; }
+        .section h2 { margin-bottom: 15px; color: #444; font-size: 18px; }
+        .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px; }
+        .stat-card {
+            background: white;
+            padding: 15px;
+            border-radius: 6px;
+            border-left: 4px solid #22c55e;
+        }
+        .stat-card.warning { border-left-color: #f59e0b; }
+        .stat-card.danger { border-left-color: #ef4444; }
+        .stat-label { font-size: 12px; color: #666; text-transform: uppercase; }
+        .stat-value { font-size: 24px; font-weight: bold; color: #333; margin-top: 5px; }
+        .diff-list { max-height: 300px; overflow-y: auto; }
+        .diff-item {
+            padding: 10px;
+            margin: 5px 0;
+            background: white;
+            border-radius: 4px;
+            border-left: 3px solid #3b82f6;
+        }
+        .diff-item.missing { border-left-color: #ef4444; }
+        .diff-item.extra { border-left-color: #f59e0b; }
+        .diff-title { font-weight: 600; color: #333; }
+        .diff-details { font-size: 12px; color: #666; margin-top: 5px; }
+        button {
+            background: #22c55e;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-right: 10px;
+            margin-top: 10px;
+        }
+        button:hover { background: #16a34a; }
+        button:disabled { background: #ccc; cursor: not-allowed; }
+        button.danger { background: #ef4444; }
+        button.danger:hover { background: #dc2626; }
+        .log {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 15px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            max-height: 400px;
+            overflow-y: auto;
+            margin-top: 20px;
+        }
+        .log-entry { margin: 5px 0; }
+        .log-entry.success { color: #4ade80; }
+        .log-entry.error { color: #f87171; }
+        .log-entry.info { color: #60a5fa; }
+        .loading { display: inline-block; width: 16px; height: 16px; border: 2px solid #ccc; border-top-color: #333; border-radius: 50%; animation: spin 0.6s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔄 Sync localStorage to Database</h1>
+        <p class="subtitle">Compare and sync your local CMS data with the database</p>
+
+        <div class="section">
+            <h2>📊 Comparison Summary</h2>
+            <div class="stats" id="stats"></div>
+        </div>
+
+        <div class="section">
+            <h2>🔍 Differences Found</h2>
+            <div id="differences"></div>
+        </div>
+
+        <div class="section">
+            <h2>⚙️ Actions</h2>
+            <button id="scanBtn" onclick="scanDifferences()">🔍 Scan Differences</button>
+            <button id="syncBtn" onclick="syncToDatabase()" disabled>⬆️ Sync Missing Items to Database</button>
+            <button id="exportBtn" onclick="exportLocalStorage()">💾 Export localStorage Data</button>
+        </div>
+
+        <div class="section">
+            <h2>📝 Sync Log</h2>
+            <div class="log" id="log"></div>
+        </div>
+    </div>
+
+    <script src="../js/config.js"></script>
+    <script src="../js/api-client.js"></script>
+    <script>
+        let comparison = null;
+        
+        // ALWAYS use production API for syncing (database is on production server)
+        // This ensures we sync to the live database regardless of where we're testing from
+        // Override any config.js settings
+        const API_BASE_URL = 'http://31.97.79.197:3001/api';
+
+        function log(message, type = 'info') {
+            const logEl = document.getElementById('log');
+            const entry = document.createElement('div');
+            entry.className = `log-entry ${type}`;
+            entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            logEl.appendChild(entry);
+            logEl.scrollTop = logEl.scrollHeight;
+        }
+
+        async function scanDifferences() {
+            log('Starting scan...', 'info');
+            document.getElementById('scanBtn').disabled = true;
+            document.getElementById('scanBtn').innerHTML = '<span class="loading"></span> Scanning...';
+
+            try {
+                // Get localStorage data
+                const localDataRaw = localStorage.getItem('kj_cms_data');
+                if (!localDataRaw) {
+                    throw new Error('No localStorage data found. Please open the CMS admin first.');
+                }
+                const localData = JSON.parse(localDataRaw);
+                log(`Found localStorage data with ${Object.keys(localData).length} sections`, 'success');
+
+                // Get database data
+                log(`Fetching data from database at: ${API_BASE_URL}`, 'info');
+                
+                async function fetchWithErrorHandling(url, name) {
+                    try {
+                        const response = await fetch(url);
+                        if (!response.ok) {
+                            const errorText = await response.text();
+                            log(`❌ ${name} API error (${response.status}): ${errorText.substring(0, 100)}`, 'error');
+                            return { data: [], error: `HTTP ${response.status}` };
+                        }
+                        const data = await response.json();
+                        return { data: data.data || data || [], error: null };
+                    } catch (error) {
+                        log(`❌ ${name} fetch failed: ${error.message}`, 'error');
+                        log(`   URL attempted: ${url}`, 'error');
+                        return { data: [], error: error.message };
+                    }
+                }
+                
+                const [slidesRes, projectsRes, teamRes, boardRes, clientsRes, testimonialsRes, blogRes, certsRes] = await Promise.all([
+                    fetchWithErrorHandling(`${API_BASE_URL}/slides`, 'Slides'),
+                    fetchWithErrorHandling(`${API_BASE_URL}/projects`, 'Projects'),
+                    fetchWithErrorHandling(`${API_BASE_URL}/team`, 'Team'),
+                    fetchWithErrorHandling(`${API_BASE_URL}/board`, 'Board'),
+                    fetchWithErrorHandling(`${API_BASE_URL}/clients`, 'Clients'),
+                    fetchWithErrorHandling(`${API_BASE_URL}/testimonials`, 'Testimonials'),
+                    fetchWithErrorHandling(`${API_BASE_URL}/blog`, 'Blog'),
+                    fetchWithErrorHandling(`${API_BASE_URL}/certifications`, 'Certifications')
+                ]);
+
+                const dbData = {
+                    slides: slidesRes.data || [],
+                    projects: projectsRes.data || [],
+                    team: teamRes.data || [],
+                    board: boardRes.data || [],
+                    clients: clientsRes.data || [],
+                    testimonials: testimonialsRes.data || [],
+                    blog: blogRes.data || [],
+                    certifications: certsRes.data || []
+                };
+                
+                // Log any errors
+                const errors = [slidesRes, projectsRes, teamRes, boardRes, clientsRes, testimonialsRes, blogRes, certsRes]
+                    .filter(r => r.error).map(r => r.error);
+                if (errors.length > 0) {
+                    log(`⚠️ Some endpoints failed. Continuing with available data...`, 'error');
+                }
+
+                log('Database data fetched successfully', 'success');
+
+                // Compare
+                comparison = {
+                    slides: compareItems('slides', localData.slides || [], dbData.slides, 'title'),
+                    projects: compareItems('projects', localData.projects || [], dbData.projects, 'title'),
+                    team: compareItems('team', localData.team || [], dbData.team, 'name'),
+                    board: compareItems('board', localData.board || [], dbData.board, 'name'),
+                    clients: compareItems('clients', localData.clients || [], dbData.clients, 'name'),
+                    testimonials: compareItems('testimonials', localData.testimonials || [], dbData.testimonials, 'name'),
+                    blog: compareItems('blog', localData.blog || [], dbData.blog, 'title'),
+                    certifications: compareItems('certifications', localData.certifications || [], dbData.certifications, 'title')
+                };
+
+                displayComparison(comparison);
+                document.getElementById('syncBtn').disabled = false;
+                log('Scan complete! Review differences above.', 'success');
+
+            } catch (error) {
+                log(`Error: ${error.message}`, 'error');
+                console.error(error);
+            } finally {
+                document.getElementById('scanBtn').disabled = false;
+                document.getElementById('scanBtn').textContent = '🔍 Scan Differences';
+            }
+        }
+
+        function compareItems(type, localItems, dbItems, keyField) {
+            // Create maps for quick lookup
+            const localMap = new Map();
+            localItems.forEach(item => {
+                const key = item[keyField] || item.title || item.name || String(item.id);
+                localMap.set(key.toLowerCase().trim(), item);
+            });
+
+            const dbMap = new Map();
+            dbItems.forEach(item => {
+                const key = item[keyField] || item.title || item.name || String(item.id);
+                dbMap.set(key.toLowerCase().trim(), item);
+            });
+
+            const missing = [];
+            const extra = [];
+
+            // Find items in localStorage but not in database
+            localMap.forEach((item, key) => {
+                if (!dbMap.has(key)) {
+                    missing.push(item);
+                }
+            });
+
+            // Find items in database but not in localStorage
+            dbMap.forEach((item, key) => {
+                if (!localMap.has(key)) {
+                    extra.push(item);
+                }
+            });
+
+            return {
+                type,
+                localCount: localItems.length,
+                dbCount: dbItems.length,
+                missing,
+                extra,
+                totalMissing: missing.length,
+                totalExtra: extra.length
+            };
+        }
+
+        function displayComparison(comparison) {
+            // Update stats
+            let totalMissing = 0;
+            let totalExtra = 0;
+            Object.values(comparison).forEach(comp => {
+                totalMissing += comp.totalMissing;
+                totalExtra += comp.totalExtra;
+            });
+
+            const statsHtml = `
+                <div class="stat-card">
+                    <div class="stat-label">LocalStorage Items</div>
+                    <div class="stat-value">${Object.values(comparison).reduce((sum, c) => sum + c.localCount, 0)}</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-label">Database Items</div>
+                    <div class="stat-value">${Object.values(comparison).reduce((sum, c) => sum + c.dbCount, 0)}</div>
+                </div>
+                <div class="stat-card ${totalMissing > 0 ? 'warning' : ''}">
+                    <div class="stat-label">Missing in DB</div>
+                    <div class="stat-value">${totalMissing}</div>
+                </div>
+                <div class="stat-card ${totalExtra > 0 ? 'danger' : ''}">
+                    <div class="stat-label">Extra in DB</div>
+                    <div class="stat-value">${totalExtra}</div>
+                </div>
+            `;
+            document.getElementById('stats').innerHTML = statsHtml;
+
+            // Display differences
+            let diffHtml = '';
+            Object.values(comparison).forEach(comp => {
+                if (comp.totalMissing === 0 && comp.totalExtra === 0) {
+                    diffHtml += `<div class="diff-item"><div class="diff-title">✅ ${comp.type.toUpperCase()}</div><div class="diff-details">All items are in sync (${comp.localCount} items)</div></div>`;
+                } else {
+                    if (comp.totalMissing > 0) {
+                        diffHtml += `<div class="diff-item missing"><div class="diff-title">⚠️ ${comp.type.toUpperCase()} - ${comp.totalMissing} missing in database</div>`;
+                        comp.missing.slice(0, 5).forEach(item => {
+                            const name = item.title || item.name || item.tagline || 'Unknown';
+                            diffHtml += `<div class="diff-details">• ${name}</div>`;
+                        });
+                        if (comp.missing.length > 5) {
+                            diffHtml += `<div class="diff-details">... and ${comp.missing.length - 5} more</div>`;
+                        }
+                        diffHtml += `</div>`;
+                    }
+                    if (comp.totalExtra > 0) {
+                        diffHtml += `<div class="diff-item extra"><div class="diff-title">ℹ️ ${comp.type.toUpperCase()} - ${comp.totalExtra} extra in database</div>`;
+                        comp.extra.slice(0, 3).forEach(item => {
+                            const name = item.title || item.name || item.tagline || 'Unknown';
+                            diffHtml += `<div class="diff-details">• ${name}</div>`;
+                        });
+                        if (comp.extra.length > 3) {
+                            diffHtml += `<div class="diff-details">... and ${comp.extra.length - 3} more</div>`;
+                        }
+                        diffHtml += `</div>`;
+                    }
+                }
+            });
+
+            if (!diffHtml) {
+                diffHtml = '<div class="diff-item"><div class="diff-title">✅ Everything is in sync!</div></div>';
+            }
+
+            document.getElementById('differences').innerHTML = diffHtml;
+        }
+
+        async function syncToDatabase() {
+            if (!comparison) {
+                alert('Please scan differences first!');
+                return;
+            }
+
+            if (!confirm(`This will sync ${Object.values(comparison).reduce((sum, c) => sum + c.totalMissing, 0)} missing items to the database. Continue?`)) {
+                return;
+            }
+
+            document.getElementById('syncBtn').disabled = true;
+            document.getElementById('syncBtn').innerHTML = '<span class="loading"></span> Syncing...';
+
+            let synced = 0;
+            let errors = 0;
+
+            try {
+                // Sync each type
+                for (const [type, comp] of Object.entries(comparison)) {
+                    if (comp.totalMissing === 0) continue;
+
+                    log(`Syncing ${comp.totalMissing} ${type}...`, 'info');
+
+                    for (const item of comp.missing) {
+                        try {
+                            const apiType = type === 'team' ? 'team' : 
+                                          type === 'board' ? 'board' : 
+                                          type === 'blog' ? 'blog' : type;
+                            
+                            const endpoint = `${API_BASE_URL}/${apiType}`;
+                            const transformed = transformItem(item, type);
+
+                            log(`  → Syncing: ${item.title || item.name || item.tagline || 'Unknown'}`, 'info');
+                            
+                            const response = await fetch(endpoint, {
+                                method: 'POST',
+                                headers: { 
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify(transformed)
+                            });
+
+                            if (!response.ok) {
+                                const errorText = await response.text();
+                                let errorMsg = 'Sync failed';
+                                try {
+                                    const errorJson = JSON.parse(errorText);
+                                    errorMsg = errorJson.message || errorJson.error || errorText.substring(0, 100);
+                                } catch {
+                                    errorMsg = errorText.substring(0, 100) || `HTTP ${response.status}`;
+                                }
+                                throw new Error(errorMsg);
+                            }
+                            
+                            const result = await response.json();
+                            synced++;
+                            const name = item.title || item.name || item.tagline || 'Unknown';
+                            log(`  ✅ Synced: ${name}`, 'success');
+                        } catch (error) {
+                            errors++;
+                            const name = item.title || item.name || item.tagline || 'Unknown';
+                            log(`  ❌ Failed: ${name} - ${error.message}`, 'error');
+                            console.error(`Sync error for ${type}:`, error, item);
+                        }
+                    }
+                }
+
+                log(`\n✅ Sync complete! ${synced} items synced, ${errors} errors`, synced > 0 ? 'success' : 'error');
+                
+                // Refresh comparison
+                setTimeout(() => {
+                    scanDifferences();
+                }, 1000);
+
+            } catch (error) {
+                log(`Fatal error: ${error.message}`, 'error');
+            } finally {
+                document.getElementById('syncBtn').disabled = false;
+                document.getElementById('syncBtn').textContent = '⬆️ Sync Missing Items to Database';
+            }
+        }
+
+        function transformItem(item, type) {
+            // Transform camelCase to snake_case and handle special fields
+            const transformed = {};
+            
+            Object.keys(item).forEach(key => {
+                // Skip ID for new items (let DB generate UUID)
+                if (key === 'id') return;
+                
+                // Convert camelCase to snake_case
+                const snakeKey = key.replace(/([A-Z])/g, '_$1').toLowerCase();
+                
+                // Handle special field mappings
+                if (type === 'slides') {
+                    if (key === 'titleHighlight') transformed.title_highlight = item[key];
+                    else if (key === 'buttonText') transformed.button_text = item[key];
+                    else if (key === 'buttonLink') transformed.button_link = item[key];
+                    else transformed[snakeKey] = item[key];
+                } else if (type === 'board') {
+                    if (key === 'isChairman') transformed.is_chairman = item[key];
+                    else transformed[snakeKey] = item[key];
+                } else if (type === 'testimonials') {
+                    // Map both 'text' and 'content' to 'text' field
+                    if (key === 'text' || key === 'content') {
+                        transformed.text = item[key];
+                    } else {
+                        transformed[snakeKey] = item[key];
+                    }
+                } else if (type === 'projects') {
+                    // Handle images array
+                    if (key === 'images' && Array.isArray(item[key])) {
+                        transformed.images = item[key].map(img => {
+                            if (typeof img === 'string') return img;
+                            return img.path || img.data || img;
+                        });
+                    } else {
+                        transformed[snakeKey] = item[key];
+                    }
+                } else {
+                    // Default: convert camelCase to snake_case
+                    transformed[snakeKey] = item[key];
+                }
+            });
+
+            return transformed;
+        }
+
+        function exportLocalStorage() {
+            const data = localStorage.getItem('kj_cms_data');
+            if (!data) {
+                alert('No localStorage data found!');
+                return;
+            }
+
+            const blob = new Blob([data], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `cms-data-${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            log('LocalStorage data exported', 'success');
+        }
+
+        // Auto-scan on load
+        window.addEventListener('load', () => {
+            log(`Ready! API Base URL: ${API_BASE_URL}`, 'info');
+            log('Click "Scan Differences" to start.', 'info');
+            
+            // Test API connection
+            fetch(`${API_BASE_URL.replace('/api', '')}/api`)
+                .then(r => r.json())
+                .then(data => {
+                    log(`✅ API connection successful: ${data.name || 'Connected'}`, 'success');
+                })
+                .catch(err => {
+                    log(`⚠️ API connection test failed: ${err.message}`, 'error');
+                    log(`   Make sure the backend is running at ${API_BASE_URL}`, 'error');
+                });
+        });
+    </script>
+</body>
+</html>
+

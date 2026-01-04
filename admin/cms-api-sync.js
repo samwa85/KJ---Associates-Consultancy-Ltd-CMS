@@ -246,6 +246,25 @@ const CMSSync = {
     }
   },
   
+  async saveBlogPost(post, isNew = false) {
+    if (!this.apiAvailable) {
+      return { success: true, local: true };
+    }
+    
+    try {
+      if (isNew) {
+        const response = await API.blog.create(this.transformToAPI(post, 'blog'));
+        return { success: true, data: response.data };
+      } else {
+        const response = await API.blog.update(post.id, this.transformToAPI(post, 'blog'));
+        return { success: true, data: response.data };
+      }
+    } catch (error) {
+      console.error('[CMSSync] Failed to save blog post:', error);
+      return { success: false, error: error.message };
+    }
+  },
+  
   // =====================================================
   // DELETE ITEMS
   // =====================================================
