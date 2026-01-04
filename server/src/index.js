@@ -39,7 +39,7 @@ app.use(cors({
       process.env.NODE_ENV !== 'production';
 
     if (isAllowed) {
-      callback(null, true);
+      callback(null, origin);
     } else {
       console.warn(`[CORS] Rejected origin: ${origin}`);
       callback(new Error('Not allowed by CORS'));

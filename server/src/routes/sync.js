@@ -16,7 +16,12 @@ const SYNC_SECRET = process.env.SYNC_SECRET || 'kj-cms-sync-2024-secret';
 
 // Middleware to verify sync secret
 const verifySyncSecret = (req, res, next) => {
-  const secret = req.headers['x-sync-secret'];
+  // Always skip verification for OPTIONS preflight requests
+  if (req.method === 'OPTIONS') {
+    return next();
+  }
+
+  const secret = req.headers['x-sync-secret'] || req.headers['X-Sync-Secret'];
 
   if (!secret || secret !== SYNC_SECRET) {
     return res.status(401).json({
