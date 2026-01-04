@@ -488,8 +488,8 @@
                 log(`   Try opening this page via HTTP instead, or use a browser that allows mixed content.`, 'error');
             }
             
-            // Test API connection
-            fetch(`${API_BASE_URL.replace('/api', '')}/api`, {
+            // Test API connection - hit the root /api endpoint
+            fetch(API_BASE_URL, {
                 method: 'GET',
                 mode: 'cors',
                 headers: {
