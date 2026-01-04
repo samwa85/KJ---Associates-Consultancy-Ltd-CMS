@@ -135,7 +135,7 @@ const CMS = {
             if (typeof CMSSync !== 'undefined') {
                 await CMSSync.init();
             }
-            
+
             await this.loadData();
             this.renderAll();
             this.updateStats();
@@ -177,7 +177,7 @@ const CMS = {
                 console.warn('[CMS] API load failed, falling back to localStorage:', error);
             }
         }
-        
+
         // Fall back to localStorage
         const stored = localStorage.getItem('kj_cms_data');
         if (stored) {
@@ -225,7 +225,7 @@ const CMS = {
     saveData(silent = false) {
         localStorage.setItem('kj_cms_data', JSON.stringify(this.data));
         if (!silent) {
-        showNotification('Changes saved!', 'success');
+            showNotification('Changes saved!', 'success');
         }
     },
 
@@ -235,7 +235,7 @@ const CMS = {
         const projectsStat = document.getElementById('stat-projects');
         const teamStat = document.getElementById('stat-team');
         const blogStat = document.getElementById('stat-blog');
-        
+
         if (slidesStat) slidesStat.textContent = (this.data.slides || []).filter(s => s.active).length;
         if (projectsStat) projectsStat.textContent = (this.data.projects || []).length;
         if (teamStat) teamStat.textContent = (this.data.team || []).length;
@@ -259,12 +259,12 @@ const CMS = {
     renderSlides() {
         const grid = document.getElementById('slidesGrid');
         if (!grid) return;
-        
+
         if (this.data.slides.length === 0) {
             grid.innerHTML = `<div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></svg><h3>No slides yet</h3><p>Add your first slide to get started</p></div>`;
             return;
         }
-        
+
         grid.innerHTML = this.data.slides.map(slide => {
             const hasImage = slide.image && slide.image.trim() !== '';
             const imageSrc = hasImage ? slide.image : '';
@@ -290,12 +290,12 @@ const CMS = {
     renderProjects() {
         const grid = document.getElementById('projectsGrid');
         if (!grid) return;
-        
+
         if (this.data.projects.length === 0) {
             grid.innerHTML = `<div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg><h3>No projects yet</h3><p>Add your first project to showcase your work</p></div>`;
             return;
         }
-        
+
         grid.innerHTML = this.data.projects.map(project => {
             let valueDisplay = 'Value Not Disclosed';
             if (project.value) {
@@ -342,12 +342,12 @@ const CMS = {
     renderTeam() {
         const grid = document.getElementById('teamGrid');
         if (!grid) return;
-        
+
         if (this.data.team.length === 0) {
             grid.innerHTML = `<div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg><h3>No team members yet</h3><p>Add your team to show your expertise</p></div>`;
             return;
         }
-        
+
         grid.innerHTML = this.data.team.map(member => {
             // Photo can be URL or base64 data
             let photoPath = member.photo || '';
@@ -357,7 +357,7 @@ const CMS = {
             const hasPhoto = photoPath && photoPath.trim() !== '' && !photoPath.includes('placeholder.com');
             return `
             <div class="item-card">
-                ${hasPhoto 
+                ${hasPhoto
                     ? `<img src="${photoPath}" alt="${member.name}" class="item-image" style="object-fit: contain; object-position: center;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" onload="this.style.display='block'; this.nextElementSibling.style.display='none';" />`
                     : ''
                 }
@@ -381,12 +381,12 @@ const CMS = {
     renderBoard() {
         const grid = document.getElementById('boardGrid');
         if (!grid) return;
-        
+
         if (!this.data.board || !Array.isArray(this.data.board) || this.data.board.length === 0) {
             grid.innerHTML = `<div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg><h3>No board members yet</h3><p>Add board members to show your governance structure</p></div>`;
             return;
         }
-        
+
         grid.innerHTML = this.data.board.map(member => {
             // Photo can be URL or base64 data
             let photoPath = member.photo || '';
@@ -396,7 +396,7 @@ const CMS = {
             const hasPhoto = photoPath && photoPath.trim() !== '' && !photoPath.includes('placeholder.com');
             return `
             <div class="item-card">
-                ${hasPhoto 
+                ${hasPhoto
                     ? `<img src="${photoPath}" alt="${member.name}" class="item-image" style="object-fit: contain; object-position: center;" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" onload="this.style.display='block'; this.nextElementSibling.style.display='none';" />`
                     : ''
                 }
@@ -421,26 +421,26 @@ const CMS = {
     renderClients() {
         const grid = document.getElementById('clientsGrid');
         if (!grid) return;
-        
+
         if (this.data.clients.length === 0) {
             grid.innerHTML = `<div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5"/></svg><h3>No clients yet</h3><p>Add your clients to build trust</p></div>`;
             return;
         }
-        
+
         const categoryColors = { Government: 'badge-info', Donor: 'badge-success', Bank: 'badge-warning', Private: 'badge-danger' };
-        
+
         grid.innerHTML = this.data.clients.map(client => {
             let logoSrc = client.logo || '';
-            
+
             // Check if we have base64 data stored for this logo
             if (logoSrc && this.data._imageData && this.data._imageData[logoSrc]) {
                 logoSrc = this.data._imageData[logoSrc];
             }
-            
+
             const hasLogo = logoSrc && logoSrc.trim() !== '' && !logoSrc.includes('placeholder.com');
             return `
             <div class="item-card">
-                ${hasLogo 
+                ${hasLogo
                     ? `<div style="padding: 1rem; background: var(--gray-50); border-bottom: 1px solid var(--gray-200); display: flex; align-items: center; justify-content: center; min-height: 120px;">
                         <img src="${logoSrc}" alt="${client.name}" style="max-width: 150px; max-height: 80px; object-fit: contain;" onerror="this.parentElement.style.display='none';" onload="this.parentElement.style.display='flex';" />
                     </div>`
@@ -464,12 +464,12 @@ const CMS = {
     renderTestimonials() {
         const grid = document.getElementById('testimonialsGrid');
         if (!grid) return;
-        
+
         if (this.data.testimonials.length === 0) {
             grid.innerHTML = `<div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg><h3>No testimonials yet</h3><p>Add client testimonials to build credibility</p></div>`;
             return;
         }
-        
+
         grid.innerHTML = this.data.testimonials.map(t => {
             const hasPhoto = t.photo && t.photo.trim() !== '' && !t.photo.includes('placeholder.com');
             const photoSrc = hasPhoto ? t.photo : '';
@@ -478,9 +478,9 @@ const CMS = {
                 <div class="item-content">
                     <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
                         ${hasPhoto
-                            ? `<img src="${photoSrc}" alt="${t.name}" style="width: 50px; height: 50px; border-radius: 50%; object-fit: contain; background: var(--gray-200);" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" onload="this.style.display='block'; this.nextElementSibling.style.display='none';" />`
-                            : ''
-                        }
+                    ? `<img src="${photoSrc}" alt="${t.name}" style="width: 50px; height: 50px; border-radius: 50%; object-fit: contain; background: var(--gray-200);" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" onload="this.style.display='block'; this.nextElementSibling.style.display='none';" />`
+                    : ''
+                }
                         <div style="display: ${hasPhoto ? 'none' : 'flex'}; width: 50px; height: 50px; border-radius: 50%; background: var(--gray-200); align-items: center; justify-content: center; color: var(--gray-400); font-size: 1.5rem;">👤</div>
                         <div>
                             <h4 class="item-title" style="margin-bottom: 0;">${t.name}</h4>
@@ -503,12 +503,12 @@ const CMS = {
     renderServices() {
         const grid = document.getElementById('servicesGrid');
         if (!grid) return;
-        
+
         if (this.data.services.length === 0) {
             grid.innerHTML = `<div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/></svg><h3>No services yet</h3><p>Add your services to showcase your offerings</p></div>`;
             return;
         }
-        
+
         grid.innerHTML = this.data.services.map(service => `
             <div class="item-card">
                 <div class="item-content">
@@ -529,14 +529,14 @@ const CMS = {
     renderBlog() {
         const grid = document.getElementById('blogGrid');
         if (!grid) return;
-        
+
         const blogPosts = this.data.blog || [];
-        
+
         if (blogPosts.length === 0) {
             grid.innerHTML = `<div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><h3>No blog posts yet</h3><p>Add your first blog post to share insights</p></div>`;
             return;
         }
-        
+
         const categoryLabels = {
             'industry-insights': 'Industry Insights',
             'project-spotlight': 'Project Spotlight',
@@ -544,7 +544,7 @@ const CMS = {
             'regulations': 'Regulations',
             'company-news': 'Company News'
         };
-        
+
         grid.innerHTML = blogPosts.map(post => {
             const hasImage = post.image && post.image.trim() !== '' && !post.image.includes('placeholder.com');
             const imageSrc = hasImage ? post.image : '';
@@ -578,21 +578,21 @@ const CMS = {
     renderCertifications() {
         const grid = document.getElementById('certificationsGrid');
         if (!grid) return;
-        
+
         const certifications = this.data.certifications || [];
-        
+
         if (certifications.length === 0) {
             grid.innerHTML = `<div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 15l-2 5l9-11h-5l2-5L7 15h5z"/></svg><h3>No certifications yet</h3><p>Add your certifications and legal documents</p></div>`;
             return;
         }
-        
+
         const categoryLabels = {
             'professional': 'Professional',
             'tax': 'Tax & Revenue',
             'legal': 'Legal',
             'insurance': 'Insurance'
         };
-        
+
         grid.innerHTML = certifications.map(cert => {
             let imagePath = cert.image || '';
             if (imagePath && !imagePath.startsWith('data:image') && !imagePath.startsWith('http')) {
@@ -680,11 +680,11 @@ const CMS = {
         if (!path || path.trim() === '') return '';
         // If it's already a full URL (http/https), return as-is
         if (path.startsWith('http://') || path.startsWith('https://')) return path;
-        
+
         // Check if we're using file:// protocol (local file system)
         const isFileProtocol = window.location.protocol === 'file:';
         const isAdminPanel = window.location.pathname.includes('/admin/') || window.location.pathname.includes('admin/index.html');
-        
+
         // If it's root-relative (starts with /)
         if (path.startsWith('/')) {
             // For file:// protocol in admin folder, convert to ../ relative path
@@ -694,16 +694,16 @@ const CMS = {
             // For web server, keep root-relative
             return path;
         }
-        
+
         // If it's already a relative path with ../
         if (path.startsWith('../')) return path;
-        
+
         // If it's a relative path (like images/team/...)
         if (isAdminPanel && !path.startsWith('../')) {
             // In admin folder, use ../ to go up to root
             return '../' + path;
         }
-        
+
         // Otherwise, make it root-relative (for web server)
         return '/' + path;
     }
@@ -714,18 +714,18 @@ function showSection(sectionId) {
     // Hide all sections
     document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
     document.querySelectorAll('.section').forEach(s => s.style.display = 'none');
-    
+
     // Show selected section
     const section = document.getElementById(`section-${sectionId}`);
     if (section) {
         section.style.display = 'block';
         section.classList.add('active');
     }
-    
+
     // Update nav
     document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
     event.target.classList.add('active');
-    
+
     // Close mobile sidebar
     document.getElementById('sidebar').classList.remove('open');
 }
@@ -754,11 +754,11 @@ function updateLogoPreview() {
     const isText = document.querySelector('input[name="logoType"]:checked').value === 'text';
     const lightPreview = document.querySelector('.logo-preview-light');
     const darkPreview = document.querySelector('.logo-preview-dark');
-    
+
     if (isText) {
         const text = document.getElementById('logoText').value || 'KJ & Associates';
         const subtitle = document.getElementById('logoSubtitle').value || 'Consultancy Ltd';
-        
+
         lightPreview.innerHTML = `
             <span class="preview-label">Light Background</span>
             <div class="text-logo">
@@ -776,7 +776,7 @@ function updateLogoPreview() {
     } else {
         const lightUrl = document.getElementById('logoImageUrl').value;
         const darkUrl = document.getElementById('logoImageUrlDark').value || lightUrl;
-        
+
         lightPreview.innerHTML = `
             <span class="preview-label">Light Background</span>
             ${lightUrl ? `<img src="${lightUrl}" alt="Logo" style="max-height: 60px; max-width: 100%;">` : '<span style="color: var(--gray-400);">No image</span>'}
@@ -795,7 +795,7 @@ function generateImagePath(urlInputId, fileExtension) {
     let category = 'uploads';
     let itemId = '';
     let itemName = '';
-    
+
     // Get category and ID based on the input field
     if (urlInputId.includes('project')) {
         category = 'projects';
@@ -837,7 +837,7 @@ function generateImagePath(urlInputId, fileExtension) {
         const title = document.getElementById('certificationTitle')?.value || 'certificate';
         itemName = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').substring(0, 30);
     }
-    
+
     // Generate filename: category-itemname-id.extension
     const filename = itemName ? `${itemName}-${itemId}` : `${category}-${itemId}`;
     return `/uploads/${category}/${filename}${fileExtension}`;
@@ -851,44 +851,44 @@ function handleImageUpload(fileInput, urlInputId, previewContainerId) {
             console.log('No file selected');
             return;
         }
-        
+
         // Validate file type - check both MIME type and extension
         const fileExtension = '.' + file.name.split('.').pop().toLowerCase();
         const validExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg', '.bmp'];
         const isValidImage = file.type.startsWith('image/') || validExtensions.includes(fileExtension);
-        
+
         if (!isValidImage) {
             alert('Please select an image file (JPG, PNG, GIF, etc.)');
             fileInput.value = '';
             return;
         }
-        
+
         // Validate file size (max 5MB)
         if (file.size > 5 * 1024 * 1024) {
             alert('Image file is too large. Please select an image smaller than 5MB.');
             fileInput.value = '';
             return;
         }
-        
+
         // Normalize file extension (use .jpg for .jpeg, etc.)
         const normalizedExtension = fileExtension === '.jpeg' ? '.jpg' : fileExtension;
-        
+
         // Generate proper file path
         const filePath = generateImagePath(urlInputId, normalizedExtension);
-        
+
         // Show loading state
         const urlInput = document.getElementById(urlInputId);
         if (urlInput) {
             urlInput.value = 'Uploading...';
             urlInput.disabled = true;
         }
-        
+
         const reader = new FileReader();
-        
-        reader.onload = function(e) {
+
+        reader.onload = function (e) {
             try {
                 const dataUrl = e.target.result;
-                
+
                 // Store the base64 data with the file path in a temporary storage
                 if (!window.uploadedImages) {
                     window.uploadedImages = {};
@@ -898,13 +898,13 @@ function handleImageUpload(fileInput, urlInputId, previewContainerId) {
                     data: dataUrl,
                     filename: filePath.split('/').pop()
                 };
-                
+
                 // Set the URL input to the file path (not base64)
                 if (urlInput) {
                     urlInput.value = filePath;
                     urlInput.disabled = false;
                 }
-                
+
                 // Show preview using base64 data
                 try {
                     const previewContainer = document.getElementById(previewContainerId);
@@ -912,7 +912,7 @@ function handleImageUpload(fileInput, urlInputId, previewContainerId) {
                         let previewImg = previewContainer.querySelector('img') || document.getElementById(previewContainerId.replace('Preview', 'PreviewImg'));
                         if (previewImg) {
                             previewImg.src = dataUrl;
-                            previewImg.onerror = function() {
+                            previewImg.onerror = function () {
                                 console.warn('Preview image failed to load');
                             };
                             previewContainer.style.display = 'block';
@@ -922,7 +922,7 @@ function handleImageUpload(fileInput, urlInputId, previewContainerId) {
                             img.src = dataUrl;
                             img.alt = 'Preview';
                             img.style.cssText = 'width: 150px; height: 150px; object-fit: contain; border-radius: 8px; border: 2px solid var(--gray-200);';
-                            img.onerror = function() {
+                            img.onerror = function () {
                                 console.warn('Preview image failed to load');
                             };
                             previewContainer.innerHTML = '';
@@ -933,12 +933,12 @@ function handleImageUpload(fileInput, urlInputId, previewContainerId) {
                 } catch (previewError) {
                     console.error('Error showing preview:', previewError);
                 }
-                
+
                 // Show brief success notification
                 setTimeout(() => {
                     showNotification('Image uploaded successfully!', 'success');
                 }, 100);
-                
+
                 // Trigger any existing preview functions
                 try {
                     // Force preview update after a short delay to ensure DOM is ready
@@ -967,8 +967,8 @@ function handleImageUpload(fileInput, urlInputId, previewContainerId) {
                 fileInput.value = '';
             }
         };
-        
-        reader.onerror = function() {
+
+        reader.onerror = function () {
             console.error('FileReader error');
             alert('Error reading file. Please try again.');
             if (urlInput) {
@@ -977,8 +977,8 @@ function handleImageUpload(fileInput, urlInputId, previewContainerId) {
             }
             fileInput.value = '';
         };
-        
-        reader.onprogress = function(e) {
+
+        reader.onprogress = function (e) {
             if (e.lengthComputable) {
                 const percentLoaded = Math.round((e.loaded / e.total) * 100);
                 if (urlInput && percentLoaded < 100) {
@@ -986,7 +986,7 @@ function handleImageUpload(fileInput, urlInputId, previewContainerId) {
                 }
             }
         };
-        
+
         reader.readAsDataURL(file);
     } catch (error) {
         console.error('Error in handleImageUpload:', error);
@@ -1008,26 +1008,26 @@ window.projectImages = window.projectImages || [];
 function handleMultipleImageUpload(fileInput, storageKey) {
     const files = fileInput.files;
     if (!files || files.length === 0) return;
-    
+
     const validExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp'];
     const maxSize = 5 * 1024 * 1024; // 5MB
-    
+
     Array.from(files).forEach((file, index) => {
         const fileExtension = '.' + file.name.split('.').pop().toLowerCase();
         const isValidImage = file.type.startsWith('image/') || validExtensions.includes(fileExtension);
-        
+
         if (!isValidImage) {
             showNotification(`${file.name} is not a valid image file`, 'error');
             return;
         }
-        
+
         if (file.size > maxSize) {
             showNotification(`${file.name} is too large (max 5MB)`, 'error');
             return;
         }
-        
+
         const reader = new FileReader();
-        reader.onload = function(e) {
+        reader.onload = function (e) {
             const dataUrl = e.target.result;
             const projectId = document.getElementById('projectId')?.value || 'new';
             const title = document.getElementById('projectTitle')?.value || 'project';
@@ -1035,19 +1035,19 @@ function handleMultipleImageUpload(fileInput, storageKey) {
             const imgIndex = window.projectImages.length + 1;
             const normalizedExtension = fileExtension === '.jpeg' ? '.jpg' : fileExtension;
             const filePath = `/uploads/projects/${itemName}-${projectId}-${imgIndex}${normalizedExtension}`;
-            
+
             window.projectImages.push({
                 path: filePath,
                 data: dataUrl,
                 filename: filePath.split('/').pop()
             });
-            
+
             renderProjectImagesGallery();
             showNotification(`Image ${file.name} added`, 'success');
         };
         reader.readAsDataURL(file);
     });
-    
+
     // Clear the file input for next selection
     fileInput.value = '';
 }
@@ -1056,23 +1056,23 @@ function handleMultipleImageUpload(fileInput, storageKey) {
 function addImageUrl(event) {
     if (event.key !== 'Enter') return;
     event.preventDefault();
-    
+
     const urlInput = document.getElementById('projectImage');
     const url = urlInput.value.trim();
-    
+
     if (!url) return;
-    
+
     if (!url.startsWith('http') && !url.startsWith('/')) {
         showNotification('Please enter a valid URL', 'error');
         return;
     }
-    
+
     window.projectImages.push({
         path: url,
         data: url, // For external URLs, path and data are the same
         filename: url.split('/').pop()
     });
-    
+
     urlInput.value = '';
     renderProjectImagesGallery();
     showNotification('Image URL added', 'success');
@@ -1082,14 +1082,14 @@ function addImageUrl(event) {
 function renderProjectImagesGallery() {
     const gallery = document.getElementById('projectImagesGallery');
     const grid = document.getElementById('projectImagesGrid');
-    
+
     if (!gallery || !grid) return;
-    
+
     if (window.projectImages.length === 0) {
         gallery.style.display = 'none';
         return;
     }
-    
+
     gallery.style.display = 'block';
     grid.innerHTML = window.projectImages.map((img, index) => `
         <div class="gallery-item ${index === 0 ? 'main' : ''}" data-index="${index}">
@@ -1109,7 +1109,7 @@ function removeProjectImage(index) {
 // Set an image as the main/cover image
 function setMainProjectImage(index) {
     if (index <= 0 || index >= window.projectImages.length) return;
-    
+
     const [img] = window.projectImages.splice(index, 1);
     window.projectImages.unshift(img);
     renderProjectImagesGallery();
@@ -1124,9 +1124,9 @@ function clearProjectImages() {
 // Load existing project images into the gallery
 function loadProjectImages(images) {
     window.projectImages = [];
-    
+
     if (!images) return;
-    
+
     // Handle both array and single string
     if (typeof images === 'string' && images.trim()) {
         window.projectImages.push({
@@ -1151,7 +1151,7 @@ function loadProjectImages(images) {
             }
         });
     }
-    
+
     renderProjectImagesGallery();
 }
 
@@ -1161,15 +1161,15 @@ function exportUploadedImages() {
         alert('No images to export. Upload images first.');
         return;
     }
-    
+
     // Create a zip-like structure or download individual files
     const images = window.uploadedImages;
     let downloadCount = 0;
-    
+
     Object.keys(images).forEach(key => {
         const imgData = images[key];
         const dataUrl = imgData.data;
-        
+
         // Convert base64 to blob
         const byteString = atob(dataUrl.split(',')[1]);
         const mimeString = dataUrl.split(',')[0].split(':')[1].split(';')[0];
@@ -1179,7 +1179,7 @@ function exportUploadedImages() {
             ia[i] = byteString.charCodeAt(i);
         }
         const blob = new Blob([ab], { type: mimeString });
-        
+
         // Create download link
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
@@ -1189,13 +1189,13 @@ function exportUploadedImages() {
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
-        
+
         downloadCount++;
     });
-    
+
     // Clear uploaded images after export
     window.uploadedImages = {};
-    
+
     showNotification(`Exported ${downloadCount} image(s). Please save them to the /uploads folder with the correct subfolder structure.`, 'success');
 }
 
@@ -1249,13 +1249,13 @@ function openSlideModal(id = null) {
     modal.classList.remove('hidden');
     modal.classList.add('active');
     document.getElementById('slideModalTitle').textContent = id ? 'Edit Slide' : 'Add Slide';
-    
+
     // Scroll modal to top
     const modalBody = modal.querySelector('.modal-body') || modal.querySelector('.space-y-4');
     if (modalBody) {
         modalBody.scrollTop = 0;
     }
-    
+
     if (id) {
         const slide = CMS.data.slides.find(s => s.id === id);
         if (slide) {
@@ -1299,7 +1299,7 @@ function previewSlideImage() {
     if (url && (url.startsWith('http') || url.startsWith('data:image'))) {
         img.src = url;
         preview.style.display = 'block';
-        img.onerror = function() {
+        img.onerror = function () {
             preview.style.display = 'none';
         };
     } else {
@@ -1310,19 +1310,19 @@ function previewSlideImage() {
 function saveSlide() {
     const id = document.getElementById('slideId').value;
     let imageValue = document.getElementById('slideImage').value.trim();
-    
+
     // If there's uploaded image data, update the path with the actual ID
     if (window.uploadedImages && window.uploadedImages['slideImage']) {
         const uploadedData = window.uploadedImages['slideImage'];
         const actualId = id ? parseInt(id) : CMS.getNextId('slides');
         const fileExtension = uploadedData.path.split('.').pop();
         imageValue = `/uploads/slides/slide-${actualId}.${fileExtension}`;
-        
+
         // Update the stored path
         uploadedData.path = imageValue;
         uploadedData.filename = imageValue.split('/').pop();
     }
-    
+
     const slide = {
         id: id ? parseInt(id) : CMS.getNextId('slides'),
         tagline: document.getElementById('slideTagline').value,
@@ -1333,19 +1333,19 @@ function saveSlide() {
         image: imageValue,
         active: document.getElementById('slideActive').checked
     };
-    
+
     const isNew = !id;
-    
+
     if (id) {
         const index = CMS.data.slides.findIndex(s => s.id === parseInt(id));
         CMS.data.slides[index] = slide;
     } else {
         CMS.data.slides.push(slide);
     }
-    
+
     // Save to localStorage
     CMS.saveData();
-    
+
     // Sync to API/database
     if (typeof CMSSync !== 'undefined' && CMSSync.apiAvailable) {
         CMSSync.saveSlide(slide, isNew).then(result => {
@@ -1358,7 +1358,7 @@ function saveSlide() {
             console.error('[CMS] Error syncing slide:', err);
         });
     }
-    
+
     CMS.renderSlides();
     CMS.updateStats();
     closeSlideModal();
@@ -1375,13 +1375,13 @@ function openProjectModal(id = null) {
     modal.classList.remove('hidden');
     modal.classList.add('active');
     document.getElementById('projectModalTitle').textContent = id ? 'Edit Project' : 'Add Project';
-    
+
     // Scroll modal to top
     const modalBody = modal.querySelector('.modal-body');
     if (modalBody) {
         modalBody.scrollTop = 0;
     }
-    
+
     if (id) {
         const project = CMS.data.projects.find(p => p.id === id);
         if (project) {
@@ -1401,7 +1401,7 @@ function openProjectModal(id = null) {
             document.getElementById('projectImage').value = imageValue;
             document.getElementById('projectCurrency').value = project.currency || '';
             document.getElementById('projectServices').value = project.services?.join(', ') || '';
-            
+
             // Show image preview if image exists
             const preview = document.getElementById('projectImagePreview');
             const previewImg = document.getElementById('projectPreviewImg');
@@ -1413,7 +1413,7 @@ function openProjectModal(id = null) {
                     } else {
                         // It's a path - try to load it, but also check for base64 in uploadedImages
                         previewImg.src = imageValue;
-                        previewImg.onerror = function() {
+                        previewImg.onerror = function () {
                             if (window.uploadedImages && window.uploadedImages['projectImage']) {
                                 this.src = window.uploadedImages['projectImage'].data;
                             } else {
@@ -1426,7 +1426,7 @@ function openProjectModal(id = null) {
                     preview.style.display = 'none';
                 }
             }
-            
+
             // Load project images into gallery (supports both single image and array)
             loadProjectImages(project.images || project.image);
         }
@@ -1446,11 +1446,11 @@ function openProjectModal(id = null) {
         document.getElementById('projectCurrency').value = '';
         document.getElementById('projectServices').value = '';
         document.getElementById('projectFeatured').checked = false;
-        
+
         // Clear project images gallery
         clearProjectImages();
     }
-    
+
     // Clear file input
     const fileInput = document.getElementById('projectImageUpload');
     if (fileInput) fileInput.value = '';
@@ -1467,37 +1467,37 @@ function saveProject() {
     const actualId = id ? parseInt(id) : CMS.getNextId('projects');
     const title = document.getElementById('projectTitle').value || 'project';
     const itemName = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').substring(0, 30);
-    
+
     // Process multiple images
     let images = [];
     let mainImage = '';
-    
+
     if (window.projectImages && window.projectImages.length > 0) {
         // Store base64 data mapping for frontend use
         if (!CMS.data._imageData) {
             CMS.data._imageData = {};
         }
-        
+
         images = window.projectImages.map((img, index) => {
             let finalPath = img.path;
-            
+
             // If it's a base64 image, generate a proper path
             if (img.data && img.data.startsWith('data:image')) {
                 const extension = img.data.split(';')[0].split('/')[1] || 'jpg';
                 finalPath = `/uploads/projects/${itemName}-${actualId}-${index + 1}.${extension}`;
                 CMS.data._imageData[finalPath] = img.data;
             }
-            
+
             return {
                 path: finalPath,
                 data: img.data
             };
         });
-        
+
         // First image is the main/cover image
         mainImage = images[0]?.data || images[0]?.path || '';
     }
-    
+
     const project = {
         id: actualId,
         title: document.getElementById('projectTitle').value,
@@ -1516,21 +1516,21 @@ function saveProject() {
         services: document.getElementById('projectServices').value.split(',').map(s => s.trim()).filter(s => s),
         featured: document.getElementById('projectFeatured')?.checked === true
     };
-    
+
     console.log('Saving project with featured:', project.featured, '- Title:', project.title);
-    
+
     const isNew = !id;
-    
+
     if (id) {
         const index = CMS.data.projects.findIndex(p => p.id === parseInt(id));
         CMS.data.projects[index] = project;
     } else {
         CMS.data.projects.push(project);
     }
-    
+
     // Save to localStorage
     CMS.saveData();
-    
+
     // Sync to API/database
     if (typeof CMSSync !== 'undefined' && CMSSync.apiAvailable) {
         CMSSync.saveProject(project, isNew).then(result => {
@@ -1543,12 +1543,12 @@ function saveProject() {
             console.error('[CMS] Error syncing project:', err);
         });
     }
-    
+
     CMS.renderProjects();
     CMS.updateStats();
     closeProjectModal();
     showNotification('Project saved successfully', 'success');
-    
+
     // Clear project images for next use
     window.projectImages = [];
 }
@@ -1563,18 +1563,18 @@ function openTeamModal(id = null) {
     modal.classList.remove('hidden');
     modal.classList.add('active');
     document.getElementById('teamModalTitle').textContent = id ? 'Edit Team Member' : 'Add Team Member';
-    
+
     // Scroll modal to top
     const modalBody = modal.querySelector('.modal-body');
     if (modalBody) {
         modalBody.scrollTop = 0;
     }
-    
+
     // Clear any previous upload data
     if (window.uploadedImages) {
         delete window.uploadedImages['teamPhoto'];
     }
-    
+
     if (id) {
         const member = CMS.data.team.find(m => m.id === parseInt(id));
         if (member) {
@@ -1588,7 +1588,7 @@ function openTeamModal(id = null) {
             document.getElementById('teamCategory').value = member.category || 'technical';
             document.getElementById('teamEmail').value = member.email || '';
             document.getElementById('teamLinkedin').value = member.linkedin || '';
-            
+
             // Show preview if photo exists
             if (member.photo) {
                 const preview = document.getElementById('teamPhotoPreview');
@@ -1611,11 +1611,11 @@ function openTeamModal(id = null) {
         document.getElementById('teamEmail').value = '';
         document.getElementById('teamLinkedin').value = '';
     }
-    
+
     // Clear file input
     const fileInput = document.getElementById('teamPhotoUpload');
     if (fileInput) fileInput.value = '';
-    
+
     // Hide preview if no photo
     if (!document.getElementById('teamPhoto').value) {
         const preview = document.getElementById('teamPhotoPreview');
@@ -1632,25 +1632,25 @@ function closeTeamModal() {
 function saveTeamMember() {
     const id = document.getElementById('teamId').value;
     const name = document.getElementById('teamName').value.trim();
-    
+
     // Validation
     if (!name) {
         showNotification('Please enter a name', 'error');
         return;
     }
-    
+
     let photoValue = document.getElementById('teamPhoto').value.trim() || '';
-    
+
     // If there's uploaded image data, use the base64 data directly
     if (window.uploadedImages && window.uploadedImages['teamPhoto'] && window.uploadedImages['teamPhoto'].data) {
         // Store base64 directly in photo field for immediate display
         photoValue = window.uploadedImages['teamPhoto'].data;
         console.log('Using uploaded image data for team member:', name);
-        
+
         // Clear the upload data after saving
         delete window.uploadedImages['teamPhoto'];
     }
-    
+
     const member = {
         id: id ? parseInt(id) : CMS.getNextId('team'),
         name: name,
@@ -1663,9 +1663,9 @@ function saveTeamMember() {
         email: document.getElementById('teamEmail').value.trim(),
         linkedin: document.getElementById('teamLinkedin').value.trim()
     };
-    
+
     const isNew = !id;
-    
+
     if (id) {
         const index = CMS.data.team.findIndex(m => m.id === parseInt(id));
         if (index >= 0) {
@@ -1674,10 +1674,10 @@ function saveTeamMember() {
     } else {
         CMS.data.team.push(member);
     }
-    
+
     // Save to localStorage
     CMS.saveData();
-    
+
     // Sync to API/database
     if (typeof CMSSync !== 'undefined' && CMSSync.apiAvailable) {
         CMSSync.saveTeamMember(member, isNew).then(result => {
@@ -1690,7 +1690,7 @@ function saveTeamMember() {
             console.error('[CMS] Error syncing team member:', err);
         });
     }
-    
+
     CMS.renderTeam();
     CMS.updateStats();
     closeTeamModal();
@@ -1707,18 +1707,18 @@ function openBoardModal(id = null) {
     modal.classList.remove('hidden');
     modal.classList.add('active');
     document.getElementById('boardModalTitle').textContent = id ? 'Edit Board Member' : 'Add Board Member';
-    
+
     // Scroll modal to top
     const modalBody = modal.querySelector('.modal-body');
     if (modalBody) {
         modalBody.scrollTop = 0;
     }
-    
+
     // Clear any previous upload data
     if (window.uploadedImages) {
         delete window.uploadedImages['boardPhoto'];
     }
-    
+
     if (id) {
         const member = CMS.data.board.find(m => m.id === parseInt(id));
         if (member) {
@@ -1730,7 +1730,7 @@ function openBoardModal(id = null) {
             document.getElementById('boardBio').value = member.bio || '';
             document.getElementById('boardPhoto').value = member.photo || '';
             document.getElementById('boardIsChairman').checked = member.isChairman || false;
-            
+
             // Show preview if photo exists
             if (member.photo) {
                 const preview = document.getElementById('boardPhotoPreview');
@@ -1751,11 +1751,11 @@ function openBoardModal(id = null) {
         document.getElementById('boardPhoto').value = '';
         document.getElementById('boardIsChairman').checked = false;
     }
-    
+
     // Clear file input
     const fileInput = document.getElementById('boardPhotoUpload');
     if (fileInput) fileInput.value = '';
-    
+
     // Hide preview if no photo
     if (!document.getElementById('boardPhoto').value) {
         const preview = document.getElementById('boardPhotoPreview');
@@ -1772,25 +1772,25 @@ function closeBoardModal() {
 function saveBoardMember() {
     const id = document.getElementById('boardId').value;
     const name = document.getElementById('boardName').value.trim();
-    
+
     // Validation
     if (!name) {
         showNotification('Please enter a name', 'error');
         return;
     }
-    
+
     let photoValue = document.getElementById('boardPhoto').value.trim() || '';
-    
+
     // If there's uploaded image data, use the base64 data directly
     if (window.uploadedImages && window.uploadedImages['boardPhoto'] && window.uploadedImages['boardPhoto'].data) {
         // Store base64 directly in photo field for immediate display
         photoValue = window.uploadedImages['boardPhoto'].data;
         console.log('Using uploaded image data for board member:', name);
-        
+
         // Clear the upload data after saving
         delete window.uploadedImages['boardPhoto'];
     }
-    
+
     const member = {
         id: id ? parseInt(id) : CMS.getNextId('board'),
         name: name,
@@ -1801,11 +1801,11 @@ function saveBoardMember() {
         photo: photoValue, // This will be either URL or base64 data
         isChairman: document.getElementById('boardIsChairman').checked || false
     };
-    
+
     if (!CMS.data.board) {
         CMS.data.board = [];
     }
-    
+
     const isNew = !id;
     const index = CMS.data.board.findIndex(m => m.id === member.id);
     if (index >= 0) {
@@ -1813,10 +1813,10 @@ function saveBoardMember() {
     } else {
         CMS.data.board.push(member);
     }
-    
+
     // Save to localStorage
     CMS.saveData();
-    
+
     // Sync to API/database
     if (typeof CMSSync !== 'undefined' && CMSSync.apiAvailable) {
         CMSSync.saveBoardMember(member, isNew).then(result => {
@@ -1829,7 +1829,7 @@ function saveBoardMember() {
             console.error('[CMS] Error syncing board member:', err);
         });
     }
-    
+
     CMS.renderBoard();
     closeBoardModal();
     showNotification('Board member saved successfully', 'success');
@@ -1845,18 +1845,18 @@ function openClientModal(id = null) {
     modal.classList.remove('hidden');
     modal.classList.add('active');
     document.getElementById('clientModalTitle').textContent = id ? 'Edit Client' : 'Add Client';
-    
+
     // Scroll modal to top
     const modalBody = modal.querySelector('.modal-body');
     if (modalBody) {
         modalBody.scrollTop = 0;
     }
-    
+
     // Clear any previous upload data
     if (window.uploadedImages) {
         delete window.uploadedImages['clientLogo'];
     }
-    
+
     if (id) {
         const client = CMS.data.clients.find(c => c.id === id);
         if (client) {
@@ -1865,7 +1865,7 @@ function openClientModal(id = null) {
             document.getElementById('clientCategory').value = client.category;
             document.getElementById('clientLogo').value = client.logo || '';
             document.getElementById('clientWebsite').value = client.website || '';
-            
+
             // Show preview if logo exists
             const previewContainer = document.getElementById('clientLogoPreview');
             const previewImg = document.getElementById('clientLogoPreviewImg');
@@ -1885,7 +1885,7 @@ function openClientModal(id = null) {
         document.getElementById('clientCategory').value = 'Government';
         document.getElementById('clientLogo').value = '';
         document.getElementById('clientWebsite').value = '';
-        
+
         // Hide preview
         const previewContainer = document.getElementById('clientLogoPreview');
         if (previewContainer) {
@@ -1898,13 +1898,13 @@ function closeClientModal() {
     const modal = document.getElementById('clientModal');
     modal.classList.remove('active');
     modal.classList.add('hidden');
-    
+
     // Clear preview
     const previewContainer = document.getElementById('clientLogoPreview');
     if (previewContainer) {
         previewContainer.style.display = 'none';
     }
-    
+
     // Clear uploaded images
     if (window.uploadedImages) {
         delete window.uploadedImages['clientLogo'];
@@ -1914,7 +1914,7 @@ function closeClientModal() {
 function saveClient() {
     const id = document.getElementById('clientId').value;
     let logoValue = document.getElementById('clientLogo').value.trim();
-    
+
     // If there's uploaded image data, update the path with the actual ID and store base64
     if (window.uploadedImages && window.uploadedImages['clientLogo']) {
         const uploadedData = window.uploadedImages['clientLogo'];
@@ -1923,18 +1923,18 @@ function saveClient() {
         const itemName = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').substring(0, 30);
         const fileExtension = uploadedData.path.split('.').pop();
         logoValue = `/uploads/clients/${itemName}-${actualId}.${fileExtension}`;
-        
+
         // Update the stored path
         uploadedData.path = logoValue;
         uploadedData.filename = logoValue.split('/').pop();
-        
+
         // Store base64 data in CMS data for frontend use
         if (!CMS.data._imageData) {
             CMS.data._imageData = {};
         }
         CMS.data._imageData[logoValue] = uploadedData.data;
     }
-    
+
     const client = {
         id: id ? parseInt(id) : CMS.getNextId('clients'),
         name: document.getElementById('clientName').value,
@@ -1942,19 +1942,19 @@ function saveClient() {
         logo: logoValue,
         website: document.getElementById('clientWebsite').value
     };
-    
+
     const isNew = !id;
-    
+
     if (id) {
         const index = CMS.data.clients.findIndex(c => c.id === parseInt(id));
         CMS.data.clients[index] = client;
     } else {
         CMS.data.clients.push(client);
     }
-    
+
     // Save to localStorage
     CMS.saveData();
-    
+
     // Sync to API/database
     if (typeof CMSSync !== 'undefined' && CMSSync.apiAvailable) {
         CMSSync.saveClient(client, isNew).then(result => {
@@ -1967,7 +1967,7 @@ function saveClient() {
             console.error('[CMS] Error syncing client:', err);
         });
     }
-    
+
     CMS.renderClients();
     closeClientModal();
     showNotification('Client saved successfully', 'success');
@@ -1983,13 +1983,13 @@ function openTestimonialModal(id = null) {
     modal.classList.remove('hidden');
     modal.classList.add('active');
     document.getElementById('testimonialModalTitle').textContent = id ? 'Edit Testimonial' : 'Add Testimonial';
-    
+
     // Scroll modal to top
     const modalBody = modal.querySelector('.modal-body');
     if (modalBody) {
         modalBody.scrollTop = 0;
     }
-    
+
     if (id) {
         const t = CMS.data.testimonials.find(t => t.id === id);
         if (t) {
@@ -2021,7 +2021,7 @@ function closeTestimonialModal() {
 function saveTestimonial() {
     const id = document.getElementById('testimonialId').value;
     let photoValue = document.getElementById('testimonialPhoto').value.trim();
-    
+
     // If there's uploaded image data, update the path with the actual ID and store base64
     if (window.uploadedImages && window.uploadedImages['testimonialPhoto']) {
         const uploadedData = window.uploadedImages['testimonialPhoto'];
@@ -2030,18 +2030,18 @@ function saveTestimonial() {
         const itemName = name.toLowerCase().replace(/[^a-z0-9]+/g, '-').substring(0, 30);
         const fileExtension = uploadedData.path.split('.').pop();
         photoValue = `/uploads/testimonials/${itemName}-${actualId}.${fileExtension}`;
-        
+
         // Update the stored path
         uploadedData.path = photoValue;
         uploadedData.filename = photoValue.split('/').pop();
-        
+
         // Store base64 data in CMS data for frontend use
         if (!CMS.data._imageData) {
             CMS.data._imageData = {};
         }
         CMS.data._imageData[photoValue] = uploadedData.data;
     }
-    
+
     const testimonial = {
         id: id ? parseInt(id) : CMS.getNextId('testimonials'),
         name: document.getElementById('testimonialName').value,
@@ -2051,19 +2051,19 @@ function saveTestimonial() {
         photo: photoValue,
         rating: parseInt(document.getElementById('testimonialRating').value)
     };
-    
+
     const isNew = !id;
-    
+
     if (id) {
         const index = CMS.data.testimonials.findIndex(t => t.id === parseInt(id));
         CMS.data.testimonials[index] = testimonial;
     } else {
         CMS.data.testimonials.push(testimonial);
     }
-    
+
     // Save to localStorage
     CMS.saveData();
-    
+
     // Sync to API/database
     if (typeof CMSSync !== 'undefined' && CMSSync.apiAvailable) {
         CMSSync.saveTestimonial(testimonial, isNew).then(result => {
@@ -2076,7 +2076,7 @@ function saveTestimonial() {
             console.error('[CMS] Error syncing testimonial:', err);
         });
     }
-    
+
     CMS.renderTestimonials();
     CMS.updateStats();
     closeTestimonialModal();
@@ -2093,13 +2093,13 @@ function openServiceModal(id = null) {
     modal.classList.remove('hidden');
     modal.classList.add('active');
     document.getElementById('serviceModalTitle').textContent = id ? 'Edit Service' : 'Add Service';
-    
+
     // Scroll modal to top
     const modalBody = modal.querySelector('.modal-body');
     if (modalBody) {
         modalBody.scrollTop = 0;
     }
-    
+
     if (id) {
         const service = CMS.data.services.find(s => s.id === id);
         if (service) {
@@ -2136,14 +2136,14 @@ function saveService() {
         summary: document.getElementById('serviceSummary').value,
         features: document.getElementById('serviceFeatures').value.split('\n').map(f => f.trim()).filter(f => f)
     };
-    
+
     if (id) {
         const index = CMS.data.services.findIndex(s => s.id === parseInt(id));
         CMS.data.services[index] = service;
     } else {
         CMS.data.services.push(service);
     }
-    
+
     CMS.saveData();
     CMS.renderServices();
     closeServiceModal();
@@ -2159,13 +2159,13 @@ function openBlogModal(id = null) {
     modal.classList.remove('hidden');
     modal.classList.add('active');
     document.getElementById('blogModalTitle').textContent = id ? 'Edit Blog Post' : 'Add Blog Post';
-    
+
     // Scroll modal to top
     const modalBody = modal.querySelector('.modal-body');
     if (modalBody) {
         modalBody.scrollTop = 0;
     }
-    
+
     if (id) {
         const post = CMS.data.blog.find(p => p.id === id);
         if (post) {
@@ -2223,15 +2223,15 @@ function saveBlogPost() {
     const id = document.getElementById('blogId').value;
     const title = document.getElementById('blogTitle').value;
     let slug = document.getElementById('blogSlug').value;
-    
+
     // Auto-generate slug if empty
     if (!slug) {
         slug = generateSlug(title);
     }
-    
+
     let imageValue = document.getElementById('blogImage').value.trim();
     let authorPhotoValue = document.getElementById('blogAuthorPhoto').value.trim();
-    
+
     // If there's uploaded image data, update the paths with the actual ID and store base64
     if (window.uploadedImages && window.uploadedImages['blogImage']) {
         const uploadedData = window.uploadedImages['blogImage'];
@@ -2239,18 +2239,18 @@ function saveBlogPost() {
         const itemName = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').substring(0, 30);
         const fileExtension = uploadedData.path.split('.').pop();
         imageValue = `/uploads/blog/${itemName}-${actualId}.${fileExtension}`;
-        
+
         // Update the stored path
         uploadedData.path = imageValue;
         uploadedData.filename = imageValue.split('/').pop();
-        
+
         // Store base64 data in CMS data for frontend use
         if (!CMS.data._imageData) {
             CMS.data._imageData = {};
         }
         CMS.data._imageData[imageValue] = uploadedData.data;
     }
-    
+
     if (window.uploadedImages && window.uploadedImages['blogAuthorPhoto']) {
         const uploadedData = window.uploadedImages['blogAuthorPhoto'];
         const actualId = id ? parseInt(id) : CMS.getNextId('blog');
@@ -2258,18 +2258,18 @@ function saveBlogPost() {
         const itemName = author.toLowerCase().replace(/[^a-z0-9]+/g, '-').substring(0, 30);
         const fileExtension = uploadedData.path.split('.').pop();
         authorPhotoValue = `/uploads/blog/${itemName}-${actualId}-author.${fileExtension}`;
-        
+
         // Update the stored path
         uploadedData.path = authorPhotoValue;
         uploadedData.filename = authorPhotoValue.split('/').pop();
-        
+
         // Store base64 data in CMS data for frontend use
         if (!CMS.data._imageData) {
             CMS.data._imageData = {};
         }
         CMS.data._imageData[authorPhotoValue] = uploadedData.data;
     }
-    
+
     const post = {
         id: id ? parseInt(id) : CMS.getNextId('blog'),
         title: title,
@@ -2287,24 +2287,24 @@ function saveBlogPost() {
         featured: document.getElementById('blogFeatured').checked,
         published: document.getElementById('blogPublished').checked
     };
-    
+
     // Initialize blog array if it doesn't exist
     if (!CMS.data.blog) {
         CMS.data.blog = [];
     }
-    
+
     const isNew = !id;
-    
+
     if (id) {
         const index = CMS.data.blog.findIndex(p => p.id === parseInt(id));
         CMS.data.blog[index] = post;
     } else {
         CMS.data.blog.push(post);
     }
-    
+
     // Save to localStorage
     CMS.saveData();
-    
+
     // Sync to API/database
     if (typeof CMSSync !== 'undefined' && CMSSync.apiAvailable) {
         CMSSync.saveBlogPost(post, isNew).then(result => {
@@ -2317,7 +2317,7 @@ function saveBlogPost() {
             console.error('[CMS] Error syncing blog post:', err);
         });
     }
-    
+
     CMS.renderBlog();
     CMS.updateStats();
     closeBlogModal();
@@ -2334,18 +2334,18 @@ function openCertificationModal(id = null) {
     modal.classList.remove('hidden');
     modal.classList.add('active');
     document.getElementById('certificationModalTitle').textContent = id ? 'Edit Certification' : 'Add Certification';
-    
+
     // Scroll modal to top
     const modalBody = modal.querySelector('.modal-body');
     if (modalBody) {
         modalBody.scrollTop = 0;
     }
-    
+
     // Clear any previous upload data
     if (window.uploadedImages) {
         delete window.uploadedImages['certificationImage'];
     }
-    
+
     if (id) {
         const cert = CMS.data.certifications.find(c => c.id === parseInt(id));
         if (cert) {
@@ -2356,7 +2356,7 @@ function openCertificationModal(id = null) {
             document.getElementById('certificationCategory').value = cert.category || 'professional';
             document.getElementById('certificationValidUntil').value = cert.validUntil || '';
             document.getElementById('certificationImage').value = cert.image || '';
-            
+
             // Show preview if image exists
             if (cert.image) {
                 const preview = document.getElementById('certificationImagePreview');
@@ -2376,11 +2376,11 @@ function openCertificationModal(id = null) {
         document.getElementById('certificationValidUntil').value = '';
         document.getElementById('certificationImage').value = '';
     }
-    
+
     // Clear file input
     const fileInput = document.getElementById('certificationImageUpload');
     if (fileInput) fileInput.value = '';
-    
+
     // Hide preview if no image
     if (!document.getElementById('certificationImage').value) {
         const preview = document.getElementById('certificationImagePreview');
@@ -2397,22 +2397,22 @@ function closeCertificationModal() {
 function saveCertification() {
     const id = document.getElementById('certificationId').value;
     const title = document.getElementById('certificationTitle').value.trim();
-    
+
     // Validation
     if (!title) {
         showNotification('Please enter a title', 'error');
         return;
     }
-    
+
     let imageValue = document.getElementById('certificationImage').value.trim() || '';
-    
+
     // If there's uploaded image data, use the base64 data directly
     if (window.uploadedImages && window.uploadedImages['certificationImage'] && window.uploadedImages['certificationImage'].data) {
         imageValue = window.uploadedImages['certificationImage'].data;
         console.log('Using uploaded image data for certification:', title);
         delete window.uploadedImages['certificationImage'];
     }
-    
+
     const certification = {
         id: id ? parseInt(id) : CMS.getNextId('certifications'),
         title: title,
@@ -2422,13 +2422,13 @@ function saveCertification() {
         validUntil: document.getElementById('certificationValidUntil').value || '',
         image: imageValue
     };
-    
+
     if (!CMS.data.certifications) {
         CMS.data.certifications = [];
     }
-    
+
     const isNew = !id;
-    
+
     if (id) {
         const index = CMS.data.certifications.findIndex(c => c.id === parseInt(id));
         if (index >= 0) {
@@ -2437,10 +2437,10 @@ function saveCertification() {
     } else {
         CMS.data.certifications.push(certification);
     }
-    
+
     // Save to localStorage
     CMS.saveData();
-    
+
     // Sync to API/database
     if (typeof CMSSync !== 'undefined' && CMSSync.apiAvailable) {
         CMSSync.saveCertification(certification, isNew).then(result => {
@@ -2453,7 +2453,7 @@ function saveCertification() {
             console.error('[CMS] Error syncing certification:', err);
         });
     }
-    
+
     CMS.renderCertifications();
     CMS.updateStats();
     closeCertificationModal();
@@ -2483,10 +2483,29 @@ function closeDeleteModal() {
 
 function confirmDelete() {
     if (deleteTarget.collection && deleteTarget.id) {
+        // Remove from local data
         CMS.data[deleteTarget.collection] = CMS.data[deleteTarget.collection].filter(item => item.id !== deleteTarget.id);
         CMS.saveData();
         CMS.renderAll();
         CMS.updateStats();
+
+        // Sync deletion to database
+        if (typeof CMSSync !== 'undefined' && CMSSync.apiAvailable) {
+            CMSSync.deleteItem(deleteTarget.collection, deleteTarget.id).then(result => {
+                if (result.success) {
+                    console.log(`[CMS] ${deleteTarget.collection} item ${deleteTarget.id} deleted from database`);
+                    showNotification('Item deleted from database', 'success');
+                } else {
+                    console.warn(`[CMS] Failed to delete from database:`, result.error);
+                    showNotification('Item deleted locally, but failed to sync to database: ' + result.error, 'warning');
+                }
+            }).catch(err => {
+                console.error(`[CMS] Error deleting from database:`, err);
+                showNotification('Item deleted locally, but failed to sync to database', 'warning');
+            });
+        } else {
+            showNotification('Item deleted (local only - API unavailable)', 'info');
+        }
     }
     closeDeleteModal();
 }
@@ -2522,7 +2541,7 @@ function selectTheme(themeName) {
 
 function updateThemeSelection(themeName) {
     selectedTheme = themeName;
-    
+
     // Update theme cards UI
     document.querySelectorAll('.theme-card').forEach(card => {
         card.classList.remove('selected');
@@ -2530,7 +2549,7 @@ function updateThemeSelection(themeName) {
             card.classList.add('selected');
         }
     });
-    
+
     // Update badge
     const badge = document.getElementById('currentThemeBadge');
     if (badge) {
@@ -2550,7 +2569,7 @@ function saveTheme() {
         showNotification('Invalid theme selected. Using default theme.', 'error');
         selectedTheme = 'classic-green';
     }
-    
+
     CMS.data.theme = selectedTheme;
     CMS.saveData();
     showNotification(`Theme changed to ${selectedTheme.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}!`, 'success');
@@ -2560,14 +2579,14 @@ function previewTheme() {
     // Validate theme name
     const validThemes = ['classic-green', 'professional-dark', 'earth-warm'];
     const themeToPreview = validThemes.includes(selectedTheme) ? selectedTheme : 'classic-green';
-    
+
     // Store preview theme in sessionStorage for the preview page to use
     sessionStorage.setItem('kj_theme_preview', themeToPreview);
-    
+
     // Open preview in new tab
     const previewUrl = '../index.html';
     window.open(previewUrl, '_blank');
-    
+
     showNotification('Preview opened in new tab. Click "Save Theme" to make the change permanent.', 'info');
 }
 
@@ -2576,7 +2595,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     try {
         // Wait for CMS to fully initialize (including API sync)
         await CMS.init();
-        
+
         // Show dashboard by default (after data is loaded)
         document.querySelectorAll('.section').forEach(s => s.style.display = 'none');
         const dashboard = document.getElementById('section-dashboard');
