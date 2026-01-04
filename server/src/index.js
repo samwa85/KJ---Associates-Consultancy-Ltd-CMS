@@ -77,13 +77,33 @@ if (process.env.NODE_ENV !== 'test') {
 // Serve static files from uploads directory
 app.use('/uploads', express.static(path.join(__dirname, '../../uploads')));
 
-// Health check endpoint
-app.get('/health', (req, res) => {
-  res.json({
-    status: 'ok',
-    timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV || 'development'
-  });
+const { supabase } = require('./config/supabase');
+
+// ... (other imports)
+
+// Health check endpoint with DB verification
+app.get('/health', async (req, res) => {
+  try {
+    // Check database connection
+    const { error } = await supabase.from('settings').select('count', { count: 'exact', head: true });
+
+    if (error) throw error;
+
+    res.json({
+      status: 'ok',
+      database: 'connected',
+      timestamp: new Date().toISOString(),
+      environment: process.env.NODE_ENV || 'development'
+    });
+  } catch (error) {
+    console.error('Health check failed:', error);
+    res.status(503).json({
+      status: 'error',
+      database: 'disconnected',
+      error: error.message,
+      timestamp: new Date().toISOString()
+    });
+  }
 });
 
 // API routes

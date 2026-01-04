@@ -561,8 +561,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                     <div class="slide-circle">
                         <div class="slide-content">
                             <span class="slide-tagline">${slide.tagline}</span>
-                            <h1 class="slide-title">${slide.title} <span>${slide.titleHighlight}</span></h1>
-                            <a href="${slide.buttonLink}" class="slide-btn">${slide.buttonText}</a>
+                            <h1 class="slide-title">${slide.title} <span>${slide.titleHighlight || slide.title_highlight || ''}</span></h1>
+                            <a href="${slide.buttonLink || slide.button_link || '#'}" class="slide-btn">${slide.buttonText || slide.button_text || 'Learn More'}</a>
                         </div>
                     </div>
                 </div>
