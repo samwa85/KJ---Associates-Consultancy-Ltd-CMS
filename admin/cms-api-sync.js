@@ -8,7 +8,7 @@ const CMSSync = {
   // Check if API is available
   apiAvailable: false,
   syncInProgress: false,
-  
+
   // Initialize sync layer
   async init() {
     // Check if API client exists and is configured
@@ -16,7 +16,7 @@ const CMSSync = {
       console.warn('[CMSSync] API client not loaded, using localStorage only');
       return false;
     }
-    
+
     // Test API connectivity
     try {
       const response = await fetch(`${API.baseURL.replace('/api', '')}/health`, {
@@ -31,7 +31,7 @@ const CMSSync = {
     } catch (error) {
       console.warn('[CMSSync] API not available, using localStorage fallback:', error.message);
     }
-    
+
     this.apiAvailable = false;
     return false;
   },
@@ -39,12 +39,12 @@ const CMSSync = {
   // =====================================================
   // LOAD DATA FROM API
   // =====================================================
-  
+
   async loadAll() {
     if (!this.apiAvailable) {
       return this.loadFromLocalStorage();
     }
-    
+
     try {
       const [
         slidesRes,
@@ -69,7 +69,7 @@ const CMSSync = {
         API.certifications.getAll().catch(() => ({ data: [] })),
         API.settings.getAll().catch(() => ({ data: {} }))
       ]);
-      
+
       const data = {
         slides: slidesRes.data || [],
         projects: projectsRes.data || [],
@@ -85,10 +85,10 @@ const CMSSync = {
         seo: settingsRes.data?.seo || CMS.defaults.seo,
         theme: settingsRes.data?.theme || CMS.defaults.theme
       };
-      
+
       // Also save to localStorage as backup
       localStorage.setItem('kj_cms_data', JSON.stringify(data));
-      
+
       console.log('[CMSSync] Data loaded from API');
       return data;
     } catch (error) {
@@ -96,7 +96,7 @@ const CMSSync = {
       return this.loadFromLocalStorage();
     }
   },
-  
+
   loadFromLocalStorage() {
     const stored = localStorage.getItem('kj_cms_data');
     if (stored) {
@@ -112,12 +112,12 @@ const CMSSync = {
   // =====================================================
   // SAVE INDIVIDUAL ITEMS
   // =====================================================
-  
+
   async saveSlide(slide, isNew = false) {
     if (!this.apiAvailable) {
       return { success: true, local: true };
     }
-    
+
     try {
       if (isNew) {
         const response = await API.slides.create(this.transformToAPI(slide, 'slide'));
@@ -131,12 +131,12 @@ const CMSSync = {
       return { success: false, error: error.message };
     }
   },
-  
+
   async saveProject(project, isNew = false) {
     if (!this.apiAvailable) {
       return { success: true, local: true };
     }
-    
+
     try {
       if (isNew) {
         const response = await API.projects.create(this.transformToAPI(project, 'project'));
@@ -150,12 +150,12 @@ const CMSSync = {
       return { success: false, error: error.message };
     }
   },
-  
+
   async saveTeamMember(member, isNew = false) {
     if (!this.apiAvailable) {
       return { success: true, local: true };
     }
-    
+
     try {
       if (isNew) {
         const response = await API.team.create(this.transformToAPI(member, 'team'));
@@ -169,12 +169,12 @@ const CMSSync = {
       return { success: false, error: error.message };
     }
   },
-  
+
   async saveBoardMember(member, isNew = false) {
     if (!this.apiAvailable) {
       return { success: true, local: true };
     }
-    
+
     try {
       if (isNew) {
         const response = await API.board.create(this.transformToAPI(member, 'board'));
@@ -188,12 +188,12 @@ const CMSSync = {
       return { success: false, error: error.message };
     }
   },
-  
+
   async saveClient(client, isNew = false) {
     if (!this.apiAvailable) {
       return { success: true, local: true };
     }
-    
+
     try {
       if (isNew) {
         const response = await API.clients.create(this.transformToAPI(client, 'client'));
@@ -207,12 +207,12 @@ const CMSSync = {
       return { success: false, error: error.message };
     }
   },
-  
+
   async saveTestimonial(testimonial, isNew = false) {
     if (!this.apiAvailable) {
       return { success: true, local: true };
     }
-    
+
     try {
       if (isNew) {
         const response = await API.testimonials.create(this.transformToAPI(testimonial, 'testimonial'));
@@ -226,12 +226,12 @@ const CMSSync = {
       return { success: false, error: error.message };
     }
   },
-  
+
   async saveCertification(cert, isNew = false) {
     if (!this.apiAvailable) {
       return { success: true, local: true };
     }
-    
+
     try {
       if (isNew) {
         const response = await API.certifications.create(this.transformToAPI(cert, 'certification'));
@@ -245,12 +245,12 @@ const CMSSync = {
       return { success: false, error: error.message };
     }
   },
-  
+
   async saveBlogPost(post, isNew = false) {
     if (!this.apiAvailable) {
       return { success: true, local: true };
     }
-    
+
     try {
       if (isNew) {
         const response = await API.blog.create(this.transformToAPI(post, 'blog'));
@@ -264,59 +264,52 @@ const CMSSync = {
       return { success: false, error: error.message };
     }
   },
-  
+
   // =====================================================
   // DELETE ITEMS
   // =====================================================
-  
+
   async deleteItem(type, id) {
     if (!this.apiAvailable) {
       return { success: true, local: true };
     }
-    
+
     try {
-      switch (type) {
-        case 'slides':
-          await API.slides.delete(id);
-          break;
-        case 'projects':
-          await API.projects.delete(id);
-          break;
-        case 'team':
-          await API.team.delete(id);
-          break;
-        case 'board':
-          await API.board.delete(id);
-          break;
-        case 'clients':
-          await API.clients.delete(id);
-          break;
-        case 'testimonials':
-          await API.testimonials.delete(id);
-          break;
-        case 'certifications':
-          await API.certifications.delete(id);
-          break;
-        default:
-          console.warn('[CMSSync] Unknown type for delete:', type);
-          return { success: false, error: 'Unknown type' };
+      // Use sync endpoint with secret (bypasses JWT auth)
+      const baseURL = API.baseURL.replace('/api', '');
+      const syncSecret = window.API_CONFIG?.syncSecret || 'kj-cms-sync-2024-secret';
+
+      const response = await fetch(`${baseURL}/api/sync/${type}/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Sync-Secret': syncSecret
+        }
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || result.error || 'Delete failed');
       }
+
+      console.log(`[CMSSync] Deleted ${type}/${id} from database`);
       return { success: true };
     } catch (error) {
       console.error(`[CMSSync] Failed to delete ${type}:`, error);
       return { success: false, error: error.message };
     }
   },
-  
+
   // =====================================================
   // SETTINGS
   // =====================================================
-  
+
   async saveBranding(branding) {
     if (!this.apiAvailable) {
       return { success: true, local: true };
     }
-    
+
     try {
       await API.settings.updateBranding(branding);
       return { success: true };
@@ -325,12 +318,12 @@ const CMSSync = {
       return { success: false, error: error.message };
     }
   },
-  
+
   async saveContact(contact) {
     if (!this.apiAvailable) {
       return { success: true, local: true };
     }
-    
+
     try {
       await API.settings.updateContact(contact);
       return { success: true };
@@ -339,12 +332,12 @@ const CMSSync = {
       return { success: false, error: error.message };
     }
   },
-  
+
   async saveSEO(seo) {
     if (!this.apiAvailable) {
       return { success: true, local: true };
     }
-    
+
     try {
       await API.settings.updateSEO(seo);
       return { success: true };
@@ -353,12 +346,12 @@ const CMSSync = {
       return { success: false, error: error.message };
     }
   },
-  
+
   async saveTheme(theme) {
     if (!this.apiAvailable) {
       return { success: true, local: true };
     }
-    
+
     try {
       await API.settings.updateTheme(theme);
       return { success: true };
@@ -367,45 +360,45 @@ const CMSSync = {
       return { success: false, error: error.message };
     }
   },
-  
+
   // =====================================================
   // DATA TRANSFORMATION
   // =====================================================
-  
+
   // Transform frontend data format to API format (camelCase to snake_case)
   transformToAPI(data, type) {
     const transformed = {};
-    
+
     for (const [key, value] of Object.entries(data)) {
       // Skip id for new items (API will generate)
       if (key === 'id' && !value) continue;
-      
+
       // Convert camelCase to snake_case
       const snakeKey = key.replace(/([A-Z])/g, '_$1').toLowerCase();
       transformed[snakeKey] = value;
     }
-    
+
     return transformed;
   },
-  
+
   // Transform API data format to frontend format (snake_case to camelCase)
   transformFromAPI(data) {
     if (Array.isArray(data)) {
       return data.map(item => this.transformFromAPI(item));
     }
-    
+
     if (typeof data !== 'object' || data === null) {
       return data;
     }
-    
+
     const transformed = {};
-    
+
     for (const [key, value] of Object.entries(data)) {
       // Convert snake_case to camelCase
       const camelKey = key.replace(/_([a-z])/g, (_, letter) => letter.toUpperCase());
       transformed[camelKey] = value;
     }
-    
+
     return transformed;
   }
 };

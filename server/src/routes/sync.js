@@ -158,5 +158,61 @@ router.post('/bulk/:table', async (req, res) => {
   }
 });
 
+// Delete endpoint - uses sync secret instead of JWT
+router.delete('/:table/:id', async (req, res) => {
+  try {
+    const { table, id } = req.params;
+
+    const tableMap = {
+      'slides': 'slides',
+      'projects': 'projects',
+      'team': 'team_members',
+      'board': 'board_members',
+      'clients': 'clients',
+      'testimonials': 'testimonials',
+      'services': 'services',
+      'blog': 'blog_posts',
+      'certifications': 'certifications'
+    };
+
+    const dbTable = tableMap[table];
+
+    if (!dbTable) {
+      return res.status(400).json({
+        error: 'Bad Request',
+        message: `Invalid table: ${table}`
+      });
+    }
+
+    // Delete the item
+    const { error } = await supabase
+      .from(dbTable)
+      .delete()
+      .eq('id', id);
+
+    if (error) {
+      console.error(`Delete error for ${dbTable}/${id}:`, error);
+      return res.status(500).json({
+        error: 'Database Error',
+        message: error.message
+      });
+    }
+
+    console.log(`[Sync] Deleted ${table}/${id} from database`);
+
+    res.json({
+      success: true,
+      message: `Deleted ${table} with id ${id}`
+    });
+
+  } catch (error) {
+    console.error('Delete error:', error);
+    res.status(500).json({
+      error: 'Server Error',
+      message: error.message
+    });
+  }
+});
+
 module.exports = router;
 
