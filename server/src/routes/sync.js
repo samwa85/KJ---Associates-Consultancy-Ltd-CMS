@@ -11,6 +11,9 @@ const { supabase } = require('../config/supabase');
 // Sync secret key - should match the one in the sync tool
 const SYNC_SECRET = process.env.SYNC_SECRET || 'kj-cms-sync-2024-secret';
 
+// Allow CORS preflight without auth
+router.options('*', (req, res) => res.sendStatus(200));
+
 // Middleware to verify sync secret
 const verifySyncSecret = (req, res, next) => {
   const secret = req.headers['x-sync-secret'];
