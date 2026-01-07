@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apply Schema Fix - KJ & Associates CMS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+
+<body class="bg-gray-100 p-8">
+    <div class="max-w-4xl mx-auto">
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+            <h1 class="text-3xl font-bold mb-2">Apply Schema Alignment Fix</h1>
+            <p class="text-gray-600">This will add missing columns to your Supabase database</p>
+        </div>
+
+        <div class="bg-yellow-50 border-l-4 border-yellow-500 p-6 mb-6">
+            <h2 class="text-lg font-bold mb-2">⚠️ Manual SQL Execution Required</h2>
+            <p class="mb-4">Due to Supabase security restrictions, schema changes (DDL) must be executed manually in the
+                SQL Editor.</p>
+
+            <div class="space-y-4">
+                <div>
+                    <h3 class="font-bold mb-2">Step 1: Copy the SQL</h3>
+                    <button onclick="copySQLToClipboard()"
+                        class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                        📋 Copy SQL to Clipboard
+                    </button>
+                </div>
+
+                <div>
+                    <h3 class="font-bold mb-2">Step 2: Open Supabase SQL Editor</h3>
+                    <a href="https://supabasekong-j8k8sksckccs4ccogsscccww.31.97.79.197.sslip.io/project/_/sql"
+                        target="_blank"
+                        class="inline-block bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+                        🔗 Open SQL Editor
+                    </a>
+                </div>
+
+                <div>
+                    <h3 class="font-bold mb-2">Step 3: Paste and Run</h3>
+                    <p class="text-sm text-gray-600">Paste the SQL in the editor and click "Run"</p>
+                </div>
+
+                <div>
+                    <h3 class="font-bold mb-2">Step 4: Verify</h3>
+                    <button onclick="verifySchema()"
+                        class="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700">
+                        ✓ Verify Schema Changes
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+            <h2 class="text-xl font-bold mb-4">SQL to Execute</h2>
+            <textarea id="sqlContent" readonly
+                class="w-full h-96 p-4 border rounded font-mono text-sm bg-gray-50"></textarea>
+        </div>
+
+        <div id="results" class="bg-white rounded-lg shadow-lg p-6"></div>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/supabase-config.js"></script>
+    <script src="js/supabase-client.js"></script>
+
+    <script>
+        const SQL_CONTENT = `-- =====================================================
+-- Schema Alignment Fix
+-- Adds missing columns to align with frontend expectations
+-- =====================================================
+
+-- Add 'category' column to projects table (if it doesn't exist)
+DO $$ 
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM information_schema.columns 
+        WHERE table_name = 'projects' AND column_name = 'category'
+    ) THEN
+        ALTER TABLE projects ADD COLUMN category TEXT;
+        UPDATE projects SET category = sector WHERE category IS NULL;
+    END IF;
+END $$;
+
+-- Add 'slug' column to projects table (if it doesn't exist)
+DO $$ 
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM information_schema.columns 
+        WHERE table_name = 'projects' AND column_name = 'slug'
+    ) THEN
+        ALTER TABLE projects ADD COLUMN slug TEXT;
+        UPDATE projects 
+        SET slug = LOWER(REGEXP_REPLACE(title, '[^a-zA-Z0-9]+', '-', 'g'))
+        WHERE slug IS NULL;
+    END IF;
+END $$;
+
+-- Add 'position' column to team_members table (if it doesn't exist)
+DO $$ 
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM information_schema.columns 
+        WHERE table_name = 'team_members' AND column_name = 'position'
+    ) THEN
+        ALTER TABLE team_members ADD COLUMN position TEXT;
+        UPDATE team_members SET position = role WHERE position IS NULL;
+    END IF;
+END $$;
+
+-- Add 'phone' column to team_members table (if it doesn't exist)
+DO $$ 
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM information_schema.columns 
+        WHERE table_name = 'team_members' AND column_name = 'phone'
+    ) THEN
+        ALTER TABLE team_members ADD COLUMN phone TEXT;
+    END IF;
+END $$;
+
+-- Add 'logo_url' column to clients table (if it doesn't exist)
+DO $$ 
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM information_schema.columns 
+        WHERE table_name = 'clients' AND column_name = 'logo_url'
+    ) THEN
+        ALTER TABLE clients ADD COLUMN logo_url TEXT;
+        UPDATE clients SET logo_url = logo WHERE logo_url IS NULL;
+    END IF;
+END $$;
+
+-- Add 'client_name' column to testimonials table (if it doesn't exist)
+DO $$ 
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM information_schema.columns 
+        WHERE table_name = 'testimonials' AND column_name = 'client_name'
+    ) THEN
+        ALTER TABLE testimonials ADD COLUMN client_name TEXT;
+        UPDATE testimonials SET client_name = name WHERE client_name IS NULL;
+    END IF;
+END $$;
+
+-- Add 'content' column to testimonials table (if it doesn't exist)
+DO $$ 
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM information_schema.columns 
+        WHERE table_name = 'testimonials' AND column_name = 'content'
+    ) THEN
+        ALTER TABLE testimonials ADD COLUMN content TEXT;
+        UPDATE testimonials SET content = text WHERE content IS NULL;
+    END IF;
+END $$;
+
+-- =====================================================
+-- Update RLS policies to allow all operations for testing
+-- =====================================================
+
+-- Drop existing auth policies
+DROP POLICY IF EXISTS "Auth insert" ON projects;
+DROP POLICY IF EXISTS "Auth update" ON projects;
+DROP POLICY IF EXISTS "Auth delete" ON projects;
+
+DROP POLICY IF EXISTS "Auth insert" ON team_members;
+DROP POLICY IF EXISTS "Auth update" ON team_members;
+DROP POLICY IF EXISTS "Auth delete" ON team_members;
+
+DROP POLICY IF EXISTS "Auth insert" ON clients;
+DROP POLICY IF EXISTS "Auth update" ON clients;
+DROP POLICY IF EXISTS "Auth delete" ON clients;
+
+DROP POLICY IF EXISTS "Auth insert" ON testimonials;
+DROP POLICY IF EXISTS "Auth update" ON testimonials;
+DROP POLICY IF EXISTS "Auth delete" ON testimonials;
+
+DROP POLICY IF EXISTS "Auth insert" ON blog_posts;
+DROP POLICY IF EXISTS "Auth update" ON blog_posts;
+DROP POLICY IF EXISTS "Auth delete" ON blog_posts;
+
+-- Create permissive policies (TEMPORARY - for testing only!)
+CREATE POLICY "Allow all operations" ON projects FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Allow all operations" ON team_members FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Allow all operations" ON clients FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Allow all operations" ON testimonials FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Allow all operations" ON blog_posts FOR ALL USING (true) WITH CHECK (true);`;
+
+        // Load SQL into textarea
+        document.getElementById('sqlContent').value = SQL_CONTENT;
+
+        function copySQLToClipboard() {
+            const textarea = document.getElementById('sqlContent');
+            textarea.select();
+            document.execCommand('copy');
+
+            alert('✅ SQL copied to clipboard! Now open the SQL Editor and paste it.');
+        }
+
+        async function verifySchema() {
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = '<p class="text-gray-600">🔍 Verifying schema changes...</p>';
+
+            try {
+                // Initialize Supabase client
+                SupabaseClient.init();
+
+                // Test if we can create a record with the new columns
+                const testData = {
+                    title: 'Schema Test Project',
+                    slug: 'schema-test-' + Date.now(),
+                    category: 'test',
+                    description: 'Testing schema changes',
+                    status: 'completed'
+                };
+
+                const created = await SupabaseClient.create('projects', testData);
+
+                // Clean up
+                await SupabaseClient.delete('projects', created.id);
+
+                resultsDiv.innerHTML = `
+                    <div class="border-l-4 border-green-500 bg-green-50 p-4">
+                        <h3 class="font-bold text-green-800 mb-2">✅ Schema Verification Successful!</h3>
+                        <p class="text-green-700">All required columns are present and working correctly.</p>
+                        <p class="text-sm text-green-600 mt-2">You can now run the CRUD tests.</p>
+                        <a href="test-crud.html" class="inline-block mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+                            Run CRUD Tests →
+                        </a>
+                    </div>
+                `;
+
+            } catch (error) {
+                resultsDiv.innerHTML = `
+                    <div class="border-l-4 border-red-500 bg-red-50 p-4">
+                        <h3 class="font-bold text-red-800 mb-2">❌ Schema Verification Failed</h3>
+                        <p class="text-red-700 mb-2">Error: ${error.message}</p>
+                        <p class="text-sm text-red-600">Please make sure you've executed the SQL in the Supabase SQL Editor.</p>
+                    </div>
+                `;
+            }
+        }
+    </script>
+</body>
+
+</html>

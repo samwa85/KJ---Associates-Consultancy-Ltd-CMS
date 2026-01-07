@@ -129,9 +129,12 @@ const SupabaseClient = {
     const { data, error } = await SupabaseClient.client
       .from(table)
       .select('*')
-      .eq('id', id)
-      .single();
+      .eq('id', id);
     if (error) throw error;
+    // Return first item if array, null if empty, otherwise return data
+    if (Array.isArray(data)) {
+      return data.length > 0 ? data[0] : null;
+    }
     return data;
   },
 
@@ -139,10 +142,10 @@ const SupabaseClient = {
     const { data, error } = await SupabaseClient.client
       .from(table)
       .insert(record)
-      .select()
-      .single();
+      .select();
     if (error) throw error;
-    return data;
+    // Return first item if array, otherwise return data
+    return Array.isArray(data) ? data[0] : data;
   },
 
   async update(table, id, updates) {

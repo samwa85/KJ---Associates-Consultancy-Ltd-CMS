@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CRUD Test - KJ & Associates CMS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        .test-pass {
+            color: #10b981;
+        }
+
+        .test-fail {
+            color: #ef4444;
+        }
+
+        .test-pending {
+            color: #f59e0b;
+        }
+
+        .log-entry {
+            padding: 0.5rem;
+            margin: 0.25rem 0;
+            border-left: 3px solid #3b82f6;
+            background: #f3f4f6;
+            font-family: monospace;
+            font-size: 0.875rem;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-100 p-8">
+    <div class="max-w-6xl mx-auto">
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+            <h1 class="text-3xl font-bold mb-2">KJ & Associates CMS - CRUD Test Suite</h1>
+            <p class="text-gray-600">Testing database connectivity and CRUD operations</p>
+        </div>
+
+        <!-- Connection Status -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+            <h2 class="text-xl font-bold mb-4">Connection Status</h2>
+            <div id="connection-status" class="space-y-2">
+                <div class="test-pending">⏳ Initializing...</div>
+            </div>
+        </div>
+
+        <!-- Test Controls -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+            <h2 class="text-xl font-bold mb-4">Test Controls</h2>
+            <div class="flex gap-4">
+                <button onclick="runAllTests()" class="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700">
+                    Run All Tests
+                </button>
+                <button onclick="clearLogs()" class="bg-gray-600 text-white px-6 py-2 rounded-lg hover:bg-gray-700">
+                    Clear Logs
+                </button>
+                <button onclick="testConnection()"
+                    class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700">
+                    Test Connection
+                </button>
+            </div>
+        </div>
+
+        <!-- Test Results -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-6">
+            <h2 class="text-xl font-bold mb-4">Test Results</h2>
+            <div id="test-results" class="space-y-4"></div>
+        </div>
+
+        <!-- Detailed Logs -->
+        <div class="bg-white rounded-lg shadow-lg p-6">
+            <h2 class="text-xl font-bold mb-4">Detailed Logs</h2>
+            <div id="logs" class="space-y-1 max-h-96 overflow-y-auto"></div>
+        </div>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/supabase-config.js"></script>
+    <script src="js/supabase-client.js"></script>
+
+    <script>
+        let testResults = [];
+
+        function log(message, type = 'info') {
+            const logsDiv = document.getElementById('logs');
+            const entry = document.createElement('div');
+            entry.className = 'log-entry';
+            entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            if (type === 'error') entry.style.borderLeftColor = '#ef4444';
+            if (type === 'success') entry.style.borderLeftColor = '#10b981';
+            logsDiv.appendChild(entry);
+            logsDiv.scrollTop = logsDiv.scrollHeight;
+            console.log(message);
+        }
+
+        function clearLogs() {
+            document.getElementById('logs').innerHTML = '';
+            document.getElementById('test-results').innerHTML = '';
+            testResults = [];
+        }
+
+        function updateTestResult(testName, status, message) {
+            const resultsDiv = document.getElementById('test-results');
+            const existing = document.getElementById(`test-${testName.replace(/\s/g, '-')}`);
+
+            const resultHTML = `
+                <div class="border-l-4 p-4 ${status === 'pass' ? 'border-green-500 bg-green-50' : status === 'fail' ? 'border-red-500 bg-red-50' : 'border-yellow-500 bg-yellow-50'}">
+                    <div class="flex items-center">
+                        <span class="text-2xl mr-3">${status === 'pass' ? '✅' : status === 'fail' ? '❌' : '⏳'}</span>
+                        <div>
+                            <h3 class="font-bold">${testName}</h3>
+                            <p class="text-sm text-gray-600">${message}</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            if (existing) {
+                existing.outerHTML = resultHTML;
+            } else {
+                const div = document.createElement('div');
+                div.id = `test-${testName.replace(/\s/g, '-')}`;
+                div.innerHTML = resultHTML;
+                resultsDiv.appendChild(div);
+            }
+
+            testResults.push({ testName, status, message });
+        }
+
+        async function testConnection() {
+            log('Testing Supabase connection...');
+            updateTestResult('Connection Test', 'pending', 'Checking connection...');
+
+            try {
+                // Initialize client
+                const initialized = SupabaseClient.init();
+                if (!initialized) {
+                    throw new Error('Failed to initialize Supabase client');
+                }
+
+                log('✓ Supabase client initialized', 'success');
+
+                // Test a simple query
+                const { data, error } = await SupabaseClient.client
+                    .from('settings')
+                    .select('*')
+                    .limit(1);
+
+                if (error) {
+                    throw error;
+                }
+
+                log('✓ Database connection successful', 'success');
+                updateTestResult('Connection Test', 'pass', 'Successfully connected to Supabase');
+
+                document.getElementById('connection-status').innerHTML = `
+                    <div class="test-pass">✅ Connected to Supabase</div>
+                    <div class="text-sm text-gray-600">URL: ${SUPABASE_CONFIG.url}</div>
+                `;
+
+                return true;
+            } catch (error) {
+                log(`✗ Connection failed: ${error.message}`, 'error');
+                updateTestResult('Connection Test', 'fail', error.message);
+
+                document.getElementById('connection-status').innerHTML = `
+                    <div class="test-fail">❌ Connection Failed</div>
+                    <div class="text-sm text-gray-600">${error.message}</div>
+                `;
+
+                return false;
+            }
+        }
+
+        async function testCRUD(tableName, sampleData, updateData) {
+            log(`\n=== Testing ${tableName} ===`);
+            updateTestResult(`${tableName} CRUD`, 'pending', 'Running tests...');
+
+            let createdId = null;
+
+            try {
+                // CREATE
+                log(`Testing CREATE on ${tableName}...`);
+                const created = await SupabaseClient.create(tableName, sampleData);
+                createdId = created.id;
+                log(`✓ CREATE successful - ID: ${createdId}`, 'success');
+
+                // READ
+                log(`Testing READ on ${tableName}...`);
+                const read = await SupabaseClient.getById(tableName, createdId);
+                if (!read) throw new Error('Failed to read created record');
+                log(`✓ READ successful`, 'success');
+
+                // UPDATE
+                log(`Testing UPDATE on ${tableName}...`);
+                const updated = await SupabaseClient.update(tableName, createdId, updateData);
+                if (!updated) throw new Error('Failed to update record');
+                log(`✓ UPDATE successful`, 'success');
+
+                // DELETE
+                log(`Testing DELETE on ${tableName}...`);
+                await SupabaseClient.delete(tableName, createdId);
+                log(`✓ DELETE successful`, 'success');
+
+                // Verify deletion
+                // Verify deletion
+                try {
+                    const check = await SupabaseClient.getById(tableName, createdId);
+                    if (check) {
+                        throw new Error('Record still exists after deletion');
+                    }
+                    log(`✓ Deletion verified`, 'success');
+                } catch (e) {
+                    if (e.message.includes('No rows found')) {
+                        log(`✓ Deletion verified`, 'success');
+                    } else {
+                        throw e;
+                    }
+                }
+
+                updateTestResult(`${tableName} CRUD`, 'pass', 'All CRUD operations successful');
+                return true;
+
+            } catch (error) {
+                log(`✗ ${tableName} test failed: ${error.message}`, 'error');
+                updateTestResult(`${tableName} CRUD`, 'fail', error.message);
+
+                // Cleanup if record was created
+                if (createdId) {
+                    try {
+                        await SupabaseClient.delete(tableName, createdId);
+                        log(`Cleaned up test record ${createdId}`);
+                    } catch (e) {
+                        log(`Failed to cleanup: ${e.message}`, 'error');
+                    }
+                }
+
+                return false;
+            }
+        }
+
+        async function runAllTests() {
+            clearLogs();
+            log('Starting comprehensive CRUD test suite...');
+
+            // Test connection first
+            const connected = await testConnection();
+            if (!connected) {
+                log('Cannot proceed with tests - connection failed', 'error');
+                return;
+            }
+
+            // Test each table
+            const tests = [
+                {
+                    table: 'blog_posts',
+                    create: {
+                        title: 'Test Blog Post',
+                        slug: 'test-blog-post-' + Date.now(),
+                        excerpt: 'Test excerpt',
+                        content: 'Test content',
+                        author: 'Test Author',
+                        published: false
+                    },
+                    update: {
+                        title: 'Updated Test Blog Post',
+                        published: true
+                    }
+                },
+                {
+                    table: 'projects',
+                    create: {
+                        title: 'Test Project',
+                        slug: 'test-project-' + Date.now(),
+                        description: 'Test description',
+                        category: 'commercial',
+                        location: 'Test Location',
+                        client: 'Test Client',
+                        value: 1000000,
+                        status: 'completed',
+                        featured: false
+                    },
+                    update: {
+                        title: 'Updated Test Project',
+                        featured: true
+                    }
+                },
+                {
+                    table: 'team_members',
+                    create: {
+                        name: 'Test Member',
+                        position: 'Test Position',
+                        bio: 'Test bio',
+                        email: 'test@example.com',
+                        phone: '+255123456789',
+                        display_order: 999
+                    },
+                    update: {
+                        name: 'Updated Test Member',
+                        position: 'Updated Position'
+                    }
+                },
+                {
+                    table: 'clients',
+                    create: {
+                        name: 'Test Client',
+                        logo_url: 'https://via.placeholder.com/150',
+                        display_order: 999
+                    },
+                    update: {
+                        name: 'Updated Test Client'
+                    }
+                },
+                {
+                    table: 'testimonials',
+                    create: {
+                        client_name: 'Test Client',
+                        position: 'Test Position',
+                        company: 'Test Company',
+                        content: 'Test testimonial content',
+                        rating: 5
+                    },
+                    update: {
+                        content: 'Updated testimonial content',
+                        rating: 4
+                    }
+                }
+            ];
+
+            let passed = 0;
+            let failed = 0;
+
+            for (const test of tests) {
+                const result = await testCRUD(test.table, test.create, test.update);
+                if (result) passed++;
+                else failed++;
+
+                // Small delay between tests
+                await new Promise(resolve => setTimeout(resolve, 500));
+            }
+
+            log(`\n=== Test Suite Complete ===`);
+            log(`Passed: ${passed}/${tests.length}`, passed === tests.length ? 'success' : 'error');
+            log(`Failed: ${failed}/${tests.length}`, failed === 0 ? 'success' : 'error');
+
+            // Summary
+            const summaryDiv = document.createElement('div');
+            summaryDiv.className = `border-4 p-6 rounded-lg mt-4 ${passed === tests.length ? 'border-green-500 bg-green-50' : 'border-red-500 bg-red-50'}`;
+            summaryDiv.innerHTML = `
+                <h3 class="text-2xl font-bold mb-2">${passed === tests.length ? '✅ All Tests Passed!' : '❌ Some Tests Failed'}</h3>
+                <p class="text-lg">Passed: ${passed}/${tests.length} | Failed: ${failed}/${tests.length}</p>
+            `;
+            document.getElementById('test-results').appendChild(summaryDiv);
+        }
+
+        // Auto-run connection test on load
+        window.addEventListener('DOMContentLoaded', () => {
+            log('Page loaded, initializing...');
+            setTimeout(testConnection, 1000);
+        });
+    </script>
+</body>
+
+</html>
