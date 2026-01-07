@@ -1002,15 +1002,22 @@
             </div>
             <form id="auth-form" class="space-y-4">
                 <div>
+                    <label for="admin-email" class="block text-sm font-medium text-gray-700 mb-1">Email or
+                        Username</label>
+                    <input type="text" id="admin-email" name="email"
+                        class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition"
+                        placeholder="admin or admin@kjconsultancy.co.tz" autocomplete="username" required>
+                </div>
+                <div>
                     <label for="admin-password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
                     <input type="password" id="admin-password" name="password"
                         class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-primary outline-none transition"
-                        placeholder="Enter admin password" autocomplete="current-password" required>
+                        placeholder="Enter password" autocomplete="current-password" required>
                 </div>
                 <div id="auth-error" class="hidden text-red-600 text-sm bg-red-50 p-3 rounded-lg"></div>
                 <button type="submit"
                     class="w-full bg-primary hover:bg-primary-dark text-white font-semibold py-3 px-4 rounded-lg transition duration-200">
-                    Access CMS
+                    Sign In
                 </button>
             </form>
             <p class="text-center text-gray-400 text-xs mt-6">KJ & Associates Consultancy Ltd</p>
@@ -1019,66 +1026,136 @@
 
     <script>
             (function () {
-                // ============================================
-                // CHANGE THIS PASSWORD TO YOUR DESIRED PASSWORD
-                // ============================================
-                const ADMIN_PASSWORD = 'qwerty7890@';
-                // ============================================
-
                 const SESSION_KEY = 'kj_cms_auth';
+                const TOKEN_KEY = 'cms_token';
                 const SESSION_DURATION = 8 * 60 * 60 * 1000; // 8 hours in milliseconds
+                const DEFAULT_EMAIL = 'admin@kjconsultancy.co.tz';
 
                 function isAuthenticated() {
+                    // Check local storage session first
                     const session = localStorage.getItem(SESSION_KEY);
-                    if (!session) return false;
+                    const token = localStorage.getItem(TOKEN_KEY);
+
+                    if (!session || !token) return false;
 
                     try {
                         const { timestamp } = JSON.parse(session);
                         const now = Date.now();
                         if (now - timestamp > SESSION_DURATION) {
                             localStorage.removeItem(SESSION_KEY);
+                            localStorage.removeItem(TOKEN_KEY);
                             return false;
                         }
                         return true;
                     } catch {
                         localStorage.removeItem(SESSION_KEY);
+                        localStorage.removeItem(TOKEN_KEY);
                         return false;
                     }
                 }
 
-                function setAuthenticated() {
+                function setAuthenticated(token) {
                     localStorage.setItem(SESSION_KEY, JSON.stringify({ timestamp: Date.now() }));
+                    if (token) {
+                        localStorage.setItem(TOKEN_KEY, token);
+                    }
                 }
 
                 function showCMS() {
                     document.getElementById('auth-overlay').style.display = 'none';
                 }
 
-                // Check if already authenticated
-                if (isAuthenticated()) {
-                    showCMS();
+                // Initialize Supabase if needed
+                if (window.SupabaseClient && !SupabaseClient.isConnected()) {
+                    SupabaseClient.init();
                 }
 
+                // Check if already authenticated via Supabase session recovery
+                async function checkSupabaseSession() {
+                    if (window.SupabaseClient && SupabaseClient.isConnected()) {
+                        try {
+                            const { data: { session } } = await SupabaseClient.auth.getSession();
+                            if (session) {
+                                setAuthenticated(session.access_token);
+                                showCMS();
+                                return true;
+                            }
+                        } catch (e) {
+                            console.error("Session check failed", e);
+                        }
+                    }
+
+                    // Fallback to local check
+                    if (isAuthenticated()) {
+                        showCMS();
+                    }
+                }
+
+                checkSupabaseSession();
+
                 // Handle form submission
-                document.getElementById('auth-form').addEventListener('submit', function (e) {
+                document.getElementById('auth-form').addEventListener('submit', async function (e) {
                     e.preventDefault();
+                    let emailInput = document.getElementById('admin-email').value.trim();
                     const password = document.getElementById('admin-password').value;
                     const errorEl = document.getElementById('auth-error');
+                    const submitBtn = this.querySelector('button[type="submit"]');
 
-                    if (password === ADMIN_PASSWORD) {
-                        setAuthenticated();
-                        showCMS();
-                    } else {
-                        errorEl.textContent = 'Incorrect password. Please try again.';
+                    // Convenience: Allow login with "admin"
+                    if (emailInput.toLowerCase() === 'admin') {
+                        emailInput = DEFAULT_EMAIL;
+                    }
+
+                    // Reset state
+                    errorEl.classList.add('hidden');
+                    submitBtn.disabled = true;
+                    submitBtn.textContent = 'Signing in...';
+
+                    try {
+                        // Ensure Supabase is initialized
+                        if (!window.SupabaseClient || !SupabaseClient.init()) {
+                            throw new Error('Supabase client failed to initialize. Check configuration.');
+                        }
+
+                        const data = await SupabaseClient.auth.signIn(emailInput, password);
+
+                        if (data.user && data.session) {
+                            console.log('Login successful');
+                            setAuthenticated(data.session.access_token);
+                            showCMS();
+                        } else {
+                            throw new Error('Login failed. Please check credentials.');
+                        }
+
+                    } catch (err) {
+                        console.error('Auth Error:', err);
+                        let msg = err.message || 'Authentication failed.';
+
+                        if (msg.includes('Email not confirmed')) {
+                            msg = 'Please confirm your email address before logging in. Check your inbox.';
+                        } else if (msg.includes('Invalid login credentials')) {
+                            msg = 'Incorrect email or password.';
+                        }
+
+                        errorEl.textContent = msg;
                         errorEl.classList.remove('hidden');
+
+                        // Focus password to retry
                         document.getElementById('admin-password').value = '';
                         document.getElementById('admin-password').focus();
+                    } finally {
+                        submitBtn.disabled = false;
+                        submitBtn.textContent = 'Sign In';
                     }
                 });
 
                 // Expose logout function globally
-                window.cmsLogout = function () {
+                window.cmsLogout = async function () {
+                    if (window.SupabaseClient && SupabaseClient.isConnected()) {
+                        await SupabaseClient.auth.signOut();
+                    }
                     localStorage.removeItem(SESSION_KEY);
+                    localStorage.removeItem(TOKEN_KEY);
                     location.reload();
                 };
             })();
@@ -2685,7 +2762,7 @@
     <!-- API Client and Config -->
     <!-- Supabase Client -->
     <script src="../js/supabase-client.js"></script>
-    
+
     <!-- API Client for connecting to backend -->
     <script src="../js/api-client.js"></script>
 

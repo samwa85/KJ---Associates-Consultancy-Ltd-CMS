@@ -8,6 +8,7 @@ const CMSSync = {
   // Check if API is available
   apiAvailable: false,
   syncInProgress: false,
+  isAuthenticated: false,
 
   // Initialize sync layer
   async init() {
@@ -25,7 +26,13 @@ const CMSSync = {
       });
       if (response.ok) {
         this.apiAvailable = true;
-        console.log('[CMSSync] API connected successfully');
+        // Check if we have a token
+        this.isAuthenticated = !!API.token;
+        if (!this.isAuthenticated) {
+          console.warn('[CMSSync] API available but not authenticated. CRUD operations will fail.');
+        } else {
+          console.log('[CMSSync] API connected and authenticated');
+        }
         return true;
       }
     } catch (error) {
@@ -33,7 +40,18 @@ const CMSSync = {
     }
 
     this.apiAvailable = false;
+    this.isAuthenticated = false;
     return false;
+  },
+
+  // Check authentication before making write requests
+  checkAuth() {
+    if (!this.apiAvailable) {
+      return { available: false, authenticated: false };
+    }
+    const hasToken = !!API.token;
+    this.isAuthenticated = hasToken;
+    return { available: true, authenticated: hasToken };
   },
 
   // =====================================================
@@ -114,154 +132,212 @@ const CMSSync = {
   // =====================================================
 
   async saveSlide(slide, isNew = false) {
-    if (!this.apiAvailable) {
+    const authCheck = this.checkAuth();
+    if (!authCheck.available) {
       return { success: true, local: true };
+    }
+    if (!authCheck.authenticated) {
+      return { success: false, error: 'Not authenticated. Please refresh the page and log in again.' };
     }
 
     try {
+      const transformed = this.transformToAPI(slide, 'slide');
+      
       if (isNew) {
-        const response = await API.slides.create(this.transformToAPI(slide, 'slide'));
+        delete transformed.id;
+        const response = await API.slides.create(transformed);
         return { success: true, data: response.data };
       } else {
-        const response = await API.slides.update(slide.id, this.transformToAPI(slide, 'slide'));
+        const response = await API.slides.update(slide.id, transformed);
         return { success: true, data: response.data };
       }
     } catch (error) {
       console.error('[CMSSync] Failed to save slide:', error);
-      return { success: false, error: error.message };
+      return { success: false, error: error.message || 'Failed to save slide' };
     }
   },
 
   async saveProject(project, isNew = false) {
-    if (!this.apiAvailable) {
+    const authCheck = this.checkAuth();
+    if (!authCheck.available) {
       return { success: true, local: true };
+    }
+    if (!authCheck.authenticated) {
+      return { success: false, error: 'Not authenticated. Please refresh the page and log in again.' };
     }
 
     try {
+      const transformed = this.transformToAPI(project, 'project');
+      
       if (isNew) {
-        const response = await API.projects.create(this.transformToAPI(project, 'project'));
+        // Don't send ID for new items - let database generate it
+        delete transformed.id;
+        const response = await API.projects.create(transformed);
         return { success: true, data: response.data };
       } else {
-        const response = await API.projects.update(project.id, this.transformToAPI(project, 'project'));
+        const response = await API.projects.update(project.id, transformed);
         return { success: true, data: response.data };
       }
     } catch (error) {
       console.error('[CMSSync] Failed to save project:', error);
-      return { success: false, error: error.message };
+      const errorMsg = error.message || 'Failed to save project';
+      return { success: false, error: errorMsg };
     }
   },
 
   async saveTeamMember(member, isNew = false) {
-    if (!this.apiAvailable) {
+    const authCheck = this.checkAuth();
+    if (!authCheck.available) {
       return { success: true, local: true };
+    }
+    if (!authCheck.authenticated) {
+      return { success: false, error: 'Not authenticated. Please refresh the page and log in again.' };
     }
 
     try {
+      const transformed = this.transformToAPI(member, 'team');
+      
       if (isNew) {
-        const response = await API.team.create(this.transformToAPI(member, 'team'));
+        delete transformed.id;
+        const response = await API.team.create(transformed);
         return { success: true, data: response.data };
       } else {
-        const response = await API.team.update(member.id, this.transformToAPI(member, 'team'));
+        const response = await API.team.update(member.id, transformed);
         return { success: true, data: response.data };
       }
     } catch (error) {
       console.error('[CMSSync] Failed to save team member:', error);
-      return { success: false, error: error.message };
+      return { success: false, error: error.message || 'Failed to save team member' };
     }
   },
 
   async saveBoardMember(member, isNew = false) {
-    if (!this.apiAvailable) {
+    const authCheck = this.checkAuth();
+    if (!authCheck.available) {
       return { success: true, local: true };
+    }
+    if (!authCheck.authenticated) {
+      return { success: false, error: 'Not authenticated. Please refresh the page and log in again.' };
     }
 
     try {
+      const transformed = this.transformToAPI(member, 'board');
+      
       if (isNew) {
-        const response = await API.board.create(this.transformToAPI(member, 'board'));
+        delete transformed.id;
+        const response = await API.board.create(transformed);
         return { success: true, data: response.data };
       } else {
-        const response = await API.board.update(member.id, this.transformToAPI(member, 'board'));
+        const response = await API.board.update(member.id, transformed);
         return { success: true, data: response.data };
       }
     } catch (error) {
       console.error('[CMSSync] Failed to save board member:', error);
-      return { success: false, error: error.message };
+      return { success: false, error: error.message || 'Failed to save board member' };
     }
   },
 
   async saveClient(client, isNew = false) {
-    if (!this.apiAvailable) {
+    const authCheck = this.checkAuth();
+    if (!authCheck.available) {
       return { success: true, local: true };
+    }
+    if (!authCheck.authenticated) {
+      return { success: false, error: 'Not authenticated. Please refresh the page and log in again.' };
     }
 
     try {
+      const transformed = this.transformToAPI(client, 'client');
+      
       if (isNew) {
-        const response = await API.clients.create(this.transformToAPI(client, 'client'));
+        delete transformed.id;
+        const response = await API.clients.create(transformed);
         return { success: true, data: response.data };
       } else {
-        const response = await API.clients.update(client.id, this.transformToAPI(client, 'client'));
+        const response = await API.clients.update(client.id, transformed);
         return { success: true, data: response.data };
       }
     } catch (error) {
       console.error('[CMSSync] Failed to save client:', error);
-      return { success: false, error: error.message };
+      return { success: false, error: error.message || 'Failed to save client' };
     }
   },
 
   async saveTestimonial(testimonial, isNew = false) {
-    if (!this.apiAvailable) {
+    const authCheck = this.checkAuth();
+    if (!authCheck.available) {
       return { success: true, local: true };
+    }
+    if (!authCheck.authenticated) {
+      return { success: false, error: 'Not authenticated. Please refresh the page and log in again.' };
     }
 
     try {
+      const transformed = this.transformToAPI(testimonial, 'testimonial');
+      
       if (isNew) {
-        const response = await API.testimonials.create(this.transformToAPI(testimonial, 'testimonial'));
+        delete transformed.id;
+        const response = await API.testimonials.create(transformed);
         return { success: true, data: response.data };
       } else {
-        const response = await API.testimonials.update(testimonial.id, this.transformToAPI(testimonial, 'testimonial'));
+        const response = await API.testimonials.update(testimonial.id, transformed);
         return { success: true, data: response.data };
       }
     } catch (error) {
       console.error('[CMSSync] Failed to save testimonial:', error);
-      return { success: false, error: error.message };
+      return { success: false, error: error.message || 'Failed to save testimonial' };
     }
   },
 
   async saveCertification(cert, isNew = false) {
-    if (!this.apiAvailable) {
+    const authCheck = this.checkAuth();
+    if (!authCheck.available) {
       return { success: true, local: true };
+    }
+    if (!authCheck.authenticated) {
+      return { success: false, error: 'Not authenticated. Please refresh the page and log in again.' };
     }
 
     try {
+      const transformed = this.transformToAPI(cert, 'certification');
+      
       if (isNew) {
-        const response = await API.certifications.create(this.transformToAPI(cert, 'certification'));
+        delete transformed.id;
+        const response = await API.certifications.create(transformed);
         return { success: true, data: response.data };
       } else {
-        const response = await API.certifications.update(cert.id, this.transformToAPI(cert, 'certification'));
+        const response = await API.certifications.update(cert.id, transformed);
         return { success: true, data: response.data };
       }
     } catch (error) {
       console.error('[CMSSync] Failed to save certification:', error);
-      return { success: false, error: error.message };
+      return { success: false, error: error.message || 'Failed to save certification' };
     }
   },
 
   async saveBlogPost(post, isNew = false) {
-    if (!this.apiAvailable) {
+    const authCheck = this.checkAuth();
+    if (!authCheck.available) {
       return { success: true, local: true };
+    }
+    if (!authCheck.authenticated) {
+      return { success: false, error: 'Not authenticated. Please refresh the page and log in again.' };
     }
 
     try {
+      const transformed = this.transformToAPI(post, 'blog');
+      
       if (isNew) {
-        const response = await API.blog.create(this.transformToAPI(post, 'blog'));
+        delete transformed.id;
+        const response = await API.blog.create(transformed);
         return { success: true, data: response.data };
       } else {
-        const response = await API.blog.update(post.id, this.transformToAPI(post, 'blog'));
+        const response = await API.blog.update(post.id, transformed);
         return { success: true, data: response.data };
       }
     } catch (error) {
       console.error('[CMSSync] Failed to save blog post:', error);
-      return { success: false, error: error.message };
+      return { success: false, error: error.message || 'Failed to save blog post' };
     }
   },
 
@@ -270,34 +346,40 @@ const CMSSync = {
   // =====================================================
 
   async deleteItem(type, id) {
-    if (!this.apiAvailable) {
+    const authCheck = this.checkAuth();
+    if (!authCheck.available) {
       return { success: true, local: true };
+    }
+    if (!authCheck.authenticated) {
+      return { success: false, error: 'Not authenticated. Please refresh the page and log in again.' };
     }
 
     try {
-      // Use sync endpoint with secret (bypasses JWT auth)
-      const baseURL = API.baseURL.replace('/api', '');
-      const syncSecret = window.API_CONFIG?.syncSecret || 'kj-cms-sync-2024-secret';
+      // Map frontend collection names to API endpoints
+      const endpointMap = {
+        'slides': 'slides',
+        'projects': 'projects',
+        'team': 'team',
+        'board': 'board',
+        'clients': 'clients',
+        'testimonials': 'testimonials',
+        'services': 'services',
+        'blog': 'blog',
+        'certifications': 'certifications'
+      };
 
-      const response = await fetch(`${baseURL}/api/sync/${type}/${id}`, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Sync-Secret': syncSecret
-        }
-      });
-
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result.message || result.error || 'Delete failed');
+      const endpoint = endpointMap[type];
+      if (!endpoint) {
+        throw new Error(`Unknown collection type: ${type}`);
       }
 
+      // Use proper API endpoint with authentication
+      await API[endpoint].delete(id);
       console.log(`[CMSSync] Deleted ${type}/${id} from database`);
       return { success: true };
     } catch (error) {
       console.error(`[CMSSync] Failed to delete ${type}:`, error);
-      return { success: false, error: error.message };
+      return { success: false, error: error.message || `Failed to delete ${type}` };
     }
   },
 
@@ -370,12 +452,45 @@ const CMSSync = {
     const transformed = {};
 
     for (const [key, value] of Object.entries(data)) {
-      // Skip id for new items (API will generate)
+      // Skip internal metadata fields
+      if (key.startsWith('_')) continue;
+      
+      // Skip id for new items (handled by caller)
       if (key === 'id' && !value) continue;
 
       // Convert camelCase to snake_case
       const snakeKey = key.replace(/([A-Z])/g, '_$1').toLowerCase();
-      transformed[snakeKey] = value;
+      
+      // Handle nested objects and arrays
+      if (Array.isArray(value)) {
+        // Transform array items if they're objects
+        transformed[snakeKey] = value.map(item => {
+          if (typeof item === 'object' && item !== null && !Array.isArray(item)) {
+            // For images array, extract just the path or data
+            if (key === 'images' && item.path) {
+              return item.path || item.data || item;
+            }
+            // Recursively transform nested objects
+            return this.transformToAPI(item, type);
+          }
+          return item;
+        });
+      } else if (typeof value === 'object' && value !== null && !(value instanceof Date)) {
+        // Recursively transform nested objects
+        transformed[snakeKey] = this.transformToAPI(value, type);
+      } else {
+        transformed[snakeKey] = value;
+      }
+    }
+
+    // Special handling for projects - convert images array to string array
+    if (type === 'project' && transformed.images && Array.isArray(transformed.images)) {
+      transformed.images = transformed.images.map(img => {
+        if (typeof img === 'object' && img !== null) {
+          return img.path || img.data || img;
+        }
+        return img;
+      }).filter(Boolean);
     }
 
     return transformed;

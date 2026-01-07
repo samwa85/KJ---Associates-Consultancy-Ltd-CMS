@@ -1351,18 +1351,22 @@ function saveSlide() {
         CMSSync.saveSlide(slide, isNew).then(result => {
             if (result.success) {
                 console.log('[CMS] Slide synced to database');
+                showNotification('Slide saved successfully', 'success');
             } else {
                 console.warn('[CMS] Failed to sync slide to database:', result.error);
+                showNotification('Slide saved locally, but failed to sync to database: ' + (result.error || 'Unknown error'), 'warning');
             }
         }).catch(err => {
             console.error('[CMS] Error syncing slide:', err);
+            showNotification('Slide saved locally, but failed to sync to database: ' + (err.message || 'Unknown error'), 'warning');
         });
+    } else {
+        showNotification('Slide saved successfully (local only)', 'success');
     }
 
     CMS.renderSlides();
     CMS.updateStats();
     closeSlideModal();
-    showNotification('Slide saved successfully', 'success');
 }
 
 function editSlide(id) {
@@ -1536,18 +1540,22 @@ function saveProject() {
         CMSSync.saveProject(project, isNew).then(result => {
             if (result.success) {
                 console.log('[CMS] Project synced to database');
+                showNotification('Project saved successfully', 'success');
             } else {
                 console.warn('[CMS] Failed to sync project to database:', result.error);
+                showNotification('Project saved locally, but failed to sync to database: ' + (result.error || 'Unknown error'), 'warning');
             }
         }).catch(err => {
             console.error('[CMS] Error syncing project:', err);
+            showNotification('Project saved locally, but failed to sync to database: ' + (err.message || 'Unknown error'), 'warning');
         });
+    } else {
+        showNotification('Project saved successfully (local only)', 'success');
     }
 
     CMS.renderProjects();
     CMS.updateStats();
     closeProjectModal();
-    showNotification('Project saved successfully', 'success');
 
     // Clear project images for next use
     window.projectImages = [];
@@ -1683,18 +1691,22 @@ function saveTeamMember() {
         CMSSync.saveTeamMember(member, isNew).then(result => {
             if (result.success) {
                 console.log('[CMS] Team member synced to database');
+                showNotification('Team member saved successfully', 'success');
             } else {
                 console.warn('[CMS] Failed to sync team member to database:', result.error);
+                showNotification('Team member saved locally, but failed to sync to database: ' + (result.error || 'Unknown error'), 'warning');
             }
         }).catch(err => {
             console.error('[CMS] Error syncing team member:', err);
+            showNotification('Team member saved locally, but failed to sync to database: ' + (err.message || 'Unknown error'), 'warning');
         });
+    } else {
+        showNotification('Team member saved successfully (local only)', 'success');
     }
 
     CMS.renderTeam();
     CMS.updateStats();
     closeTeamModal();
-    showNotification('Team member saved successfully', 'success');
 }
 
 function editTeamMember(id) {
@@ -1822,17 +1834,21 @@ function saveBoardMember() {
         CMSSync.saveBoardMember(member, isNew).then(result => {
             if (result.success) {
                 console.log('[CMS] Board member synced to database');
+                showNotification('Board member saved successfully', 'success');
             } else {
                 console.warn('[CMS] Failed to sync board member to database:', result.error);
+                showNotification('Board member saved locally, but failed to sync to database: ' + (result.error || 'Unknown error'), 'warning');
             }
         }).catch(err => {
             console.error('[CMS] Error syncing board member:', err);
+            showNotification('Board member saved locally, but failed to sync to database: ' + (err.message || 'Unknown error'), 'warning');
         });
+    } else {
+        showNotification('Board member saved successfully (local only)', 'success');
     }
 
     CMS.renderBoard();
     closeBoardModal();
-    showNotification('Board member saved successfully', 'success');
 }
 
 function editBoardMember(id) {
@@ -1960,17 +1976,21 @@ function saveClient() {
         CMSSync.saveClient(client, isNew).then(result => {
             if (result.success) {
                 console.log('[CMS] Client synced to database');
+                showNotification('Client saved successfully', 'success');
             } else {
                 console.warn('[CMS] Failed to sync client to database:', result.error);
+                showNotification('Client saved locally, but failed to sync to database: ' + (result.error || 'Unknown error'), 'warning');
             }
         }).catch(err => {
             console.error('[CMS] Error syncing client:', err);
+            showNotification('Client saved locally, but failed to sync to database: ' + (err.message || 'Unknown error'), 'warning');
         });
+    } else {
+        showNotification('Client saved successfully (local only)', 'success');
     }
 
     CMS.renderClients();
     closeClientModal();
-    showNotification('Client saved successfully', 'success');
 }
 
 function editClient(id) {
@@ -2069,18 +2089,22 @@ function saveTestimonial() {
         CMSSync.saveTestimonial(testimonial, isNew).then(result => {
             if (result.success) {
                 console.log('[CMS] Testimonial synced to database');
+                showNotification('Testimonial saved successfully', 'success');
             } else {
                 console.warn('[CMS] Failed to sync testimonial to database:', result.error);
+                showNotification('Testimonial saved locally, but failed to sync to database: ' + (result.error || 'Unknown error'), 'warning');
             }
         }).catch(err => {
             console.error('[CMS] Error syncing testimonial:', err);
+            showNotification('Testimonial saved locally, but failed to sync to database: ' + (err.message || 'Unknown error'), 'warning');
         });
+    } else {
+        showNotification('Testimonial saved successfully (local only)', 'success');
     }
 
     CMS.renderTestimonials();
     CMS.updateStats();
     closeTestimonialModal();
-    showNotification('Testimonial saved successfully', 'success');
 }
 
 function editTestimonial(id) {
@@ -2310,18 +2334,22 @@ function saveBlogPost() {
         CMSSync.saveBlogPost(post, isNew).then(result => {
             if (result.success) {
                 console.log('[CMS] Blog post synced to database');
+                showNotification('Blog post saved successfully', 'success');
             } else {
                 console.warn('[CMS] Failed to sync blog post to database:', result.error);
+                showNotification('Blog post saved locally, but failed to sync to database: ' + (result.error || 'Unknown error'), 'warning');
             }
         }).catch(err => {
             console.error('[CMS] Error syncing blog post:', err);
+            showNotification('Blog post saved locally, but failed to sync to database: ' + (err.message || 'Unknown error'), 'warning');
         });
+    } else {
+        showNotification('Blog post saved successfully (local only)', 'success');
     }
 
     CMS.renderBlog();
     CMS.updateStats();
     closeBlogModal();
-    showNotification('Blog post saved successfully', 'success');
 }
 
 function editBlogPost(id) {
@@ -2446,18 +2474,22 @@ function saveCertification() {
         CMSSync.saveCertification(certification, isNew).then(result => {
             if (result.success) {
                 console.log('[CMS] Certification synced to database');
+                showNotification('Certification saved successfully', 'success');
             } else {
                 console.warn('[CMS] Failed to sync certification to database:', result.error);
+                showNotification('Certification saved locally, but failed to sync to database: ' + (result.error || 'Unknown error'), 'warning');
             }
         }).catch(err => {
             console.error('[CMS] Error syncing certification:', err);
+            showNotification('Certification saved locally, but failed to sync to database: ' + (err.message || 'Unknown error'), 'warning');
         });
+    } else {
+        showNotification('Certification saved successfully (local only)', 'success');
     }
 
     CMS.renderCertifications();
     CMS.updateStats();
     closeCertificationModal();
-    showNotification('Certification saved successfully', 'success');
 }
 
 function editCertification(id) {
