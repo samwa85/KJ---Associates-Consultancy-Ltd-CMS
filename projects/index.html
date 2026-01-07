@@ -280,6 +280,153 @@
             }
         }
 
+        /* Search and Sort Controls */
+        .search-sort-container {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .search-wrapper {
+            flex: 1;
+            min-width: 300px;
+            position: relative;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 20px;
+            color: var(--gray-400);
+            pointer-events: none;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.875rem 3rem 0.875rem 3rem;
+            border: 2px solid var(--gray-300);
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(13, 77, 44, 0.1);
+        }
+
+        .clear-search {
+            position: absolute;
+            right: 0.75rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--gray-200);
+            border: none;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            padding: 0;
+        }
+
+        .clear-search svg {
+            width: 14px;
+            height: 14px;
+            color: var(--gray-600);
+        }
+
+        .clear-search:hover {
+            background: var(--gray-300);
+        }
+
+        .sort-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            min-width: 250px;
+        }
+
+        .sort-label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+            color: var(--gray-700);
+            font-size: 0.95rem;
+            white-space: nowrap;
+        }
+
+        .sort-label svg {
+            width: 18px;
+            height: 18px;
+            color: var(--gray-500);
+        }
+
+        .sort-select {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            border: 2px solid var(--gray-300);
+            border-radius: 10px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: var(--gray-700);
+        }
+
+        .sort-select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(13, 77, 44, 0.1);
+        }
+
+        .results-counter {
+            text-align: center;
+            padding: 0.75rem;
+            color: var(--gray-600);
+            font-size: 0.95rem;
+            margin-bottom: 1rem;
+        }
+
+        .results-counter strong {
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        @media (max-width: 768px) {
+            .search-sort-container {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .search-wrapper,
+            .sort-wrapper {
+                width: 100%;
+                min-width: auto;
+            }
+
+            .sort-wrapper {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .sort-label {
+                justify-content: center;
+            }
+        }
+
         .filters {
             display: flex;
             flex-wrap: wrap;
@@ -409,8 +556,57 @@
         </div>
     </section>
 
-    <!-- Filters -->
+    <!-- Search and Sort Controls -->
     <section class="content-section" style="padding-top: 2rem;">
+        <div class="container">
+            <!-- Search Bar -->
+            <div class="search-sort-container">
+                <div class="search-wrapper">
+                    <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <path d="m21 21-4.35-4.35"></path>
+                    </svg>
+                    <input type="text" id="projectSearch" class="search-input"
+                        placeholder="Search projects by title, client, or location..." aria-label="Search projects">
+                    <button class="clear-search" id="clearSearch" style="display: none;" aria-label="Clear search">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Sort Dropdown -->
+                <div class="sort-wrapper">
+                    <label for="projectSort" class="sort-label">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M3 6h18M7 12h10M11 18h2"></path>
+                        </svg>
+                        Sort by:
+                    </label>
+                    <select id="projectSort" class="sort-select" aria-label="Sort projects">
+                        <option value="default">Default Order</option>
+                        <option value="title-asc">Title (A-Z)</option>
+                        <option value="title-desc">Title (Z-A)</option>
+                        <option value="year-desc">Year (Newest First)</option>
+                        <option value="year-asc">Year (Oldest First)</option>
+                        <option value="value-desc">Value (Highest First)</option>
+                        <option value="value-asc">Value (Lowest First)</option>
+                        <option value="status">Status (Completed First)</option>
+                        <option value="location">Location (A-Z)</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Results Counter -->
+            <div class="results-counter" id="resultsCounter">
+                Showing <strong id="visibleCount">0</strong> of <strong id="totalCount">0</strong> projects
+            </div>
+        </div>
+    </section>
+
+    <!-- Filters -->
+    <section class="content-section" style="padding-top: 1rem;">
         <div class="container">
             <div class="filters">
                 <button class="filter-btn active" data-filter="all">All Projects</button>
@@ -626,8 +822,15 @@
                     imageHtml = `<div class="project-image-placeholder"><i data-lucide="hard-hat"></i></div>`;
                 }
 
+                // Extract numeric value for sorting
+                const numericValue = project.value ? parseFloat(project.value.replace(/,/g, '')) : 0;
+                const projectYear = project.year || new Date().getFullYear();
+
                 return `
-                    <div class="project-card" data-category="${categories}">
+                    <div class="project-card" 
+                         data-category="${categories}" 
+                         data-year="${projectYear}"
+                         data-value="${numericValue}">
                         <div class="project-image-container">
                             ${imageHtml}
                             <div class="project-badge ${statusClass}">${project.status}</div>
@@ -689,40 +892,173 @@
             document.getElementById('ongoingProjects').textContent = ongoing;
         }
 
+        // Global variables for search and filter
+        let allProjectsData = [];
+        let currentFilter = 'all';
+        let currentSearchTerm = '';
+        let currentSortOrder = 'default';
+
+        // Update results counter
+        function updateResultsCounter() {
+            const projectCards = document.querySelectorAll('.project-card');
+            const visibleCards = Array.from(projectCards).filter(card =>
+                card.style.display !== 'none'
+            );
+
+            document.getElementById('visibleCount').textContent = visibleCards.length;
+            document.getElementById('totalCount').textContent = projectCards.length;
+        }
+
+        // Search functionality
+        function searchProjects(searchTerm) {
+            currentSearchTerm = searchTerm.toLowerCase();
+            const projectCards = document.querySelectorAll('.project-card');
+
+            projectCards.forEach(card => {
+                const title = card.querySelector('.project-title')?.textContent.toLowerCase() || '';
+                const client = card.querySelector('.project-meta-item:nth-child(2) span')?.textContent.toLowerCase() || '';
+                const location = card.querySelector('.project-meta-item:nth-child(1) span')?.textContent.toLowerCase() || '';
+
+                const matchesSearch = !currentSearchTerm ||
+                    title.includes(currentSearchTerm) ||
+                    client.includes(currentSearchTerm) ||
+                    location.includes(currentSearchTerm);
+
+                const categories = card.getAttribute('data-category');
+                const matchesFilter = currentFilter === 'all' || categories.includes(currentFilter);
+
+                const shouldShow = matchesSearch && matchesFilter;
+
+                if (shouldShow) {
+                    card.style.display = 'block';
+                    setTimeout(() => {
+                        card.style.opacity = '1';
+                        card.style.transform = 'translateY(0)';
+                    }, 10);
+                } else {
+                    card.style.opacity = '0';
+                    card.style.transform = 'translateY(20px)';
+                    setTimeout(() => {
+                        card.style.display = 'none';
+                    }, 300);
+                }
+            });
+
+            updateResultsCounter();
+        }
+
+        // Sort functionality
+        function sortProjects(sortOrder) {
+            currentSortOrder = sortOrder;
+            const grid = document.getElementById('projectsGrid');
+            const cards = Array.from(document.querySelectorAll('.project-card'));
+
+            if (sortOrder === 'default') {
+                // Restore original order (re-render)
+                return;
+            }
+
+            cards.sort((a, b) => {
+                switch (sortOrder) {
+                    case 'title-asc':
+                        return a.querySelector('.project-title').textContent.localeCompare(
+                            b.querySelector('.project-title').textContent
+                        );
+                    case 'title-desc':
+                        return b.querySelector('.project-title').textContent.localeCompare(
+                            a.querySelector('.project-title').textContent
+                        );
+                    case 'year-desc':
+                    case 'year-asc': {
+                        const yearA = parseInt(a.getAttribute('data-year') || '0');
+                        const yearB = parseInt(b.getAttribute('data-year') || '0');
+                        return sortOrder === 'year-desc' ? yearB - yearA : yearA - yearB;
+                    }
+                    case 'value-desc':
+                    case 'value-asc': {
+                        const valueA = parseFloat(a.getAttribute('data-value') || '0');
+                        const valueB = parseFloat(b.getAttribute('data-value') || '0');
+                        return sortOrder === 'value-desc' ? valueB - valueA : valueA - valueB;
+                    }
+                    case 'status': {
+                        const statusA = a.querySelector('.project-badge')?.textContent.toLowerCase() || '';
+                        const statusB = b.querySelector('.project-badge')?.textContent.toLowerCase() || '';
+                        // Completed first
+                        if (statusA === 'completed' && statusB !== 'completed') return -1;
+                        if (statusA !== 'completed' && statusB === 'completed') return 1;
+                        return 0;
+                    }
+                    case 'location': {
+                        const locA = a.querySelector('.project-meta-item:nth-child(1) span')?.textContent || '';
+                        const locB = b.querySelector('.project-meta-item:nth-child(1) span')?.textContent || '';
+                        return locA.localeCompare(locB);
+                    }
+                    default:
+                        return 0;
+                }
+            });
+
+            // Re-append cards in sorted order
+            cards.forEach(card => grid.appendChild(card));
+        }
+
         // Filter functionality
         document.addEventListener('DOMContentLoaded', async () => {
             await loadProjects();
 
+            // Initialize results counter
+            updateResultsCounter();
+
             const filterButtons = document.querySelectorAll('.filter-btn');
             const projectCards = document.querySelectorAll('.project-card');
+            const searchInput = document.getElementById('projectSearch');
+            const clearSearchBtn = document.getElementById('clearSearch');
+            const sortSelect = document.getElementById('projectSort');
 
+            // Search input handler
+            if (searchInput) {
+                searchInput.addEventListener('input', (e) => {
+                    const searchTerm = e.target.value;
+                    searchProjects(searchTerm);
+
+                    // Show/hide clear button
+                    if (clearSearchBtn) {
+                        clearSearchBtn.style.display = searchTerm ? 'flex' : 'none';
+                    }
+                });
+            }
+
+            // Clear search button
+            if (clearSearchBtn) {
+                clearSearchBtn.addEventListener('click', () => {
+                    searchInput.value = '';
+                    searchProjects('');
+                    clearSearchBtn.style.display = 'none';
+                    searchInput.focus();
+                });
+            }
+
+            // Sort select handler
+            if (sortSelect) {
+                sortSelect.addEventListener('change', (e) => {
+                    sortProjects(e.target.value);
+                });
+            }
+
+            // Filter buttons
             filterButtons.forEach(button => {
                 button.addEventListener('click', function () {
                     const filter = this.getAttribute('data-filter');
+                    if (!filter) return; // Skip refresh button
+
+                    currentFilter = filter;
 
                     // Update active state
                     filterButtons.forEach(btn => btn.classList.remove('active'));
                     this.classList.add('active');
 
-                    // Filter projects
-                    projectCards.forEach(card => {
-                        const categories = card.getAttribute('data-category');
-                        const shouldShow = filter === 'all' || categories.includes(filter);
-
-                        if (shouldShow) {
-                            card.style.display = 'block';
-                            setTimeout(() => {
-                                card.style.opacity = '1';
-                                card.style.transform = 'translateY(0)';
-                            }, 10);
-                        } else {
-                            card.style.opacity = '0';
-                            card.style.transform = 'translateY(20px)';
-                            setTimeout(() => {
-                                card.style.display = 'none';
-                            }, 300);
-                        }
-                    });
+                    // Apply filter with current search
+                    searchProjects(currentSearchTerm);
                 });
             });
 
