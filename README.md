@@ -1,228 +1,326 @@
-# KJ & Associates Consultancy Ltd - CMS Website
+# KJ & Associates Consultancy Ltd - CMS
 
-A professional website and content management system for KJ & Associates Consultancy Ltd, a quantity surveying firm based in Tanzania.
+A modern, full-stack Content Management System for quantity surveying and construction project management firms.
 
-## 🏗️ Project Overview
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Node.js](https://img.shields.io/badge/Node.js-18+-green.svg)](https://nodejs.org/)
+[![Supabase](https://img.shields.io/badge/Database-Supabase-green.svg)](https://supabase.com/)
 
-This project consists of:
-- **Frontend**: Static HTML/CSS/JS website with dynamic content loading
-- **Backend**: Node.js + Express API server
-- **Database**: Supabase (PostgreSQL)
-- **CMS Admin**: Web-based admin panel for content management
+---
 
-## 📁 Project Structure
+## 🌟 Features
+
+- **📊 Project Management** - Showcase construction projects with images, details, and filtering
+- **👥 Team Management** - Manage team members and board of directors
+- **💼 Client Portfolio** - Display client logos and testimonials
+- **📝 Blog System** - Publish articles and industry insights
+- **🎨 Theme Customization** - Multiple pre-built themes (Classic Green, Professional Dark, Earth Warm)
+- **🔐 Secure Admin Panel** - Password-protected CMS with full CRUD operations
+- **📱 Responsive Design** - Mobile-first, works on all devices
+- **🚀 Fast & Lightweight** - Static frontend with API backend
+- **☁️ Cloud Database** - Powered by Supabase (PostgreSQL)
+- **🔄 Real-time Sync** - Changes reflect immediately on the website
+
+---
+
+## 🏗️ Architecture
 
 ```
-├── index.html              # Homepage
-├── about.html              # About Us page
-├── contact.html            # Contact page
-├── team.html               # Team page
-├── clients.html            # Clients page
-├── certifications.html     # Certifications page
-├── privacy.html            # Privacy Policy
-├── terms.html              # Terms of Service
-├── projects/               # Projects section
-├── services/               # Services section
-├── blog/                   # Blog section
-├── admin/                  # CMS Admin Panel
-│   ├── index.html          # Admin dashboard
-│   └── cms-data.js         # CMS data management
-├── css/                    # Stylesheets
-│   ├── style.css           # Main styles
-│   └── themes.css          # Theme variations
-├── js/                     # JavaScript
-│   ├── main.js             # Main frontend JS
-│   ├── api-client.js       # API client for backend
-│   └── config.js           # Configuration
-├── uploads/                # Uploaded files
-├── server/                 # Node.js Backend
-│   ├── src/                # Server source code
-│   ├── database/           # SQL schemas
-│   └── README.md           # Backend documentation
-└── README.md               # This file
+┌─────────────────┐
+│   Admin Panel   │ (Static HTML/JS)
+│   (Browser)     │
+└────────┬────────┘
+         │
+         │ Direct Connection
+         ▼
+┌─────────────────┐
+│  Supabase DB    │ (PostgreSQL)
+│                 │
+└────────┬────────┘
+         ▲
+         │ API Calls
+         │
+┌────────┴────────┐   ┌─────────────┐
+│  API Server     │◄──│  Website    │ (Static HTML/JS)
+│  (Node.js)      │   │  (Browser)  │
+└─────────────────┘   └─────────────┘
 ```
 
-## 🚀 Getting Started
+---
 
-### Option 1: Static Site (No Backend)
+## 🚀 Quick Start
 
-For development or simple hosting, the site works with localStorage:
+### **Prerequisites**
 
-```bash
-# Using Python
-python3 -m http.server 8080
+- Node.js 18 or higher
+- npm or yarn
+- Supabase account (free tier available)
 
-# Using Node.js
-npx serve .
+### **Installation**
 
-# Using PHP
-php -S localhost:8080
-```
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/samwa85/KJ---Associates-Consultancy-Ltd-CMS.git
+   cd KJ---Associates-Consultancy-Ltd-CMS
+   ```
 
-Visit `http://localhost:8080` to view the site.
+2. **Install dependencies:**
+   ```bash
+   npm install
+   cd server && npm install && cd ..
+   ```
 
-### Option 2: Full Stack with Supabase Backend
-
-1. **Set up Supabase:**
-   - Create a Supabase project at [supabase.com](https://supabase.com)
-   - Run `server/database/schema.sql` in SQL Editor
-   - Get your project URL and service role key
-
-2. **Configure the backend:**
+3. **Configure environment variables:**
    ```bash
    cd server
    cp .env.example .env
    # Edit .env with your Supabase credentials
    ```
 
-3. **Install and run:**
+4. **Set up database:**
+   - Create a Supabase project at https://supabase.com
+   - Run the schema from `database/schema.sql` in Supabase SQL Editor
+   - Copy your Supabase URL and keys to `server/.env`
+
+5. **Start the development server:**
    ```bash
-   npm install
    npm run dev
    ```
 
-4. **Update frontend config:**
-   Edit `js/config.js` to point to your API:
-   ```javascript
-   window.API_BASE_URL = 'http://localhost:3001/api';
-   ```
+6. **Open the application:**
+   - Website: Open `index.html` in your browser
+   - Admin Panel: Open `admin/index.html` (password: `qwerty7890@`)
 
-See `server/README.md` for detailed backend documentation.
+---
 
-## 🔧 Configuration
+## 📖 Documentation
 
-### Environment Variables (Backend)
+- **[Quick Start Guide](QUICK-START.md)** - Get up and running in 30 seconds
+- **[Deployment Guide](DEPLOYMENT-GUIDE.md)** - Deploy to production with live API
+- **[CRUD Testing Report](CRUD-TEST-REPORT.md)** - Comprehensive testing documentation
+- **[Troubleshooting](CRUD-ISSUE-RESOLUTION.md)** - Common issues and solutions
 
-```env
-SUPABASE_URL=https://your-project.supabase.co
-SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
-PORT=3001
-NODE_ENV=development
-ALLOWED_ORIGINS=http://localhost:8080
+---
+
+## 🛠️ Tech Stack
+
+### **Frontend**
+- HTML5, CSS3, JavaScript (ES6+)
+- Tailwind CSS (via CDN)
+- Lucide Icons
+- Vanilla JS (no framework dependencies)
+
+### **Backend**
+- Node.js + Express
+- Supabase (PostgreSQL database)
+- JWT authentication
+- CORS middleware
+- Rate limiting
+
+### **Database**
+- Supabase (managed PostgreSQL)
+- Row Level Security (RLS)
+- Real-time subscriptions
+- Automatic backups
+
+---
+
+## 📁 Project Structure
+
+```
+KJ-Associates-CMS/
+├── admin/                    # CMS Admin Panel
+│   ├── index.html           # Admin dashboard
+│   ├── cms-data.js          # CMS data management
+│   └── cms-api-sync.js      # API synchronization
+├── server/                   # Node.js API Server
+│   ├── src/
+│   │   ├── index.js         # Server entry point
+│   │   ├── routes/          # API routes
+│   │   ├── services/        # Business logic
+│   │   └── middleware/      # Express middleware
+│   ├── .env.example         # Environment template
+│   └── package.json
+├── database/                 # Database schemas & migrations
+│   ├── schema.sql           # Main database schema
+│   └── secure-policies.sql  # RLS policies
+├── js/                      # Frontend JavaScript
+│   ├── config.js            # Configuration
+│   ├── main.js              # Main application logic
+│   └── supabase-client.js   # Supabase client wrapper
+├── css/                     # Stylesheets
+│   ├── style.css            # Main styles
+│   └── themes.css           # Theme definitions
+├── projects/                # Projects page
+│   └── index.html
+├── index.html               # Homepage
+├── about.html               # About page
+├── contact.html             # Contact page
+└── README.md                # This file
 ```
 
-### Frontend Configuration
+---
 
-Edit `js/config.js`:
-```javascript
-window.API_BASE_URL = 'http://localhost:3001/api';
-window.USE_API = true;  // false to use localStorage
-```
+## 🎨 Features in Detail
 
-## 📊 CMS Features
+### **Admin Panel**
+- **Dashboard** - Overview of all content (projects, team, clients, etc.)
+- **Projects** - Full CRUD operations with image upload
+- **Team Members** - Manage staff and board members
+- **Clients** - Client logos and information
+- **Testimonials** - Customer reviews and ratings
+- **Blog Posts** - Article management with rich text
+- **Settings** - Branding, contact info, SEO, themes
 
-Access the admin panel at `/admin/index.html`:
+### **Website**
+- **Dynamic Content** - All content pulled from database
+- **Project Filtering** - Filter by sector, status, funding source
+- **Responsive Design** - Mobile, tablet, desktop optimized
+- **SEO Optimized** - Meta tags, schema.org markup
+- **Fast Loading** - Optimized images, lazy loading
+- **Offline Support** - LocalStorage caching fallback
 
-- **Hero Slides**: Manage homepage slideshow
-- **Projects**: Add/edit portfolio projects
-- **Team**: Manage team members and board
-- **Clients**: Client organizations
-- **Testimonials**: Client testimonials
-- **Services**: Service offerings
-- **Blog**: Blog posts
-- **Certifications**: Company certifications
-- **Settings**: Branding, contact info, SEO
-
-## 🔌 API Endpoints
-
-| Endpoint | Description |
-|----------|-------------|
-| `GET /api/projects` | List all projects |
-| `GET /api/projects/featured` | Featured projects |
-| `GET /api/team` | Team members |
-| `GET /api/clients` | Client organizations |
-| `GET /api/testimonials` | Testimonials |
-| `GET /api/settings/branding` | Branding settings |
-
-See `server/README.md` for complete API documentation.
-
-## 🚢 Deployment
-
-### Frontend Only (Static Hosting)
-
-Deploy to any static host:
-- GitHub Pages
-- Netlify
-- Vercel
-- Cloudflare Pages
-
-### Full Stack
-
-1. Deploy backend to:
-   - Railway
-   - Render
-   - Vercel (Serverless)
-   - DigitalOcean App Platform
-
-2. Update `js/config.js` with production API URL
-
-3. Deploy frontend to static host
-
-### Docker
-
-```dockerfile
-# Backend
-FROM node:18-alpine
-WORKDIR /app
-COPY server/package*.json ./
-RUN npm ci --only=production
-COPY server/ .
-EXPOSE 3001
-CMD ["npm", "start"]
-```
+---
 
 ## 🔐 Security
 
-- Service role keys are never exposed to frontend
-- JWT authentication for protected routes
-- Row Level Security (RLS) on all tables
-- Rate limiting on API endpoints
-- CORS configuration
-- Helmet security headers
+- **Password Protection** - Admin panel requires authentication
+- **Row Level Security** - Database-level access control
+- **Environment Variables** - Sensitive data not in code
+- **CORS Protection** - Whitelist allowed origins
+- **Rate Limiting** - Prevent API abuse
+- **Input Validation** - Sanitize all user inputs
+- **HTTPS Only** - Secure connections in production
 
-## 📝 Migration from localStorage
+---
 
-If you have existing data in localStorage:
+## 🚀 Deployment
 
-```bash
-# Export from browser console:
-# copy(JSON.stringify(localStorage.getItem('kj_cms_data')))
+### **Quick Deploy Options**
 
-# Run migration:
-cd server
-node scripts/migrate-from-localstorage.js ./cms-export.json
-```
+1. **Frontend (Static Files):**
+   - 20i (current)
+   - Netlify
+   - Vercel
+   - GitHub Pages
 
-## 🛠️ Development
+2. **Backend (API Server):**
+   - Railway (recommended)
+   - Render
+   - Heroku
+   - DigitalOcean App Platform
 
-### Frontend Development
+3. **Database:**
+   - Supabase (managed PostgreSQL)
 
-```bash
-# Start local server
-python3 -m http.server 8080
+See [DEPLOYMENT-GUIDE.md](DEPLOYMENT-GUIDE.md) for detailed instructions.
 
-# Edit files and refresh browser
-```
+---
 
-### Backend Development
+## 🧪 Testing
 
-```bash
-cd server
-npm run dev  # Starts with nodemon
-```
+### **Run CRUD Tests:**
 
-### Database Changes
+Open `test-crud.html` in your browser to run automated database tests.
 
-1. Edit `server/database/schema.sql`
-2. Run changes in Supabase SQL Editor
-3. Update services/controllers as needed
+### **Manual Testing:**
 
-## 📄 License
+1. Start the server: `npm run dev`
+2. Open admin panel: `admin/index.html`
+3. Create a test project
+4. Verify it appears on `projects/index.html`
+5. Edit and delete the test project
 
-MIT License - See LICENSE file for details.
+See [CRUD-TEST-REPORT.md](CRUD-TEST-REPORT.md) for full test results.
 
-## 🤝 Support
+---
 
-For support, contact KJ & Associates Consultancy Ltd:
-- Email: md@kjconsultancy.co.tz
-- Phone: +255 768 757 779
+## 📊 Database Schema
+
+Main tables:
+- `projects` - Construction projects
+- `team_members` - Staff and leadership
+- `board_members` - Board of directors
+- `clients` - Client information
+- `testimonials` - Customer reviews
+- `blog_posts` - Blog articles
+- `services` - Service offerings
+- `certifications` - Company certifications
+- `slides` - Homepage slideshow
+- `settings` - Global settings
+
+See `database/schema.sql` for complete schema.
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Please follow these steps:
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
+
+---
+
+## 📝 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+## 👥 Authors
+
+**KJ & Associates Consultancy Ltd**
+- Website: https://kjconsultancy.co.tz
+- Email: info@kjconsultancy.co.tz
+- Location: Dar es Salaam, Tanzania
+
+**Developer**
+- GitHub: [@samwa85](https://github.com/samwa85)
+
+---
+
+## 🙏 Acknowledgments
+
+- [Supabase](https://supabase.com) - Backend as a Service
+- [Tailwind CSS](https://tailwindcss.com) - CSS framework
+- [Lucide Icons](https://lucide.dev) - Icon library
+- [Express.js](https://expressjs.com) - Web framework
+
+---
+
+## 📞 Support
+
+For issues, questions, or suggestions:
+
+1. Check the [documentation](QUICK-START.md)
+2. Search [existing issues](https://github.com/samwa85/KJ---Associates-Consultancy-Ltd-CMS/issues)
+3. Create a [new issue](https://github.com/samwa85/KJ---Associates-Consultancy-Ltd-CMS/issues/new)
+
+---
+
+## 🗺️ Roadmap
+
+- [ ] Implement Supabase Auth for admin panel
+- [ ] Add image optimization and CDN support
+- [ ] Create mobile app (React Native)
+- [ ] Add multi-language support
+- [ ] Implement advanced analytics
+- [ ] Add email notifications
+- [ ] Create automated backups
+- [ ] Add version control for content
+
+---
+
+## 📈 Status
+
+**Current Version:** 1.0.0  
+**Status:** ✅ Production Ready  
+**Last Updated:** January 7, 2026
+
+---
+
+**⭐ If you find this project useful, please consider giving it a star on GitHub!**
