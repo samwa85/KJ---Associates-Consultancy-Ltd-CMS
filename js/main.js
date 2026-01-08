@@ -236,6 +236,16 @@ document.addEventListener('DOMContentLoaded', async function () {
      * Works for file:// protocol and web servers
      */
     function getBasePath() {
+        // If we are on the live site in /demo/ subdirectory
+        if (window.location.pathname.includes('/demo/')) {
+            const pathParts = window.location.pathname.split('/');
+            const demoIndex = pathParts.indexOf('demo');
+            const depth = pathParts.length - demoIndex - 2; // -2 because arrays are 0-indexed and 'demo' is at index
+
+            if (depth <= 0) return './';
+            return '../'.repeat(depth);
+        }
+
         const currentPath = window.location.pathname;
 
         // Check known subdirectories
