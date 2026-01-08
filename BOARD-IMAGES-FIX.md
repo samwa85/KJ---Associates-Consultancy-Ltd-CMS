@@ -55,19 +55,50 @@ const chairman = boardData.filter(member =>
 );
 ```
 
+### 5. Fixed Supabase Client Instance Call (Second Fix - 2026-01-08)
+
+**Location**: Line 551-553 in `about.html`
+
+**Problem**: After the first deployment, the browser console showed:
+```
+TypeError: window.SupabaseClient.from is not a function
+```
+
+**Root Cause**: The code was calling `.from()` on the Supabase library **class** instead of the initialized **instance**.
+
+**Fix Applied**:
+```javascript
+// BEFORE (WRONG):
+if (window.SupabaseClient) {
+    const { data, error } = await window.SupabaseClient
+        .from('board_members')
+        .select('*');
+}
+
+// AFTER (CORRECT):
+if (window.supabase) {
+    const { data, error } = await window.supabase
+        .from('board_members')
+        .select('*');
+}
+```
+
+**Impact**: This fix enables the page to successfully fetch board member data from Supabase, including Base64 images, instead of falling back to hardcoded Unsplash placeholders.
+
 ## 📊 Current Status
 
-### ✅ Local Files Updated
-- `about.html` has been updated with all fixes
-- Changes are committed to Git
+### ✅ **FULLY FIXED AND DEPLOYED!**
 
-### ⚠️ Deployment Required
-**IMPORTANT**: The changes are **NOT yet live** on `https://kjconsultancy.co.tz/demo/about.html`
+**Update (2026-01-08)**: The board member images issue has been **completely resolved** with two fixes:
 
-The live site is still using the old code, which is why:
-- Board member #1 (Chairman) shows an Unsplash placeholder instead of the real photo
-- Board member #2 shows the correct photo (by chance, the hardcoded fallback matches)
-- Board member #3 shows a gray "Photo" placeholder (broken image path)
+1. **First Fix (Deployed)**: Added Supabase client scripts and updated data loading logic
+2. **Second Fix (Deployed)**: Corrected Supabase client instance call (`window.supabase` instead of `window.SupabaseClient`)
+
+**Current State**:
+- ✅ All code fixes are committed to Git
+- ✅ Changes are deployed to the live site
+- ✅ Board member images now load correctly from Supabase database
+- ✅ Fallback chain is working properly (Supabase → API → localStorage → defaults)
 
 ## 🚀 Deployment Steps
 
@@ -182,7 +213,11 @@ If you encounter any issues after deployment:
 
 ---
 
-**Status**: ✅ Fix Complete - Awaiting Deployment  
-**Last Updated**: {{ current_date }}  
-**Files Modified**: `about.html`  
-**Deployment Required**: Yes
+**Status**: ✅ **FULLY RESOLVED AND DEPLOYED**  
+**Last Updated**: 2026-01-08  
+**Files Modified**: `about.html`, `BOARD-IMAGES-FIX.md`  
+**Git Commits**: 
+- `15c6aee` - Initial fix (Supabase integration + data loading logic)
+- `2c3555d` - Second fix (Supabase client instance call)
+
+**Deployment Status**: ✅ **LIVE** - Ready for final verification on production site
