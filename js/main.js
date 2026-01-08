@@ -13,8 +13,88 @@ if (typeof window.cmsData === 'undefined') {
 document.addEventListener('DOMContentLoaded', async function () {
 
     // ==================== CMS DATA LOADER ====================
+    // Initialize Supabase if available
+    if (window.SupabaseClient) {
+        window.SupabaseClient.init();
+    }
+
     // Check if we should use API from centralized config
     const useAPI = window.API_CONFIG?.useApi !== false;
+
+    async function loadCMSDataFromSupabase() {
+        if (!window.SupabaseClient || !window.SupabaseClient.isConnected()) {
+            console.log('[Main] Supabase client not available or not connected');
+            return null;
+        }
+
+        try {
+            console.log('[Main] Loading CMS data from Supabase...');
+
+            // Fetch everything in parallel
+            const [
+                settings,
+                projects,
+                clients,
+                testimonials,
+                team,
+                slides,
+                blog
+            ] = await Promise.all([
+                window.SupabaseClient.settings.get().catch(() => ({})),
+                window.SupabaseClient.projects.getAll().catch(() => []),
+                window.SupabaseClient.clients.getAll().catch(() => []),
+                window.SupabaseClient.testimonials.getAll().catch(() => []),
+                window.SupabaseClient.team.getAll().catch(() => []),
+                window.SupabaseClient.slides.getActive().catch(() => []),
+                window.SupabaseClient.blog.getPublished().catch(() => [])
+            ]);
+
+            // Construct CMS data object matching the expected structure
+            const cmsData = {
+                // Settings mapping
+                branding: {
+                    logoType: 'image', // Assume image if we have a URL, text if not? Or just use what's in settings?
+                    logoText: settings?.site_title || 'KJ & Associates',
+                    logoSubtitle: 'Consultancy Ltd',
+                    logoImageUrl: settings?.logo_url, // If you add this to settings table
+                    faviconUrl: settings?.favicon_url, // If you add this
+                    ...settings // Spread other settings
+                },
+                contact: {
+                    email: settings?.contact_email,
+                    phone: settings?.contact_phone,
+                    address: settings?.contact_address,
+                    ...settings
+                },
+                seo: {
+                    title: settings?.site_title,
+                    description: settings?.site_description,
+                    keywords: settings?.site_keywords
+                },
+                theme: settings?.theme || 'classic-green',
+
+                // Content arrays
+                projects: projects || [],
+                clients: clients || [],
+                testimonials: testimonials || [],
+                team: team || [],
+                slides: slides || [],
+                blog: blog || []
+            };
+
+            // Cache in localStorage
+            if (cmsData.projects.length > 0 || cmsData.clients.length > 0) {
+                localStorage.setItem('kj_cms_data', JSON.stringify(cmsData));
+                console.log('[Main] Data loaded from Supabase and cached');
+            }
+
+            return cmsData;
+
+        } catch (error) {
+            console.error('[Main] Supabase load failed:', error);
+            return null;
+        }
+    }
 
     async function loadCMSDataFromAPI() {
         if (!useAPI) {
@@ -87,17 +167,22 @@ document.addEventListener('DOMContentLoaded', async function () {
         return null;
     }
 
-    // Try API first, then fall back to localStorage
-    // Only fall back if API call itself failed (returned null), not based on content
+    // Try API first, then Supabase, then fall back to localStorage
     let cmsData = await loadCMSDataFromAPI();
+
+    // If API failed, try Supabase directly
     if (cmsData === null) {
-        // API failed completely, use localStorage
+        cmsData = await loadCMSDataFromSupabase();
+    }
+
+    // If both failed, use localStorage
+    if (cmsData === null) {
         cmsData = loadCMSDataFromLocalStorage();
         if (cmsData) {
-            console.log('[Main] API unavailable, using localStorage data');
+            console.log('[Main] Remote data unavailable, using localStorage data');
         }
     } else {
-        console.log('[Main] Using API data');
+        console.log('[Main] Using remote data');
     }
 
     // Make CMS data globally available and resolve the readiness promise
