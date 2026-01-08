@@ -1164,48 +1164,53 @@ function loadProjectImages(images) {
 
     if (!images) return;
 
-    // Helper to get image data - check _imageData storage first, then use provided data
-    const getImageData = (path, providedData) => {
-        // If provided data is already base64, use it
-        if (providedData && providedData.startsWith('data:image')) {
-            return providedData;
+    // Helper to get image data - handles base64, URLs, and path lookups
+    const getImageData = (value) => {
+        if (!value) return '';
+        // If it's already base64 or URL, use directly
+        if (value.startsWith('data:image') || value.startsWith('http://') || value.startsWith('https://')) {
+            return value;
         }
-        // Check _imageData storage for base64 data
-        if (CMS.data._imageData && CMS.data._imageData[path]) {
-            return CMS.data._imageData[path];
+        // It's a path - check _imageData storage for base64 data
+        if (CMS.data._imageData && CMS.data._imageData[value]) {
+            return CMS.data._imageData[value];
         }
-        // For external URLs (http/https), use the URL directly
-        if (path && (path.startsWith('http://') || path.startsWith('https://'))) {
-            return path;
-        }
-        // Fallback to provided data or path
-        return providedData || path;
+        // Path without base64 data - return empty (will show placeholder)
+        return '';
     };
 
     // Handle both array and single string
     if (typeof images === 'string' && images.trim()) {
-        const data = getImageData(images, images);
-        window.projectImages.push({
-            path: images,
-            data: data,
-            filename: images.split('/').pop()
-        });
+        const data = getImageData(images);
+        if (data) {
+            window.projectImages.push({
+                path: images.startsWith('data:') ? 'uploaded-image' : images,
+                data: data,
+                filename: images.startsWith('data:') ? 'image.jpg' : images.split('/').pop()
+            });
+        }
     } else if (Array.isArray(images)) {
         images.forEach(img => {
             if (typeof img === 'string' && img.trim()) {
-                const data = getImageData(img, img);
-                window.projectImages.push({
-                    path: img,
-                    data: data,
-                    filename: img.split('/').pop()
-                });
-            } else if (img && img.path) {
-                const data = getImageData(img.path, img.data);
-                window.projectImages.push({
-                    path: img.path,
-                    data: data,
-                    filename: img.path.split('/').pop()
-                });
+                const data = getImageData(img);
+                if (data) {
+                    window.projectImages.push({
+                        path: img.startsWith('data:') ? 'uploaded-image' : img,
+                        data: data,
+                        filename: img.startsWith('data:') ? 'image.jpg' : img.split('/').pop()
+                    });
+                }
+            } else if (img && typeof img === 'object') {
+                // Handle object format { path, data }
+                const imgData = img.data || '';
+                const data = getImageData(imgData) || getImageData(img.path);
+                if (data) {
+                    window.projectImages.push({
+                        path: img.path || 'uploaded-image',
+                        data: data,
+                        filename: img.path ? img.path.split('/').pop() : 'image.jpg'
+                    });
+                }
             }
         });
     }
@@ -1539,30 +1544,30 @@ function saveProject() {
     let mainImage = '';
 
     if (window.projectImages && window.projectImages.length > 0) {
-        // Store base64 data mapping for frontend use
+        // Store base64 data mapping for frontend use (local backup)
         if (!CMS.data._imageData) {
             CMS.data._imageData = {};
         }
 
         images = window.projectImages.map((img, index) => {
             let finalPath = img.path;
+            let imageData = img.data || '';
 
-            // If it's a base64 image, generate a proper path
-            if (img.data && img.data.startsWith('data:image')) {
-                const extension = img.data.split(';')[0].split('/')[1] || 'jpg';
+            // If it's a base64 image, generate a proper path for reference
+            if (imageData && imageData.startsWith('data:image')) {
+                const extension = imageData.split(';')[0].split('/')[1] || 'jpg';
                 finalPath = `/uploads/projects/${itemName}-${actualId}-${index + 1}.${extension}`;
-                CMS.data._imageData[finalPath] = img.data;
+                CMS.data._imageData[finalPath] = imageData;
             }
 
-            return {
-                path: finalPath,
-                data: img.data
-            };
+            // Return the actual data (base64 or URL) for storage
+            // This ensures the image data is saved with the project, not just a path
+            return imageData || finalPath;
         });
 
-        // First image is the main/cover image - store the PATH, not the base64 data
-        // The base64 data is stored in _imageData[path] for lookup
-        mainImage = images[0]?.path || '';
+        // First image is the main/cover image - store the ACTUAL DATA (base64 or URL)
+        // This ensures the image displays even without _imageData lookup
+        mainImage = images[0] || '';
     }
 
     const project = {
