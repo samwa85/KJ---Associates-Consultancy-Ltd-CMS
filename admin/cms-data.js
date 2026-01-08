@@ -158,6 +158,20 @@ const CMS = {
 
     // Load data from API or localStorage
     async loadData() {
+        // Always try to preserve _imageData from localStorage (base64 images)
+        let localImageData = {};
+        try {
+            const stored = localStorage.getItem('kj_cms_data');
+            if (stored) {
+                const localData = JSON.parse(stored);
+                if (localData._imageData) {
+                    localImageData = localData._imageData;
+                }
+            }
+        } catch (e) {
+            console.warn('[CMS] Could not load _imageData from localStorage');
+        }
+
         // Try to load from API first if CMSSync is available
         if (typeof CMSSync !== 'undefined' && CMSSync.apiAvailable) {
             try {
@@ -170,7 +184,9 @@ const CMS = {
                             this.data[key] = this.defaults[key];
                         }
                     });
-                    console.log('[CMS] Data loaded from API');
+                    // Restore _imageData from localStorage (base64 images are stored locally)
+                    this.data._imageData = localImageData;
+                    console.log('[CMS] Data loaded from API, _imageData restored from localStorage');
                     return;
                 }
             } catch (error) {
@@ -1127,25 +1143,46 @@ function loadProjectImages(images) {
 
     if (!images) return;
 
+    // Helper to get image data - check _imageData storage first, then use provided data
+    const getImageData = (path, providedData) => {
+        // If provided data is already base64, use it
+        if (providedData && providedData.startsWith('data:image')) {
+            return providedData;
+        }
+        // Check _imageData storage for base64 data
+        if (CMS.data._imageData && CMS.data._imageData[path]) {
+            return CMS.data._imageData[path];
+        }
+        // For external URLs (http/https), use the URL directly
+        if (path && (path.startsWith('http://') || path.startsWith('https://'))) {
+            return path;
+        }
+        // Fallback to provided data or path
+        return providedData || path;
+    };
+
     // Handle both array and single string
     if (typeof images === 'string' && images.trim()) {
+        const data = getImageData(images, images);
         window.projectImages.push({
             path: images,
-            data: images,
+            data: data,
             filename: images.split('/').pop()
         });
     } else if (Array.isArray(images)) {
         images.forEach(img => {
             if (typeof img === 'string' && img.trim()) {
+                const data = getImageData(img, img);
                 window.projectImages.push({
                     path: img,
-                    data: img,
+                    data: data,
                     filename: img.split('/').pop()
                 });
             } else if (img && img.path) {
+                const data = getImageData(img.path, img.data);
                 window.projectImages.push({
                     path: img.path,
-                    data: img.data || img.path,
+                    data: data,
                     filename: img.path.split('/').pop()
                 });
             }
@@ -1415,15 +1452,19 @@ function openProjectModal(id = null) {
                     if (imageValue.startsWith('data:image') || imageValue.startsWith('http')) {
                         previewImg.src = imageValue;
                     } else {
-                        // It's a path - try to load it, but also check for base64 in uploadedImages
-                        previewImg.src = imageValue;
-                        previewImg.onerror = function () {
-                            if (window.uploadedImages && window.uploadedImages['projectImage']) {
-                                this.src = window.uploadedImages['projectImage'].data;
-                            } else {
-                                preview.style.display = 'none';
-                            }
-                        };
+                        // It's a path - check _imageData first for base64
+                        if (CMS.data._imageData && CMS.data._imageData[imageValue]) {
+                            previewImg.src = CMS.data._imageData[imageValue];
+                        } else {
+                            previewImg.src = imageValue;
+                            previewImg.onerror = function () {
+                                if (window.uploadedImages && window.uploadedImages['projectImage']) {
+                                    this.src = window.uploadedImages['projectImage'].data;
+                                } else {
+                                    preview.style.display = 'none';
+                                }
+                            };
+                        }
                     }
                     preview.style.display = 'block';
                 } else {
@@ -1498,8 +1539,9 @@ function saveProject() {
             };
         });
 
-        // First image is the main/cover image
-        mainImage = images[0]?.data || images[0]?.path || '';
+        // First image is the main/cover image - store the PATH, not the base64 data
+        // The base64 data is stored in _imageData[path] for lookup
+        mainImage = images[0]?.path || '';
     }
 
     const project = {
