@@ -696,15 +696,15 @@
         async function loadProjects() {
             let projects = [];
             let cmsData = null;
-
+            
             // Prefer data loaded by main.js (API-backed) to avoid stale per-browser caches
-            try {
+                try {
                 cmsData = await (window.cmsDataReady || Promise.resolve(null));
                 if (cmsData && Array.isArray(cmsData.projects)) {
                     projects = cmsData.projects;
                     console.log('[Projects] Using API-backed CMS data', projects.length);
                 }
-            } catch (e) {
+                } catch (e) {
                 console.warn('[Projects] Failed to read cmsDataReady', e);
             }
 
@@ -720,7 +720,7 @@
                     console.error('[Projects] Error parsing cached CMS data:', e);
                 }
             }
-
+            
             // Default 15 projects (only for true fallback)
             const defaultProjects = [
                 { id: 1, title: "Residential Complex Apartments – Oysterbay", client: "Private Developer", location: "Oysterbay, Dar es Salaam", value: "24,000,000,000", funding: "Private", sector: "Building", status: "Ongoing", year: 2024, image: "", services: ["Pre-contract QS", "Post-contract QS"] },
@@ -739,17 +739,17 @@
                 { id: 14, title: "Uongozi Institute – Kondo Village Development", client: "Uongozi Institute", location: "Bagamoyo", value: "70,500,000,000", funding: "Private", sector: "Building", status: "Ongoing", year: 2024, image: "", services: ["Estimates", "BOQs", "Cost Control"] },
                 { id: 15, title: "Mzumbe University Library Rehabilitation & Extension", client: "Mzumbe University", location: "Morogoro", value: "1,250,000", currency: "USD", funding: "Government", sector: "Building", status: "Completed", year: 2023, duration: 12, image: "", services: ["Pre-contract QS", "Post-contract QS"] }
             ];
-
+            
             // Use default projects only if nothing came from API or cache
             if (!projects || projects.length === 0) {
                 projects = defaultProjects;
                 console.log('[Projects] Using default fallback projects');
             }
-
+            
             renderProjects(projects, cmsData);
             updateStats(projects);
         }
-
+        
         function formatValue(value, currency) {
             if (!value) return 'Value Not Disclosed';
             if (currency === 'USD') {
@@ -767,11 +767,11 @@
             }
             return `TZS ${numValue.toLocaleString()}`;
         }
-
+        
         function renderProjects(projects, cmsData) {
             const grid = document.getElementById('projectsGrid');
             if (!grid) return;
-
+            
             grid.innerHTML = projects.map(project => {
                 const statusText = project.status || 'Ongoing';
                 const sectorText = project.sector || 'General';
@@ -783,7 +783,7 @@
                     statusText.toLowerCase(),
                     fundingText.toLowerCase().replace(/\s+/g, '-')
                 ].join(' ');
-
+                
                 // Get all images (support both single image and images array)
                 let allImages = [];
                 if (project.images && Array.isArray(project.images) && project.images.length > 0) {
@@ -828,7 +828,7 @@
                     }
                     if (imageSrc) allImages.push(imageSrc);
                 }
-
+                
                 // Generate image HTML - slideshow if multiple images, single if one
                 let imageHtml = '';
                 if (allImages.length > 1) {
@@ -838,7 +838,7 @@
                             <img src="${src}" alt="${project.title} - Image ${idx + 1}" onerror="this.parentElement.style.display='none'">
                         </div>
                     `).join('');
-
+                    
                     imageHtml = `
                         <div class="project-slideshow" data-project-id="${project.id}" data-image-count="${allImages.length} images">
                             <div class="slides-container">${slidesHtml}</div>
@@ -858,7 +858,7 @@
                 // Extract numeric value for sorting
                 const numericValue = project.value ? parseFloat(project.value.replace(/,/g, '')) : 0;
                 const projectYear = project.year || new Date().getFullYear();
-
+                
                 return `
                     <div class="project-card" 
                          data-category="${categories}" 
@@ -915,16 +915,16 @@
                 `;
             }).join('');
         }
-
+        
         function updateStats(projects) {
             const completed = projects.filter(p => (p.status || '').toLowerCase() === 'completed').length;
             const ongoing = projects.filter(p => (p.status || '').toLowerCase() === 'ongoing').length;
-
+            
             document.getElementById('totalProjects').textContent = projects.length;
             document.getElementById('completedProjects').textContent = completed;
             document.getElementById('ongoingProjects').textContent = ongoing;
         }
-
+        
         // Global variables for search and filter
         let allProjectsData = [];
         let currentFilter = 'all';
@@ -947,7 +947,7 @@
             currentSearchTerm = searchTerm.toLowerCase();
             const projectCards = document.querySelectorAll('.project-card');
 
-            projectCards.forEach(card => {
+                    projectCards.forEach(card => {
                 const title = card.querySelector('.project-title')?.textContent.toLowerCase() || '';
                 const client = card.querySelector('.project-meta-item:nth-child(2) span')?.textContent.toLowerCase() || '';
                 const location = card.querySelector('.project-meta-item:nth-child(1) span')?.textContent.toLowerCase() || '';
@@ -957,25 +957,25 @@
                     client.includes(currentSearchTerm) ||
                     location.includes(currentSearchTerm);
 
-                const categories = card.getAttribute('data-category');
+                        const categories = card.getAttribute('data-category');
                 const matchesFilter = currentFilter === 'all' || categories.includes(currentFilter);
 
                 const shouldShow = matchesSearch && matchesFilter;
-
-                if (shouldShow) {
-                    card.style.display = 'block';
-                    setTimeout(() => {
-                        card.style.opacity = '1';
-                        card.style.transform = 'translateY(0)';
-                    }, 10);
-                } else {
-                    card.style.opacity = '0';
-                    card.style.transform = 'translateY(20px)';
-                    setTimeout(() => {
-                        card.style.display = 'none';
-                    }, 300);
-                }
-            });
+                        
+                        if (shouldShow) {
+                            card.style.display = 'block';
+                            setTimeout(() => {
+                                card.style.opacity = '1';
+                                card.style.transform = 'translateY(0)';
+                            }, 10);
+                        } else {
+                            card.style.opacity = '0';
+                            card.style.transform = 'translateY(20px)';
+                            setTimeout(() => {
+                                card.style.display = 'none';
+                            }, 300);
+                        }
+                    });
 
             updateResultsCounter();
         }
@@ -1106,47 +1106,47 @@
                 });
             }
         });
-
+        
         // Slideshow functions
         function changeSlide(projectId, direction) {
             const slideshow = document.querySelector(`.project-slideshow[data-project-id="${projectId}"]`);
             if (!slideshow) return;
-
+            
             const slides = slideshow.querySelectorAll('.slide');
             const dots = slideshow.querySelectorAll('.dot');
             let currentIndex = Array.from(slides).findIndex(s => s.classList.contains('active'));
-
+            
             // Remove active from current
             slides[currentIndex].classList.remove('active');
             dots[currentIndex].classList.remove('active');
-
+            
             // Calculate new index
             currentIndex += direction;
             if (currentIndex >= slides.length) currentIndex = 0;
             if (currentIndex < 0) currentIndex = slides.length - 1;
-
+            
             // Add active to new
             slides[currentIndex].classList.add('active');
             dots[currentIndex].classList.add('active');
         }
-
+        
         function goToSlide(projectId, index) {
             const slideshow = document.querySelector(`.project-slideshow[data-project-id="${projectId}"]`);
             if (!slideshow) return;
-
+            
             const slides = slideshow.querySelectorAll('.slide');
             const dots = slideshow.querySelectorAll('.dot');
-
+            
             // Remove active from all
             slides.forEach(s => s.classList.remove('active'));
             dots.forEach(d => d.classList.remove('active'));
-
+            
             // Add active to selected
             slides[index].classList.add('active');
             dots[index].classList.add('active');
         }
     </script>
-
+    
     <style>
         /* Project Image Container - Improved Canvas Fit */
         .project-image-container {
@@ -1162,7 +1162,7 @@
             border-bottom: 1px solid var(--gray-200);
             box-sizing: border-box;
         }
-
+        
         .project-image-container img {
             width: 100%;
             height: 100%;
@@ -1171,7 +1171,7 @@
             background: transparent;
             display: block;
         }
-
+        
         .project-image-placeholder {
             width: 100%;
             height: 100%;
@@ -1182,7 +1182,7 @@
             color: var(--gray-400);
             background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
         }
-
+        
         /* Project Slideshow Styles - Enhanced UI */
         .project-slideshow {
             position: absolute;
@@ -1194,7 +1194,7 @@
             background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
             box-sizing: border-box;
         }
-
+        
         .project-slideshow .slides-container {
             position: relative;
             width: 100%;
@@ -1205,7 +1205,7 @@
             justify-content: center;
             box-sizing: border-box;
         }
-
+        
         .project-slideshow .slide {
             position: absolute;
             top: 0;
@@ -1217,12 +1217,12 @@
             transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1);
             box-sizing: border-box;
         }
-
+        
         .project-slideshow .slide.active {
             opacity: 1;
             z-index: 2;
         }
-
+        
         .project-slideshow .slide img {
             width: 100%;
             height: 100%;
@@ -1231,7 +1231,7 @@
             background: transparent;
             display: block;
         }
-
+        
         /* Enhanced Navigation Buttons */
         .project-slideshow .slide-btn {
             position: absolute;
@@ -1254,25 +1254,25 @@
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
             backdrop-filter: blur(4px);
         }
-
+        
         .project-slideshow .slide-btn:hover {
             background: rgba(13, 77, 44, 1);
             transform: translateY(-50%) scale(1.1);
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
         }
-
+        
         .project-slideshow .slide-btn:active {
             transform: translateY(-50%) scale(0.95);
         }
-
+        
         .project-slideshow .slide-btn.prev {
             left: 12px;
         }
-
+        
         .project-slideshow .slide-btn.next {
             right: 12px;
         }
-
+        
         /* Enhanced Dot Indicators */
         .project-slideshow .slide-dots {
             position: absolute;
@@ -1287,7 +1287,7 @@
             border-radius: 20px;
             backdrop-filter: blur(4px);
         }
-
+        
         .project-slideshow .dot {
             width: 10px;
             height: 10px;
@@ -1297,19 +1297,19 @@
             transition: all 0.3s ease;
             border: 2px solid transparent;
         }
-
+        
         .project-slideshow .dot.active {
             background: white;
             width: 24px;
             border-radius: 5px;
             border-color: rgba(255, 255, 255, 0.8);
         }
-
+        
         .project-slideshow .dot:hover {
             background: rgba(255, 255, 255, 0.9);
             transform: scale(1.2);
         }
-
+        
         /* Image counter badge */
         .project-slideshow::before {
             content: attr(data-image-count);
@@ -1326,55 +1326,55 @@
             backdrop-filter: blur(4px);
             display: none;
         }
-
+        
         .project-slideshow[data-image-count]::before {
             display: block;
         }
-
+        
         /* Responsive adjustments */
         @media (max-width: 768px) {
             .project-image-container {
                 height: 240px;
                 min-height: 240px;
             }
-
+            
             .project-slideshow {
                 min-height: 240px;
             }
-
+            
             .project-slideshow .slides-container {
                 min-height: 240px;
             }
-
+            
             .project-slideshow .slide {
                 min-height: 240px;
             }
-
+            
             .project-slideshow .slide-btn {
                 width: 36px;
                 height: 36px;
                 padding: 0.5rem;
                 font-size: 0.9rem;
             }
-
+            
             .project-slideshow .slide-btn.prev {
                 left: 8px;
             }
-
+            
             .project-slideshow .slide-btn.next {
                 right: 8px;
             }
-
+            
             .project-slideshow .slide-dots {
                 bottom: 12px;
                 padding: 6px 10px;
             }
-
+            
             .project-slideshow .dot {
                 width: 8px;
                 height: 8px;
             }
-
+            
             .project-slideshow .dot.active {
                 width: 20px;
             }

@@ -134,7 +134,7 @@
             let imageData = {};
 
             // Prefer API-loaded data
-            try {
+                try {
                 const cmsData = await (window.cmsDataReady || Promise.resolve(null));
                 if (cmsData && Array.isArray(cmsData.clients)) {
                     clients = cmsData.clients;

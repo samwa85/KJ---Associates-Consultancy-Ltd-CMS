@@ -348,28 +348,28 @@
             // Get projects marked as "featured" first
             let featuredProjects = projects.filter(p => p.featured);
             console.log('Featured projects found:', featuredProjects.length);
-
+            
             // If no projects are marked as featured, fall back to mix of ongoing/completed
             if (featuredProjects.length === 0) {
                 console.log('No featured projects, using fallback selection');
                 const ongoingProjects = projects.filter(p => p.status === 'Ongoing');
                 const completedProjects = projects.filter(p => p.status === 'Completed');
-
+                
                 // Take 3 ongoing and 3 completed, or fill with whatever is available
                 featuredProjects.push(...ongoingProjects.slice(0, 3));
                 featuredProjects.push(...completedProjects.slice(0, 3));
-
+                
                 // If we don't have 6, fill with remaining projects
                 if (featuredProjects.length < 6) {
                     const remaining = projects.filter(p => !featuredProjects.includes(p));
                     featuredProjects.push(...remaining.slice(0, 6 - featuredProjects.length));
                 }
             }
-
+            
             // Limit to 6 projects
             featuredProjects = featuredProjects.slice(0, 6);
             console.log('Rendering', featuredProjects.length, 'featured projects');
-
+            
             // Debug: log image info for each project
             featuredProjects.forEach(p => {
                 const hasImages = Array.isArray(p.images) && p.images.length > 0;
@@ -395,7 +395,7 @@
             if (!value) return '';
             const numValue = parseFloat(value.toString().replace(/,/g, ''));
             if (isNaN(numValue)) return value;
-
+            
             if (currency === 'USD') {
                 return `USD ${numValue.toLocaleString()}`;
             } else if (currency === 'EUR') {
@@ -442,7 +442,7 @@
                     return val && typeof val === 'string' && 
                            (val.startsWith('data:image') || val.startsWith('http://') || val.startsWith('https://'));
                 };
-
+                
                 // First check project.images array
                 if (Array.isArray(project.images) && project.images.length > 0) {
                     const firstImage = project.images[0];
@@ -459,13 +459,13 @@
                     } else if (typeof firstImage === 'string') {
                         // String - could be base64, URL, or path
                         if (isUsableImage(firstImage)) {
-                            imagePath = firstImage;
+                        imagePath = firstImage;
                         } else if (cmsImageData[firstImage]) {
                             imagePath = cmsImageData[firstImage];
                         }
                     }
                 }
-
+                
                 // If images array didn't yield anything, check project.image
                 if (!imagePath && project.image) {
                     if (isUsableImage(project.image)) {
@@ -479,18 +479,18 @@
                 if (imagePath && !isUsableImage(imagePath)) {
                     imagePath = '';
                 }
-
+                
                 const hasImage = imagePath && imagePath.trim() !== '';
-
+                
                 const valueDisplay = formatProjectValue(project.value, project.currency);
                 const statusClass = project.status === 'Ongoing' ? 'ongoing' : '';
-
+                
                 return `
                     <div class="project-card">
-                        ${hasImage
-                        ? `<div class="project-image" style="background-image: url('${imagePath}'); background-size: cover; background-position: center;"></div>`
-                        : `<div class="project-image">${getSectorIcon(project.sector)}</div>`
-                    }
+                        ${hasImage 
+                            ? `<div class="project-image" style="background-image: url('${imagePath}'); background-size: cover; background-position: center;"></div>`
+                            : `<div class="project-image">${getSectorIcon(project.sector)}</div>`
+                        }
                         <div class="project-content">
                             <div class="project-badge ${statusClass}">${project.status || 'Ongoing'}</div>
                             <h3>${project.title || 'Untitled Project'}</h3>
@@ -562,17 +562,17 @@
 
             container.innerHTML = displayClients.map(client => {
                 let logoPath = client.logo || '';
-
+                
                 // Check if we have base64 data stored for this logo
                 if (logoPath && imageData && imageData[logoPath]) {
                     logoPath = imageData[logoPath]; // Use base64 data
                 } else if (logoPath && !logoPath.startsWith('data:image') && !logoPath.startsWith('http')) {
                     logoPath = normalizeImagePath(logoPath);
                 }
-
+                
                 const hasLogo = logoPath && logoPath.trim() !== '' && !logoPath.includes('undefined');
-
-                return hasLogo
+                
+                return hasLogo 
                     ? `<div class="client-logo"><img src="${logoPath}" alt="${client.name}" style="max-height: 40px; max-width: 120px; object-fit: contain;" onerror="this.parentElement.innerHTML='${client.name}'"></div>`
                     : `<div class="client-logo">${client.name}</div>`;
             }).join('');

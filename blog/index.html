@@ -547,13 +547,13 @@
             allPosts = [];
 
             // Prefer API-loaded data
-            try {
+                try {
                 const cmsData = await (window.cmsDataReady || Promise.resolve(null));
                 if (cmsData && Array.isArray(cmsData.blog)) {
                     allPosts = cmsData.blog;
                     console.log('[Blog] Using API-backed posts', allPosts.length);
                 }
-            } catch (e) {
+                } catch (e) {
                 console.warn('[Blog] Failed to read cmsDataReady', e);
             }
 
