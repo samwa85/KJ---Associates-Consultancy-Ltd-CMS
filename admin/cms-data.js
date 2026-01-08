@@ -122,6 +122,53 @@ function prepareDataForLocalStorage(sourceData) {
     return { data: dataCopy, modified };
 }
 
+const VALID_IMAGE_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+
+function readFileAsDataUrl(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = event => resolve(event.target.result);
+        reader.onerror = () => reject(new Error('Failed to read file'));
+        reader.readAsDataURL(file);
+    });
+}
+
+function isApiUploadAvailable() {
+    return typeof API !== 'undefined' && API.upload && typeof API.upload.uploadFile === 'function';
+}
+
+async function uploadImageToServer(file, { category = 'general', requireAuth = true } = {}) {
+    if (!file) {
+        throw new Error('No file selected');
+    }
+
+    if (!VALID_IMAGE_MIME_TYPES.includes(file.type)) {
+        throw new Error('Unsupported image format. Please upload JPG, PNG, WEBP, or GIF.');
+    }
+
+    const maxSizeMb = 8;
+    if (file.size > maxSizeMb * 1024 * 1024) {
+        throw new Error(`Image is too large. Maximum size is ${maxSizeMb}MB.`);
+    }
+
+    if (!isApiUploadAvailable()) {
+        if (requireAuth) {
+            throw new Error('Upload service unavailable. Please ensure you are signed in and API is reachable.');
+        }
+        return null;
+    }
+
+    const response = await API.upload.uploadFile(file, category);
+    if (response?.success && response.data?.url) {
+        return {
+            url: response.data.url,
+            filename: response.data.filename || file.name,
+            category
+        };
+    }
+    throw new Error(response?.error || 'Image upload failed');
+}
+
 const CMS = {
     // Default Data
     defaults: {
@@ -1058,156 +1105,103 @@ function generateImagePath(urlInputId, fileExtension) {
     return `/uploads/${category}/${filename}${fileExtension}`;
 }
 
-// Handle image file uploads - generates path and stores base64 for download
-function handleImageUpload(fileInput, urlInputId, previewContainerId) {
+// Handle image file uploads - uploads to API when available and stores preview
+async function handleImageUpload(fileInput, urlInputId, previewContainerId, options = {}) {
+    const file = fileInput.files[0];
+    if (!file) {
+        console.log('No file selected');
+        return;
+    }
+
+    const fileExtension = '.' + file.name.split('.').pop().toLowerCase();
+    const validExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg', '.bmp'];
+    const isValidImage = file.type.startsWith('image/') || validExtensions.includes(fileExtension);
+
+    if (!isValidImage) {
+        showNotification('Please select an image file (JPG, PNG, GIF, etc.)', 'error');
+        fileInput.value = '';
+        return;
+    }
+
+    if (file.size > 8 * 1024 * 1024) {
+        showNotification('Image file is too large. Please select an image smaller than 8MB.', 'error');
+        fileInput.value = '';
+        return;
+    }
+
+    const normalizedExtension = fileExtension === '.jpeg' ? '.jpg' : fileExtension;
+    const urlInput = document.getElementById(urlInputId);
+    const previewContainer = document.getElementById(previewContainerId);
+    const requireServerUpload = options.requireServerUpload === true;
+    const category = options.category || 'general';
+
+    if (urlInput) {
+        urlInput.value = 'Uploading...';
+        urlInput.disabled = true;
+    }
+
     try {
-        const file = fileInput.files[0];
-        if (!file) {
-            console.log('No file selected');
-            return;
-        }
+        const dataUrl = await readFileAsDataUrl(file);
+        let uploadedPath = '';
 
-        // Validate file type - check both MIME type and extension
-        const fileExtension = '.' + file.name.split('.').pop().toLowerCase();
-        const validExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg', '.bmp'];
-        const isValidImage = file.type.startsWith('image/') || validExtensions.includes(fileExtension);
-
-        if (!isValidImage) {
-            alert('Please select an image file (JPG, PNG, GIF, etc.)');
-            fileInput.value = '';
-            return;
-        }
-
-        // Validate file size (max 5MB)
-        if (file.size > 5 * 1024 * 1024) {
-            alert('Image file is too large. Please select an image smaller than 5MB.');
-            fileInput.value = '';
-            return;
-        }
-
-        // Normalize file extension (use .jpg for .jpeg, etc.)
-        const normalizedExtension = fileExtension === '.jpeg' ? '.jpg' : fileExtension;
-
-        // Generate proper file path
-        const filePath = generateImagePath(urlInputId, normalizedExtension);
-
-        // Show loading state
-        const urlInput = document.getElementById(urlInputId);
-        if (urlInput) {
-            urlInput.value = 'Uploading...';
-            urlInput.disabled = true;
-        }
-
-        const reader = new FileReader();
-
-        reader.onload = function (e) {
+        if (options.category || requireServerUpload) {
             try {
-                const dataUrl = e.target.result;
-
-                // Store the base64 data with the file path in a temporary storage
-                if (!window.uploadedImages) {
-                    window.uploadedImages = {};
+                const result = await uploadImageToServer(file, { category, requireAuth: requireServerUpload });
+                if (result?.url) {
+                    uploadedPath = result.url;
                 }
-                window.uploadedImages[urlInputId] = {
-                    path: filePath,
-                    data: dataUrl,
-                    filename: filePath.split('/').pop()
-                };
-
-                // Set the URL input to the file path (not base64)
-                if (urlInput) {
-                    urlInput.value = filePath;
-                    urlInput.disabled = false;
-                }
-
-                // Show preview using base64 data
-                try {
-                    const previewContainer = document.getElementById(previewContainerId);
-                    if (previewContainer) {
-                        let previewImg = previewContainer.querySelector('img') || document.getElementById(previewContainerId.replace('Preview', 'PreviewImg'));
-                        if (previewImg) {
-                            previewImg.src = dataUrl;
-                            previewImg.onerror = function () {
-                                console.warn('Preview image failed to load');
-                            };
-                            previewContainer.style.display = 'block';
-                        } else {
-                            // Create preview image if it doesn't exist
-                            const img = document.createElement('img');
-                            img.src = dataUrl;
-                            img.alt = 'Preview';
-                            img.style.cssText = 'width: 150px; height: 150px; object-fit: contain; border-radius: 8px; border: 2px solid var(--gray-200);';
-                            img.onerror = function () {
-                                console.warn('Preview image failed to load');
-                            };
-                            previewContainer.innerHTML = '';
-                            previewContainer.appendChild(img);
-                            previewContainer.style.display = 'block';
-                        }
+            } catch (uploadError) {
+                console.error('[CMS] Image upload failed:', uploadError);
+                if (requireServerUpload) {
+                    showNotification(uploadError.message || 'Image upload failed', 'error');
+                    fileInput.value = '';
+                    if (urlInput) {
+                        urlInput.value = '';
+                        urlInput.disabled = false;
                     }
-                } catch (previewError) {
-                    console.error('Error showing preview:', previewError);
-                }
-
-                // Show brief success notification
-                setTimeout(() => {
-                    showNotification('Image uploaded successfully!', 'success');
-                }, 100);
-
-                // Trigger any existing preview functions
-                try {
-                    // Force preview update after a short delay to ensure DOM is ready
-                    setTimeout(() => {
-                        if (urlInputId === 'projectImage' && typeof previewProjectImage === 'function') {
-                            previewProjectImage();
-                        }
-                        if (urlInputId === 'slideImage' && typeof previewSlideImage === 'function') {
-                            previewSlideImage();
-                        }
-                        // Also trigger input event to ensure preview updates
-                        if (urlInput) {
-                            urlInput.dispatchEvent(new Event('input'));
-                        }
-                    }, 100);
-                } catch (previewFuncError) {
-                    console.warn('Preview function error:', previewFuncError);
-                }
-            } catch (error) {
-                console.error('Error processing uploaded file:', error);
-                alert('Error processing image. Please try again.');
-                if (urlInput) {
-                    urlInput.value = '';
-                    urlInput.disabled = false;
-                }
-                fileInput.value = '';
-            }
-        };
-
-        reader.onerror = function () {
-            console.error('FileReader error');
-            alert('Error reading file. Please try again.');
-            if (urlInput) {
-                urlInput.value = '';
-                urlInput.disabled = false;
-            }
-            fileInput.value = '';
-        };
-
-        reader.onprogress = function (e) {
-            if (e.lengthComputable) {
-                const percentLoaded = Math.round((e.loaded / e.total) * 100);
-                if (urlInput && percentLoaded < 100) {
-                    urlInput.value = `Uploading... ${percentLoaded}%`;
+                    return;
+                } else {
+                    showNotification('Upload failed — saving image locally only.', 'warning');
                 }
             }
+        }
+
+        const filePath = uploadedPath || generateImagePath(urlInputId, normalizedExtension);
+
+        window.uploadedImages = window.uploadedImages || {};
+        window.uploadedImages[urlInputId] = {
+            path: filePath,
+            data: dataUrl,
+            filename: filePath.split('/').pop(),
+            remoteUrl: uploadedPath || ''
         };
 
-        reader.readAsDataURL(file);
+        if (urlInput) {
+            urlInput.value = filePath;
+            urlInput.disabled = false;
+        }
+
+        if (previewContainer) {
+            let previewImg = previewContainer.querySelector('img') || document.getElementById(previewContainerId.replace('Preview', 'PreviewImg'));
+            if (!previewImg) {
+                previewImg = document.createElement('img');
+                previewImg.alt = 'Preview';
+                previewImg.className = 'preview-image';
+                previewContainer.innerHTML = '';
+                previewContainer.appendChild(previewImg);
+            }
+            previewImg.src = dataUrl;
+            previewImg.onerror = function () {
+                previewContainer.style.display = 'none';
+            };
+            previewContainer.style.display = 'block';
+        }
+
+        fileInput.value = '';
     } catch (error) {
         console.error('Error in handleImageUpload:', error);
-        alert('An error occurred while uploading the image. Please try again.');
+        showNotification(error.message || 'An error occurred while uploading the image. Please try again.', 'error');
         fileInput.value = '';
-        const urlInput = document.getElementById(urlInputId);
         if (urlInput) {
             urlInput.value = '';
             urlInput.disabled = false;
@@ -1215,55 +1209,58 @@ function handleImageUpload(fileInput, urlInputId, previewContainerId) {
     }
 }
 
+
 // ==================== MULTIPLE IMAGE UPLOAD FOR PROJECTS ====================
 // Store project images temporarily
 window.projectImages = window.projectImages || [];
 
 // Handle multiple image uploads for projects
-function handleMultipleImageUpload(fileInput, storageKey) {
+async function handleMultipleImageUpload(fileInput, storageKey, options = {}) {
     const files = fileInput.files;
     if (!files || files.length === 0) return;
 
     const validExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp'];
-    const maxSize = 5 * 1024 * 1024; // 5MB
+    const maxSize = 8 * 1024 * 1024; // 8MB
+    const category = options.category || 'projects';
 
-    Array.from(files).forEach((file, index) => {
+    for (const file of Array.from(files)) {
         const fileExtension = '.' + file.name.split('.').pop().toLowerCase();
         const isValidImage = file.type.startsWith('image/') || validExtensions.includes(fileExtension);
 
         if (!isValidImage) {
             showNotification(`${file.name} is not a valid image file`, 'error');
-            return;
+            continue;
         }
 
         if (file.size > maxSize) {
-            showNotification(`${file.name} is too large (max 5MB)`, 'error');
-            return;
+            showNotification(`${file.name} is too large (max 8MB)`, 'error');
+            continue;
         }
 
-        const reader = new FileReader();
-        reader.onload = function (e) {
-            const dataUrl = e.target.result;
-            const projectId = document.getElementById('projectId')?.value || 'new';
-            const title = document.getElementById('projectTitle')?.value || 'project';
-            const itemName = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').substring(0, 30);
-            const imgIndex = window.projectImages.length + 1;
-            const normalizedExtension = fileExtension === '.jpeg' ? '.jpg' : fileExtension;
-            const filePath = `/uploads/projects/${itemName}-${projectId}-${imgIndex}${normalizedExtension}`;
+        let uploadedPath = '';
+        try {
+            const uploadResult = await uploadImageToServer(file, { category, requireAuth: true });
+            uploadedPath = uploadResult?.url || '';
+        } catch (error) {
+            console.error('[CMS] Project image upload failed:', error);
+            showNotification(`${file.name}: ${error.message || 'Upload failed'}`, 'error');
+            continue;
+        }
 
-            window.projectImages.push({
-                path: filePath,
-                data: dataUrl,
-                filename: filePath.split('/').pop()
-            });
+        const previewSrc = await readFileAsDataUrl(file);
+        const filename = uploadedPath ? uploadedPath.split('/').pop() : file.name;
 
-            renderProjectImagesGallery();
-            showNotification(`Image ${file.name} added`, 'success');
-        };
-        reader.readAsDataURL(file);
-    });
+        window.projectImages.push({
+            path: uploadedPath || filename,
+            data: previewSrc,
+            filename,
+            remoteUrl: uploadedPath
+        });
 
-    // Clear the file input for next selection
+        showNotification(`Image ${file.name} uploaded`, 'success');
+    }
+
+    renderProjectImagesGallery();
     fileInput.value = '';
 }
 
@@ -1285,7 +1282,8 @@ function addImageUrl(event) {
     window.projectImages.push({
         path: url,
         data: url, // For external URLs, path and data are the same
-        filename: url.split('/').pop()
+        filename: url.split('/').pop(),
+        remoteUrl: url
     });
 
     urlInput.value = '';
@@ -1306,13 +1304,16 @@ function renderProjectImagesGallery() {
     }
 
     gallery.style.display = 'block';
-    grid.innerHTML = window.projectImages.map((img, index) => `
+    grid.innerHTML = window.projectImages.map((img, index) => {
+        const previewSrc = img.data || img.path || '';
+        return `
         <div class="gallery-item ${index === 0 ? 'main' : ''}" data-index="${index}">
-            <img src="${img.data}" alt="Project image ${index + 1}" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect fill=%22%23f3f4f6%22 width=%22100%22 height=%22100%22/><text x=%2250%22 y=%2255%22 text-anchor=%22middle%22 fill=%22%239ca3af%22 font-size=%2212%22>Error</text></svg>'">
+            <img src="${previewSrc}" alt="Project image ${index + 1}" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect fill=%22%23f3f4f6%22 width=%22100%22 height=%22100%22/><text x=%2250%22 y=%2255%22 text-anchor=%22middle%22 fill=%22%239ca3af%22 font-size=%2212%22>Error</text></svg>'">
             <button type="button" class="remove-btn" onclick="removeProjectImage(${index})" title="Remove image">&times;</button>
             ${index === 0 ? '<span class="main-badge">MAIN</span>' : `<button type="button" class="set-main-btn" onclick="setMainProjectImage(${index})">Set as main</button>`}
         </div>
-    `).join('');
+    `;
+    }).join('');
 }
 
 // Remove image from project gallery
@@ -1349,12 +1350,16 @@ function loadProjectImages(images) {
         if (value.startsWith('data:image') || value.startsWith('http://') || value.startsWith('https://')) {
             return value;
         }
+        // Allow relative paths to be used directly for preview
+        if (value.startsWith('/') || value.startsWith('./') || value.startsWith('../')) {
+            return value;
+        }
         // It's a path - check _imageData storage for base64 data
         if (CMS.data._imageData && CMS.data._imageData[value]) {
             return CMS.data._imageData[value];
         }
-        // Path without base64 data - return empty (will show placeholder)
-        return '';
+        // Path without base64 data - return the raw value so preview can attempt to load it
+        return value;
     };
 
     // Handle both array and single string
@@ -1364,7 +1369,8 @@ function loadProjectImages(images) {
             window.projectImages.push({
                 path: images.startsWith('data:') ? 'uploaded-image' : images,
                 data: data,
-                filename: images.startsWith('data:') ? 'image.jpg' : images.split('/').pop()
+                filename: images.startsWith('data:') ? 'image.jpg' : images.split('/').pop(),
+                remoteUrl: images.startsWith('http') || images.startsWith('/') ? images : ''
             });
         }
     } else if (Array.isArray(images)) {
@@ -1375,7 +1381,8 @@ function loadProjectImages(images) {
                     window.projectImages.push({
                         path: img.startsWith('data:') ? 'uploaded-image' : img,
                         data: data,
-                        filename: img.startsWith('data:') ? 'image.jpg' : img.split('/').pop()
+                        filename: img.startsWith('data:') ? 'image.jpg' : img.split('/').pop(),
+                        remoteUrl: img.startsWith('http') || img.startsWith('/') ? img : ''
                     });
                 }
             } else if (img && typeof img === 'object') {
@@ -1386,7 +1393,8 @@ function loadProjectImages(images) {
                     window.projectImages.push({
                         path: img.path || 'uploaded-image',
                         data: data,
-                        filename: img.path ? img.path.split('/').pop() : 'image.jpg'
+                        filename: img.path ? img.path.split('/').pop() : 'image.jpg',
+                        remoteUrl: img.path && (img.path.startsWith('http') || img.path.startsWith('/')) ? img.path : ''
                     });
                 }
             }
@@ -1555,13 +1563,19 @@ function saveSlide() {
     // If there's uploaded image data, update the path with the actual ID
     if (window.uploadedImages && window.uploadedImages['slideImage']) {
         const uploadedData = window.uploadedImages['slideImage'];
-        const actualId = id ? parseInt(id) : CMS.getNextId('slides');
-        const fileExtension = uploadedData.path.split('.').pop();
-        imageValue = `/uploads/slides/slide-${actualId}.${fileExtension}`;
-
-        // Update the stored path
-        uploadedData.path = imageValue;
-        uploadedData.filename = imageValue.split('/').pop();
+        if (uploadedData.remoteUrl) {
+            imageValue = uploadedData.remoteUrl;
+        } else {
+            const actualId = id ? parseInt(id) : CMS.getNextId('slides');
+            const fileExtension = uploadedData.path.split('.').pop();
+            imageValue = `/uploads/slides/slide-${actualId}.${fileExtension}`;
+            uploadedData.path = imageValue;
+            uploadedData.filename = imageValue.split('/').pop();
+            if (uploadedData.data) {
+                CMS.data._imageData = CMS.data._imageData || {};
+                CMS.data._imageData[imageValue] = uploadedData.data;
+            }
+        }
     }
 
     const slide = {
@@ -1719,35 +1733,35 @@ function saveProject() {
 
     // Process multiple images
     let images = [];
-    let imagesForAPI = []; // Full base64 data for API
+    let imagesForAPI = [];
     let mainImage = '';
     let mainImageForAPI = '';
 
     if (window.projectImages && window.projectImages.length > 0) {
-        // Store base64 data mapping for frontend use (memory only, not localStorage)
-        if (!CMS.data._imageData) {
-            CMS.data._imageData = {};
-        }
-
         window.projectImages.forEach((img, index) => {
-            let imageData = img.data || '';
-            let finalPath = img.path || '';
+            const imageData = img.data || '';
+            const remotePath = img.remoteUrl || '';
+            let finalPath = remotePath || img.path || '';
 
-            // If it's a base64 image, generate a proper path for reference
-            if (imageData && imageData.startsWith('data:image')) {
+            if (!finalPath && imageData && imageData.startsWith('data:image')) {
                 const extension = imageData.split(';')[0].split('/')[1] || 'jpg';
                 finalPath = `/uploads/projects/${itemName}-${actualId}-${index + 1}.${extension}`;
-                // Store in memory for current session display
+                CMS.data._imageData = CMS.data._imageData || {};
                 CMS.data._imageData[finalPath] = imageData;
             }
 
-            // For localStorage: store paths only (to avoid quota issues)
-            images.push(finalPath || imageData);
-            // For API: store actual base64 data (database has no size limit like localStorage)
-            imagesForAPI.push(imageData || finalPath);
+            if (finalPath) {
+                images.push(finalPath);
+            }
+            if (remotePath) {
+                imagesForAPI.push(remotePath);
+            } else if (imageData && imageData.startsWith('data:image')) {
+                imagesForAPI.push(imageData);
+            } else if (finalPath) {
+                imagesForAPI.push(finalPath);
+            }
         });
 
-        // First image is the main/cover image
         mainImage = images[0] || '';
         mainImageForAPI = imagesForAPI[0] || '';
     }

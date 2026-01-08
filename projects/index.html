@@ -767,6 +767,24 @@
             }
             return `TZS ${numValue.toLocaleString()}`;
         }
+
+        function normalizeProjectImagePath(path) {
+            if (!path || path.trim() === '') return '';
+            if (path.startsWith('data:image') || path.startsWith('http://') || path.startsWith('https://')) return path;
+            if (path.startsWith('//')) {
+                return `${window.location.protocol}${path}`;
+            }
+            if (path.startsWith('/')) {
+                return path;
+            }
+            if (path.startsWith('./')) {
+                return path.replace('./', '/');
+            }
+            if (path.startsWith('../')) {
+                return path.replace('..', '');
+            }
+            return `/${path.replace(/^\\/+/, '')}`;
+        }
         
         function renderProjects(projects, cmsData) {
             const grid = document.getElementById('projectsGrid');
@@ -798,8 +816,11 @@
                             if (cmsData && cmsData._imageData && cmsData._imageData[img]) {
                                 return cmsData._imageData[img];
                             }
-                            // Path without base64 data - skip it
-                            return '';
+                            // Treat relative paths as valid URLs
+                            if (img.startsWith('/') || img.startsWith('./') || img.startsWith('../')) {
+                                return normalizeProjectImagePath(img);
+                            }
+                            return img ? normalizeProjectImagePath(img) : '';
                         }
                         // Check for base64 data in object
                         if (img.data && img.data.startsWith('data:image')) return img.data;
@@ -809,6 +830,9 @@
                         // If object has data that's base64 or URL, use it
                         if (img.data && (img.data.startsWith('data:') || img.data.startsWith('http'))) {
                             return img.data;
+                        }
+                        if (img.path) {
+                            return normalizeProjectImagePath(img.path);
                         }
                         return '';
                     }).filter(src => src);
@@ -822,8 +846,7 @@
                         if (cmsData && cmsData._imageData && cmsData._imageData[imageSrc]) {
                             imageSrc = cmsData._imageData[imageSrc];
                         } else {
-                            // Path without base64 - skip
-                            imageSrc = '';
+                            imageSrc = normalizeProjectImagePath(imageSrc);
                         }
                     }
                     if (imageSrc) allImages.push(imageSrc);

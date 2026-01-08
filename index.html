@@ -440,7 +440,7 @@
                 // Helper to check if value is usable image data (base64 or URL)
                 const isUsableImage = (val) => {
                     return val && typeof val === 'string' && 
-                           (val.startsWith('data:image') || val.startsWith('http://') || val.startsWith('https://'));
+                           (val.startsWith('data:image') || val.startsWith('http://') || val.startsWith('https://') || val.startsWith('/') || val.startsWith('./') || val.startsWith('../'));
                 };
                 
                 // First check project.images array
@@ -478,6 +478,8 @@
                 // Final check - if we still have a path that's not usable, clear it
                 if (imagePath && !isUsableImage(imagePath)) {
                     imagePath = '';
+                } else if (imagePath) {
+                    imagePath = normalizeImagePath(imagePath);
                 }
                 
                 const hasImage = imagePath && imagePath.trim() !== '';
