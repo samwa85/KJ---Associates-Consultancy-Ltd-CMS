@@ -39,25 +39,31 @@ CREATE TABLE IF NOT EXISTS certifications (
 ALTER TABLE services ENABLE ROW LEVEL SECURITY;
 ALTER TABLE certifications ENABLE ROW LEVEL SECURITY;
 
+-- Drop existing policies if they exist (to avoid errors on re-run)
+DROP POLICY IF EXISTS "Allow public read access to services" ON services;
+DROP POLICY IF EXISTS "Allow authenticated users to manage services" ON services;
+DROP POLICY IF EXISTS "Allow public read access to certifications" ON certifications;
+DROP POLICY IF EXISTS "Allow authenticated users to manage certifications" ON certifications;
+
 -- Create RLS policies for services
-CREATE POLICY IF NOT EXISTS "Allow public read access to services"
+CREATE POLICY "Allow public read access to services"
 ON services FOR SELECT
 TO public
 USING (active = true);
 
-CREATE POLICY IF NOT EXISTS "Allow authenticated users to manage services"
+CREATE POLICY "Allow authenticated users to manage services"
 ON services FOR ALL
 TO authenticated
 USING (true)
 WITH CHECK (true);
 
 -- Create RLS policies for certifications
-CREATE POLICY IF NOT EXISTS "Allow public read access to certifications"
+CREATE POLICY "Allow public read access to certifications"
 ON certifications FOR SELECT
 TO public
 USING (active = true);
 
-CREATE POLICY IF NOT EXISTS "Allow authenticated users to manage certifications"
+CREATE POLICY "Allow authenticated users to manage certifications"
 ON certifications FOR ALL
 TO authenticated
 USING (true)
