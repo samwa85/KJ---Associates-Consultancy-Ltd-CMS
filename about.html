@@ -538,6 +538,12 @@
 
         // Load team when page loads
         document.addEventListener('DOMContentLoaded', async function () {
+            // Initialize Supabase client
+            if (window.SupabaseClient) {
+                window.SupabaseClient.init();
+                console.log('[About] Supabase client initialized');
+            }
+
             await loadTeamForAbout();
             await loadBoardMembers();
         });
@@ -546,19 +552,14 @@
         async function loadBoardMembers() {
             let boardData = [];
 
-            // Try to load directly from Supabase first
+            // Try to load directly from Supabase first using the wrapper
             try {
-                if (window.supabase) {
+                if (window.SupabaseClient && window.SupabaseClient.isConnected()) {
                     console.log('[About] Loading board members from Supabase...');
-                    const { data, error } = await window.supabase
-                        .from('board_members')
-                        .select('*')
-                        .order('display_order', { ascending: true });
+                    const data = await window.SupabaseClient.board.getAll();
 
-                    if (error) {
-                        console.error('[About] Supabase error loading board members:', error);
-                    } else if (data && data.length > 0) {
-                        // Transform snake_case to camelCase
+                    // Transform snake_case to camelCase for compatibility
+                    if (data && data.length > 0) {
                         boardData = data.map(member => ({
                             id: member.id,
                             name: member.name,
