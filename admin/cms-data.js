@@ -279,8 +279,28 @@ const CMS = {
         }
     },
 
+    localStorageDisabled: false,
+    localStorageWarningShown: false,
+
+    disableLocalStorage(reason = '') {
+        this.localStorageDisabled = true;
+        try {
+            localStorage.removeItem(CMS_STORAGE_KEY);
+        } catch (err) {
+            console.warn('[CMS] Failed to clear localStorage after disabling:', err);
+        }
+        if (!this.localStorageWarningShown && typeof showNotification === 'function') {
+            showNotification('Local storage limit reached. Data will sync with the database only.', 'warning');
+            this.localStorageWarningShown = true;
+        }
+        console.warn('[CMS] Local storage disabled.', reason);
+    },
+
     // Clean up localStorage to remove base64 images that cause quota issues
     cleanupLocalStorage() {
+        if (this.localStorageDisabled) {
+            return false;
+        }
         try {
             const stored = localStorage.getItem(CMS_STORAGE_KEY);
             if (!stored) return false;
@@ -375,17 +395,30 @@ const CMS = {
 
     // Save data to localStorage
     saveData(silent = false) {
+        if (this.localStorageDisabled) {
+            if (!silent && typeof showNotification === 'function') {
+                showNotification('Changes saved (database only)', 'info');
+            }
+            return;
+        }
+
         const { data: dataToSave } = prepareDataForLocalStorage(this.data);
 
         try {
-            localStorage.setItem(CMS_STORAGE_KEY, JSON.stringify(dataToSave));
+            const serialized = JSON.stringify(dataToSave);
+            // If the payload is approaching 4.5MB, skip localStorage to avoid quota errors
+            if (serialized.length > 4_500_000) {
+                this.disableLocalStorage('Data payload exceeds safe localStorage threshold');
+                return;
+            }
+            localStorage.setItem(CMS_STORAGE_KEY, serialized);
             if (!silent) {
                 showNotification('Changes saved!', 'success');
             }
         } catch (e) {
             console.error('localStorage save failed:', e);
             if (e.name === 'QuotaExceededError') {
-                showNotification('Local storage full. Data will be saved to database only.', 'warning');
+                this.disableLocalStorage('QuotaExceededError encountered during save');
             }
         }
     },
