@@ -38,7 +38,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                 testimonials,
                 team,
                 slides,
-                blog
+                blog,
+                board
             ] = await Promise.all([
                 window.SupabaseClient.settings.get().catch(() => ({})),
                 window.SupabaseClient.projects.getAll().catch(() => []),
@@ -46,7 +47,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                 window.SupabaseClient.testimonials.getAll().catch(() => []),
                 window.SupabaseClient.team.getAll().catch(() => []),
                 window.SupabaseClient.slides.getActive().catch(() => []),
-                window.SupabaseClient.blog.getPublished().catch(() => [])
+                window.SupabaseClient.blog.getPublished().catch(() => []),
+                window.SupabaseClient.board.getAll().catch(() => [])
             ]);
 
             // Construct CMS data object matching the expected structure
@@ -79,7 +81,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                 testimonials: testimonials || [],
                 team: team || [],
                 slides: slides || [],
-                blog: blog || []
+                blog: blog || [],
+                board: board || []
             };
 
             // Cache in localStorage
@@ -114,14 +117,16 @@ document.addEventListener('DOMContentLoaded', async function () {
                 clientsRes,
                 testimonialsRes,
                 teamRes,
-                slidesRes
+                slidesRes,
+                boardRes
             ] = await Promise.all([
                 fetch(`${baseURL}/settings`, fetchOptions).then(r => r.ok ? r.json() : null).catch(() => null),
                 fetch(`${baseURL}/projects`, fetchOptions).then(r => r.ok ? r.json() : null).catch(() => null),
                 fetch(`${baseURL}/clients`, fetchOptions).then(r => r.ok ? r.json() : null).catch(() => null),
                 fetch(`${baseURL}/testimonials`, fetchOptions).then(r => r.ok ? r.json() : null).catch(() => null),
                 fetch(`${baseURL}/team`, fetchOptions).then(r => r.ok ? r.json() : null).catch(() => null),
-                fetch(`${baseURL}/slides/active`, fetchOptions).then(r => r.ok ? r.json() : null).catch(() => null)
+                fetch(`${baseURL}/slides/active`, fetchOptions).then(r => r.ok ? r.json() : null).catch(() => null),
+                fetch(`${baseURL}/board`, fetchOptions).then(r => r.ok ? r.json() : null).catch(() => null)
             ]);
 
             // Combine into CMS data format
@@ -134,7 +139,8 @@ document.addEventListener('DOMContentLoaded', async function () {
                 clients: clientsRes?.data || [],
                 testimonials: testimonialsRes?.data || [],
                 team: teamRes?.data || [],
-                slides: slidesRes?.data || []
+                slides: slidesRes?.data || [],
+                board: boardRes?.data || []
             };
 
             // Cache in localStorage for offline use
