@@ -85,20 +85,61 @@ if (window.supabase) {
 
 **Impact**: This fix enables the page to successfully fetch board member data from Supabase, including Base64 images, instead of falling back to hardcoded Unsplash placeholders.
 
+### 6. Fixed Script Loading Order (Fourth Fix - 2026-01-08) **[CRITICAL]**
+
+**Location**: Lines 428-434 in `about.html`
+
+**Problem**: After deployment, live site verification revealed that board member images were **still not loading from Supabase**. Console showed:
+```
+[Supabase] Missing URL or anon key
+[About] No board data found, using defaults
+```
+
+**Root Cause**: **Script loading order issue**
+- `js/config.js` (which defines `window.API_CONFIG`) was loading **AFTER** `js/supabase-client.js`
+- `supabase-client.js` contains an IIFE that immediately tries to read `window.API_CONFIG`
+- Since `API_CONFIG` didn't exist yet, the Supabase client initialized with **empty credentials**
+- This caused all database queries to fail silently, falling back to hardcoded defaults
+
+**Fix Applied**:
+```html
+<!-- BEFORE (WRONG ORDER): -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase-config.js"></script>
+<script src="js/supabase-client.js"></script>  <!-- ❌ Tries to read API_CONFIG here -->
+<script src="js/config.js"></script>            <!-- ❌ But API_CONFIG defined here! -->
+<script src="js/main.js"></script>
+
+<!-- AFTER (CORRECT ORDER): -->
+<script src="js/config.js"></script>            <!-- ✅ Define API_CONFIG first -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="js/supabase-config.js"></script>
+<script src="js/supabase-client.js"></script>  <!-- ✅ Now API_CONFIG exists -->
+<script src="js/main.js"></script>
+```
+
+**Verification**: Manual test in browser console confirmed that when Supabase client was re-initialized with correct credentials, it **successfully fetched Base64 images** from the database. This proved the database, credentials, and code logic were all correct - only the initialization timing was wrong.
+
+**Impact**: This is the **actual fix** that enables board member images to load from Supabase database with Base64 photos instead of Unsplash fallbacks.
+
 ## 📊 Current Status
 
-### ✅ **FULLY FIXED AND DEPLOYED!**
+### ⚠️ **AWAITING FINAL DEPLOYMENT**
 
-**Update (2026-01-08)**: The board member images issue has been **completely resolved** with two fixes:
+**Update (2026-01-08 11:42 EAT)**: After initial deployment, live site verification revealed the **root cause** - a script loading order issue. This has now been fixed.
 
-1. **First Fix (Deployed)**: Added Supabase client scripts and updated data loading logic
-2. **Second Fix (Deployed)**: Corrected Supabase client instance call (`window.supabase` instead of `window.SupabaseClient`)
+**Four Fixes Applied**:
+
+1. **First Fix**: Added Supabase client scripts and updated data loading logic
+2. **Second Fix**: Corrected Supabase client instance call (`window.supabase` instead of `window.SupabaseClient`)
+3. **Third Fix**: Proper wrapper usage & initialization (`SupabaseClient.board.getAll()`)
+4. **Fourth Fix (CRITICAL)**: Fixed script loading order - `config.js` now loads **before** Supabase scripts
 
 **Current State**:
-- ✅ All code fixes are committed to Git
-- ✅ Changes are deployed to the live site
-- ✅ Board member images now load correctly from Supabase database
-- ✅ Fallback chain is working properly (Supabase → API → localStorage → defaults)
+- ✅ All code fixes are committed to Git (Commit: `625b96d`)
+- ✅ Changes are pushed to GitHub
+- ⏳ **Awaiting deployment to live site**
+- 🔍 **Verification confirmed**: Manual test showed Base64 images load successfully when client is properly initialized
 
 ## 🚀 Deployment Steps
 
@@ -213,11 +254,15 @@ If you encounter any issues after deployment:
 
 ---
 
-**Status**: ✅ **FULLY RESOLVED AND DEPLOYED**  
-**Last Updated**: 2026-01-08  
-**Files Modified**: `about.html`, `BOARD-IMAGES-FIX.md`  
+**Status**: ⚠️ **AWAITING FINAL DEPLOYMENT**  
+**Last Updated**: 2026-01-08 11:42 EAT  
+**Files Modified**: `about.html`, `BOARD-IMAGES-FIX.md`, `deploy.sh`  
 **Git Commits**: 
-- `15c6aee` - Initial fix (Supabase integration + data loading logic)
-- `2c3555d` - Second fix (Supabase client instance call)
+- `15c6aee` - Fix #1: Supabase integration + data loading logic
+- `2c3555d` - Fix #2: Supabase client instance call
+- `404e6a6` - Fix #3: SupabaseClient wrapper initialization
+- `b6104a2` - Deployment script fix (git stash + clean)
+- `625b96d` - **Fix #4 (CRITICAL)**: Script loading order fix
 
-**Deployment Status**: ✅ **LIVE** - Ready for final verification on production site
+**Deployment Status**: ⏳ **READY TO DEPLOY** - Run `./deploy.sh` to apply the critical script loading order fix
+
