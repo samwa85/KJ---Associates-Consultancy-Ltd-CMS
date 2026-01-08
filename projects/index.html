@@ -472,6 +472,16 @@
     </style>
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Configuration (must load first) -->
+    <script src="../js/config.js"></script>
+
+    <!-- Supabase JS (Must be after config.js) -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/supabase-config.js"></script>
+    <script src="../js/supabase-client.js"></script>
+
+    <script src="../js/main.js"></script>
 </head>
 
 <body>
@@ -681,8 +691,6 @@
         </div>
     </footer>
 
-    <script src="../js/config.js"></script>
-    <script src="../js/main.js"></script>
     <script>
         // Load and render projects from CMS data (prefers API data from main.js)
         async function loadProjects() {
