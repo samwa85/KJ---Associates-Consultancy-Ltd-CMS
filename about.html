@@ -548,9 +548,9 @@
 
             // Try to load directly from Supabase first
             try {
-                if (window.SupabaseClient) {
+                if (window.supabase) {
                     console.log('[About] Loading board members from Supabase...');
-                    const { data, error } = await window.SupabaseClient
+                    const { data, error } = await window.supabase
                         .from('board_members')
                         .select('*')
                         .order('display_order', { ascending: true });
