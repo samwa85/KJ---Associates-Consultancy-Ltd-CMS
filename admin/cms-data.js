@@ -137,6 +137,10 @@ function isApiUploadAvailable() {
     return typeof API !== 'undefined' && API.upload && typeof API.upload.uploadFile === 'function';
 }
 
+function isApiAuthenticated() {
+    return typeof API !== 'undefined' && API.token && API.token.length > 0;
+}
+
 async function uploadImageToServer(file, { category = 'general', requireAuth = true } = {}) {
     if (!file) {
         throw new Error('No file selected');
@@ -153,9 +157,13 @@ async function uploadImageToServer(file, { category = 'general', requireAuth = t
 
     if (!isApiUploadAvailable()) {
         if (requireAuth) {
-            throw new Error('Upload service unavailable. Please ensure you are signed in and API is reachable.');
+            throw new Error('Upload service unavailable. API client not loaded.');
         }
         return null;
+    }
+
+    if (requireAuth && !isApiAuthenticated()) {
+        throw new Error('Please sign in to upload images. Click "Sign In" in the header.');
     }
 
     const response = await API.upload.uploadFile(file, category);

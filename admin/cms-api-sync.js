@@ -4,6 +4,97 @@
  * Falls back to localStorage if Supabase is unavailable
  */
 
+const CMS_SYNC_STORAGE_KEY = 'kj_cms_data';
+const CMS_SYNC_MAX_CACHE_BYTES = 4_500_000; // ~4.5MB safety limit
+
+/**
+ * Sanitize CMS data for localStorage caching - strips base64 images
+ */
+function sanitizeCMSDataForCache(data) {
+  if (!data) return null;
+  
+  try {
+    const copy = JSON.parse(JSON.stringify(data));
+    
+    // Remove _imageData entirely
+    if (copy._imageData) delete copy._imageData;
+    
+    const stripBase64 = (val) => {
+      if (!val) return val;
+      if (typeof val === 'string' && val.startsWith('data:image')) return null;
+      if (typeof val === 'object' && val.data && typeof val.data === 'string' && val.data.startsWith('data:image')) {
+        return val.path || null;
+      }
+      return val;
+    };
+    
+    // Sanitize collections
+    ['projects', 'team', 'board', 'testimonials', 'clients', 'blog', 'certifications', 'slides'].forEach(key => {
+      if (Array.isArray(copy[key])) {
+        copy[key] = copy[key].map(item => {
+          const clean = { ...item };
+          ['image', 'photo', 'logo', 'authorPhoto'].forEach(field => {
+            if (clean[field]) clean[field] = stripBase64(clean[field]);
+          });
+          if (Array.isArray(clean.images)) {
+            clean.images = clean.images.map(img => stripBase64(img)).filter(Boolean);
+          }
+          return clean;
+        });
+      }
+    });
+    
+    // Sanitize branding
+    if (copy.branding) {
+      ['logoImageUrl', 'logoImageUrlDark', 'faviconUrl'].forEach(field => {
+        if (copy.branding[field]) copy.branding[field] = stripBase64(copy.branding[field]);
+      });
+    }
+    
+    // Sanitize SEO
+    if (copy.seo && copy.seo.ogImage) {
+      copy.seo.ogImage = stripBase64(copy.seo.ogImage);
+    }
+    
+    return copy;
+  } catch (e) {
+    console.warn('[CMSSync] Failed to sanitize data for cache:', e);
+    return null;
+  }
+}
+
+/**
+ * Safely cache CMS data to localStorage with size limit
+ */
+function safeCacheCMSData(data) {
+  if (!data) return;
+  
+  try {
+    const sanitized = sanitizeCMSDataForCache(data);
+    if (!sanitized) return;
+    
+    const serialized = JSON.stringify(sanitized);
+    if (serialized.length > CMS_SYNC_MAX_CACHE_BYTES) {
+      console.warn('[CMSSync] Skipping cache write - payload too large');
+      localStorage.removeItem(CMS_SYNC_STORAGE_KEY);
+      return;
+    }
+    
+    localStorage.setItem(CMS_SYNC_STORAGE_KEY, serialized);
+  } catch (error) {
+    if (error?.name === 'QuotaExceededError') {
+      console.warn('[CMSSync] localStorage quota exceeded. Cache disabled.');
+    } else {
+      console.warn('[CMSSync] Failed to cache CMS data:', error);
+    }
+    try {
+      localStorage.removeItem(CMS_SYNC_STORAGE_KEY);
+    } catch (e) {
+      // Ignore secondary errors
+    }
+  }
+}
+
 const CMSSync = {
   // Check if API (Supabase) is available
   apiAvailable: false,
@@ -75,6 +166,18 @@ const CMSSync = {
     return { available: true, authenticated: this.isAuthenticated };
   },
 
+  // Update authentication state (call after login)
+  setAuthenticated(authenticated) {
+    this.isAuthenticated = authenticated;
+    if (authenticated) {
+      this.updateStatus('connected');
+      console.log('[CMSSync] Authentication state updated: authenticated');
+    } else {
+      this.updateStatus('offline');
+      console.log('[CMSSync] Authentication state updated: not authenticated');
+    }
+  },
+
   // =====================================================
   // LOAD DATA FROM SUPABASE
   // =====================================================
@@ -144,8 +247,8 @@ const CMSSync = {
         theme: settingsRes?.theme || CMS.defaults.theme
       };
 
-      // Also save to localStorage as backup
-      localStorage.setItem('kj_cms_data', JSON.stringify(data));
+      // Safely cache to localStorage (with sanitization to avoid QuotaExceededError)
+      safeCacheCMSData(data);
 
       console.log('[CMSSync] Data loaded from Supabase');
       return data;

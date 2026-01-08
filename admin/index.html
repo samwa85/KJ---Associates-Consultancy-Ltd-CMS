@@ -1077,6 +1077,17 @@
                             const { data: { session } } = await SupabaseClient.auth.getSession();
                             if (session) {
                                 setAuthenticated(session.access_token);
+                                
+                                // Update CMSSync authentication state
+                                if (typeof CMSSync !== 'undefined') {
+                                    CMSSync.setAuthenticated(true);
+                                }
+                                
+                                // Update API client token
+                                if (typeof API !== 'undefined' && API.setToken) {
+                                    API.setToken(session.access_token);
+                                }
+                                
                                 showCMS();
                                 return true;
                             }
@@ -1087,6 +1098,14 @@
 
                     // Fallback to local check
                     if (isAuthenticated()) {
+                        // Try to get token from localStorage and set it
+                        const token = localStorage.getItem(TOKEN_KEY);
+                        if (token && typeof API !== 'undefined' && API.setToken) {
+                            API.setToken(token);
+                        }
+                        if (token && typeof CMSSync !== 'undefined') {
+                            CMSSync.setAuthenticated(true);
+                        }
                         showCMS();
                     }
                 }
@@ -1122,6 +1141,17 @@
                         if (data.user && data.session) {
                             console.log('Login successful');
                             setAuthenticated(data.session.access_token);
+                            
+                            // Update CMSSync authentication state
+                            if (typeof CMSSync !== 'undefined') {
+                                CMSSync.setAuthenticated(true);
+                            }
+                            
+                            // Update API client token
+                            if (typeof API !== 'undefined' && API.setToken) {
+                                API.setToken(data.session.access_token);
+                            }
+                            
                             showCMS();
                         } else {
                             throw new Error('Login failed. Please check credentials.');
