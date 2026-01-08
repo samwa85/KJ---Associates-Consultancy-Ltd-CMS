@@ -1667,7 +1667,7 @@ function openProjectModal(id = null) {
             const imageValue = project.image || '';
             document.getElementById('projectImage').value = imageValue;
             document.getElementById('projectCurrency').value = project.currency || '';
-            document.getElementById('projectServices').value = project.services?.join(', ') || '';
+            document.getElementById('projectServices').value = Array.isArray(project.services) ? project.services.join(', ') : (project.services || '');
 
             // Show image preview if image exists
             const preview = document.getElementById('projectImagePreview');
