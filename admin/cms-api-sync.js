@@ -462,10 +462,20 @@ const CMSSync = {
       // Convert camelCase to snake_case
       const snakeKey = key.replace(/([A-Z])/g, '_$1').toLowerCase();
 
+      // CRITICAL: Preserve base64 image data as-is
+      if (typeof value === 'string' && value.startsWith('data:image/')) {
+        transformed[snakeKey] = value;
+        continue;
+      }
+
       // Handle nested objects and arrays
       if (Array.isArray(value)) {
         // Transform array items if they're objects
         transformed[snakeKey] = value.map(item => {
+          // Preserve base64 in arrays too
+          if (typeof item === 'string' && item.startsWith('data:image/')) {
+            return item;
+          }
           if (typeof item === 'object' && item !== null && !Array.isArray(item)) {
             // For images array, keep as is effectively, or recurs
             // But specifically for projects images array, we want clean data
@@ -486,10 +496,13 @@ const CMSSync = {
     // Special handlers
     if (type === 'project') {
       if (transformed.images && Array.isArray(transformed.images)) {
-        // Ensure it's just paths/urls
-        transformed.images = transformed.images.map(img =>
-          (typeof img === 'object' ? (img.path || img.data) : img)
-        ).filter(Boolean);
+        // Ensure it's just paths/urls or base64
+        transformed.images = transformed.images.map(img => {
+          if (typeof img === 'string' && img.startsWith('data:image/')) {
+            return img; // Preserve base64
+          }
+          return (typeof img === 'object' ? (img.path || img.data) : img);
+        }).filter(Boolean);
       }
     }
 
