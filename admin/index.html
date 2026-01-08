@@ -1357,7 +1357,14 @@
                         <h1 class="text-3xl font-bold mb-1">Dashboard</h1>
                         <p class="text-gray-600">Welcome to your content management system</p>
                     </div>
-                    <div style="display: flex; gap: 0.5rem;">
+                    <div style="display: flex; gap: 0.5rem; align-items: center;">
+                        <!-- Connection Status Indicator -->
+                        <div id="db-status-indicator"
+                            class="px-3 py-1.5 rounded-full text-xs font-medium flex items-center gap-1.5 bg-gray-100 text-gray-500 border border-gray-200"
+                            title="Checking connection...">
+                            <span class="w-2 h-2 rounded-full bg-gray-400"></span>
+                            Connecting...
+                        </div>
                         <button class="btn btn-primary" onclick="exportAllData()">
                             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" />

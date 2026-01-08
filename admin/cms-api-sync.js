@@ -10,11 +10,34 @@ const CMSSync = {
   syncInProgress: false,
   isAuthenticated: false,
 
+
+  // Update UI Status Indicator
+  updateStatus(state) {
+    const indicator = document.getElementById('db-status-indicator');
+    if (!indicator) return;
+
+    if (state === 'connected') {
+      indicator.className = 'px-3 py-1.5 rounded-full text-xs font-medium flex items-center gap-1.5 bg-green-100 text-green-700 border border-green-200';
+      indicator.innerHTML = '<span class="w-2 h-2 rounded-full bg-green-500"></span>Database Connected';
+      indicator.title = 'Connected to Supabase';
+    } else if (state === 'offline') {
+      indicator.className = 'px-3 py-1.5 rounded-full text-xs font-medium flex items-center gap-1.5 bg-red-100 text-red-700 border border-red-200';
+      indicator.innerHTML = '<span class="w-2 h-2 rounded-full bg-red-500"></span>Offline Mode';
+      indicator.title = 'Using Local Storage (Changes saved locally only)';
+    } else {
+      indicator.className = 'px-3 py-1.5 rounded-full text-xs font-medium flex items-center gap-1.5 bg-gray-100 text-gray-500 border border-gray-200';
+      indicator.innerHTML = '<span class="w-2 h-2 rounded-full bg-gray-400"></span>Connecting...';
+    }
+  },
+
   // Initialize sync layer
   async init() {
+    this.updateStatus('connecting');
+
     // Check if Supabase client exists and is initialized
     if (typeof SupabaseClient === 'undefined') {
       console.warn('[CMSSync] Supabase client not loaded, using localStorage only');
+      this.updateStatus('offline');
       return false;
     }
 
@@ -29,13 +52,16 @@ const CMSSync = {
 
       if (this.isAuthenticated) {
         console.log('[CMSSync] Supabase connected and authenticated');
+        this.updateStatus('connected');
       } else {
         console.log('[CMSSync] Supabase connected but not authenticated');
+        this.updateStatus('offline'); // Treat unauthenticated as offline for admin purposes
       }
       return true;
     } else {
       console.warn('[CMSSync] Supabase initialization failed, using localStorage fallback');
       this.apiAvailable = false;
+      this.updateStatus('offline');
       return false;
     }
   },
