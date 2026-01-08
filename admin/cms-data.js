@@ -1,4 +1,127 @@
 // CMS Data Management
+const CMS_STORAGE_KEY = 'kj_cms_data';
+
+function prepareDataForLocalStorage(sourceData) {
+    const dataCopy = sourceData ? JSON.parse(JSON.stringify(sourceData)) : {};
+    let modified = false;
+
+    if (dataCopy._imageData) {
+        delete dataCopy._imageData;
+        modified = true;
+    }
+
+    const buildPlaceholder = (folder, prefix, id, suffix = 'image') => {
+        const safeId = typeof id === 'number' || (typeof id === 'string' && id.trim() !== '') ? id : 'temp';
+        const safeSuffix = suffix ? `-${suffix}` : '';
+        return `/uploads/${folder}/${prefix}-${safeId}${safeSuffix}.jpg`;
+    };
+
+    const sanitizeImage = (value, placeholderBuilder) => {
+        if (!value) return value;
+
+        if (typeof value === 'string') {
+            if (value.startsWith('data:image')) {
+                modified = true;
+                return placeholderBuilder();
+            }
+            return value;
+        }
+
+        if (typeof value === 'object') {
+            if (value.data && typeof value.data === 'string' && value.data.startsWith('data:image')) {
+                modified = true;
+                return value.path || placeholderBuilder();
+            }
+            if (value.path) {
+                return value.path;
+            }
+        }
+
+        return value;
+    };
+
+    if (Array.isArray(dataCopy.projects)) {
+        dataCopy.projects = dataCopy.projects.map(project => {
+            const clean = { ...project };
+            clean.image = sanitizeImage(clean.image, () => buildPlaceholder('projects', 'project', clean.id, 'cover'));
+            if (Array.isArray(clean.images)) {
+                clean.images = clean.images.map((img, index) =>
+                    sanitizeImage(img, () => buildPlaceholder('projects', 'project', clean.id, `gallery-${index + 1}`))
+                );
+            }
+            return clean;
+        });
+    }
+
+    if (Array.isArray(dataCopy.team)) {
+        dataCopy.team = dataCopy.team.map(member => ({
+            ...member,
+            photo: sanitizeImage(member.photo, () => buildPlaceholder('team', 'member', member.id))
+        }));
+    }
+
+    if (Array.isArray(dataCopy.board)) {
+        dataCopy.board = dataCopy.board.map(member => ({
+            ...member,
+            photo: sanitizeImage(member.photo, () => buildPlaceholder('board', 'member', member.id))
+        }));
+    }
+
+    if (Array.isArray(dataCopy.testimonials)) {
+        dataCopy.testimonials = dataCopy.testimonials.map(item => ({
+            ...item,
+            photo: sanitizeImage(item.photo, () => buildPlaceholder('testimonials', 'testimonial', item.id))
+        }));
+    }
+
+    if (Array.isArray(dataCopy.clients)) {
+        dataCopy.clients = dataCopy.clients.map(client => ({
+            ...client,
+            logo: sanitizeImage(client.logo, () => buildPlaceholder('clients', 'client', client.id, 'logo'))
+        }));
+    }
+
+    if (Array.isArray(dataCopy.blog)) {
+        dataCopy.blog = dataCopy.blog.map(post => ({
+            ...post,
+            image: sanitizeImage(post.image, () => buildPlaceholder('blog', 'post', post.id)),
+            authorPhoto: sanitizeImage(post.authorPhoto, () => buildPlaceholder('blog', 'author', post.id))
+        }));
+    }
+
+    if (Array.isArray(dataCopy.certifications)) {
+        dataCopy.certifications = dataCopy.certifications.map(cert => ({
+            ...cert,
+            image: sanitizeImage(cert.image, () => buildPlaceholder('certifications', 'certification', cert.id))
+        }));
+    }
+
+    if (Array.isArray(dataCopy.slides)) {
+        dataCopy.slides = dataCopy.slides.map(slide => ({
+            ...slide,
+            image: sanitizeImage(slide.image, () => buildPlaceholder('slides', 'slide', slide.id))
+        }));
+    }
+
+    if (dataCopy.branding) {
+        dataCopy.branding = {
+            ...dataCopy.branding,
+            logoImageUrl: sanitizeImage(dataCopy.branding.logoImageUrl, () => '/uploads/branding/logo.png'),
+            logoImageUrlDark: sanitizeImage(dataCopy.branding.logoImageUrlDark, () => '/uploads/branding/logo-dark.png'),
+            faviconUrl: sanitizeImage(dataCopy.branding.faviconUrl, () => '/uploads/branding/favicon.png')
+        };
+    }
+
+    if (dataCopy.seo) {
+        dataCopy.seo = {
+            ...dataCopy.seo,
+            ogImage: sanitizeImage(dataCopy.seo.ogImage, () => '/uploads/seo/og-image.png')
+        };
+    }
+
+    return { data: dataCopy, modified };
+}
+
 const CMS = {
     // Default Data
     defaults: {
@@ -159,49 +282,23 @@ const CMS = {
     // Clean up localStorage to remove base64 images that cause quota issues
     cleanupLocalStorage() {
         try {
-            const stored = localStorage.getItem('kj_cms_data');
+            const stored = localStorage.getItem(CMS_STORAGE_KEY);
             if (!stored) return false;
-            
-            const data = JSON.parse(stored);
-            let needsCleanup = false;
-            
-            // Check if projects have base64 data embedded
-            if (data.projects && Array.isArray(data.projects)) {
-                data.projects = data.projects.map(p => {
-                    const cleanProject = { ...p };
-                    if (cleanProject.image && cleanProject.image.startsWith('data:image')) {
-                        cleanProject.image = `/uploads/projects/${p.id || 'temp'}-cover.jpg`;
-                        needsCleanup = true;
-                    }
-                    if (Array.isArray(cleanProject.images)) {
-                        cleanProject.images = cleanProject.images.map((img, idx) => {
-                            if (typeof img === 'string' && img.startsWith('data:image')) {
-                                needsCleanup = true;
-                                return `/uploads/projects/${p.id || 'temp'}-${idx + 1}.jpg`;
-                            }
-                            return img;
-                        });
-                    }
-                    return cleanProject;
-                });
-            }
-            
-            // Remove _imageData entirely from localStorage
-            if (data._imageData) {
-                delete data._imageData;
-                needsCleanup = true;
-            }
-            
-            if (needsCleanup) {
-                localStorage.setItem('kj_cms_data', JSON.stringify(data));
-                console.log('[CMS] Cleaned up localStorage - removed base64 images');
+
+            const parsed = JSON.parse(stored);
+            const { data, modified } = prepareDataForLocalStorage(parsed);
+
+            if (modified) {
+                localStorage.setItem(CMS_STORAGE_KEY, JSON.stringify(data));
+                console.log('[CMS] Cleaned up localStorage - removed base64 data');
                 return true;
             }
+
             return false;
         } catch (e) {
             console.warn('[CMS] Cleanup failed, clearing localStorage:', e);
             // If cleanup fails, clear localStorage entirely and rely on API
-            localStorage.removeItem('kj_cms_data');
+            localStorage.removeItem(CMS_STORAGE_KEY);
             return true;
         }
     },
@@ -234,7 +331,7 @@ const CMS = {
         }
 
         // Fall back to localStorage
-        const stored = localStorage.getItem('kj_cms_data');
+        const stored = localStorage.getItem(CMS_STORAGE_KEY);
         if (stored) {
             try {
                 this.data = JSON.parse(stored);
@@ -278,34 +375,10 @@ const CMS = {
 
     // Save data to localStorage
     saveData(silent = false) {
-        // Create a copy without _imageData to avoid localStorage quota issues
-        // Base64 images are too large for localStorage (~5MB limit)
-        const dataToSave = { ...this.data };
-        delete dataToSave._imageData;
-        
-        // Also strip base64 data from projects to save space
-        if (dataToSave.projects) {
-            dataToSave.projects = dataToSave.projects.map(p => {
-                const cleanProject = { ...p };
-                // If image is base64, just store a placeholder path
-                if (cleanProject.image && cleanProject.image.startsWith('data:image')) {
-                    cleanProject.image = `/uploads/projects/${p.id || 'temp'}-cover.jpg`;
-                }
-                // Clean images array
-                if (Array.isArray(cleanProject.images)) {
-                    cleanProject.images = cleanProject.images.map((img, idx) => {
-                        if (typeof img === 'string' && img.startsWith('data:image')) {
-                            return `/uploads/projects/${p.id || 'temp'}-${idx + 1}.jpg`;
-                        }
-                        return img;
-                    });
-                }
-                return cleanProject;
-            });
-        }
-        
+        const { data: dataToSave } = prepareDataForLocalStorage(this.data);
+
         try {
-            localStorage.setItem('kj_cms_data', JSON.stringify(dataToSave));
+            localStorage.setItem(CMS_STORAGE_KEY, JSON.stringify(dataToSave));
             if (!silent) {
                 showNotification('Changes saved!', 'success');
             }
