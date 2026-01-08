@@ -869,7 +869,7 @@
                                     <span>${project.funding}</span>
                                 </div>` : ''}
                             </div>
-                            ${project.services && project.services.length > 0 ? `
+                            ${project.services && Array.isArray(project.services) && project.services.length > 0 ? `
                                 <div class="project-services">
                                     <div class="project-services-label">Services Provided</div>
                                     <div class="project-services-list">

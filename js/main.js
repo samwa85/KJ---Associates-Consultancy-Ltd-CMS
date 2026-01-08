@@ -167,12 +167,12 @@ document.addEventListener('DOMContentLoaded', async function () {
         return null;
     }
 
-    // Try API first, then Supabase, then fall back to localStorage
-    let cmsData = await loadCMSDataFromAPI();
+    // Try Supabase direct first (as this is now the primary backend)
+    let cmsData = await loadCMSDataFromSupabase();
 
-    // If API failed, try Supabase directly
+    // If Supabase failed or disconnected, try API (legacy/fallback)
     if (cmsData === null) {
-        cmsData = await loadCMSDataFromSupabase();
+        cmsData = await loadCMSDataFromAPI();
     }
 
     // If both failed, use localStorage
