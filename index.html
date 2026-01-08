@@ -437,34 +437,50 @@
                 // Handle image - can be array of objects, array of strings, or string
                 let imagePath = '';
 
+                // Helper to check if value is usable image data (base64 or URL)
+                const isUsableImage = (val) => {
+                    return val && typeof val === 'string' && 
+                           (val.startsWith('data:image') || val.startsWith('http://') || val.startsWith('https://'));
+                };
+
                 // First check project.images array
                 if (Array.isArray(project.images) && project.images.length > 0) {
                     const firstImage = project.images[0];
                     // Check if it's an object with path/data or just a string
                     if (typeof firstImage === 'object' && firstImage !== null) {
                         // Prefer data (base64) over path
-                        imagePath = firstImage.data || firstImage.path || '';
-                    } else {
-                        imagePath = firstImage;
-                    }
-                }
-                // Then check project.image (single image, backward compatibility)
-                else if (project.image) {
-                    imagePath = project.image;
-                }
-
-                // If we have a path (not base64), check if there's base64 data in cmsImageData
-                if (imagePath && typeof imagePath === 'string' && !imagePath.startsWith('data:image')) {
-                    // Check if base64 data exists for this path
-                    if (cmsImageData[imagePath]) {
-                        imagePath = cmsImageData[imagePath];
-                    } else if (!imagePath.startsWith('http')) {
-                        // Try to normalize the path for file:// protocol
-                        imagePath = normalizeImagePath(imagePath);
+                        if (isUsableImage(firstImage.data)) {
+                            imagePath = firstImage.data;
+                        } else if (isUsableImage(firstImage.path)) {
+                            imagePath = firstImage.path;
+                        } else if (firstImage.path && cmsImageData[firstImage.path]) {
+                            imagePath = cmsImageData[firstImage.path];
+                        }
+                    } else if (typeof firstImage === 'string') {
+                        // String - could be base64, URL, or path
+                        if (isUsableImage(firstImage)) {
+                            imagePath = firstImage;
+                        } else if (cmsImageData[firstImage]) {
+                            imagePath = cmsImageData[firstImage];
+                        }
                     }
                 }
 
-                const hasImage = imagePath && typeof imagePath === 'string' && imagePath.trim() !== '' && !imagePath.includes('undefined');
+                // If images array didn't yield anything, check project.image
+                if (!imagePath && project.image) {
+                    if (isUsableImage(project.image)) {
+                        imagePath = project.image;
+                    } else if (cmsImageData[project.image]) {
+                        imagePath = cmsImageData[project.image];
+                    }
+                }
+
+                // Final check - if we still have a path that's not usable, clear it
+                if (imagePath && !isUsableImage(imagePath)) {
+                    imagePath = '';
+                }
+
+                const hasImage = imagePath && imagePath.trim() !== '';
 
                 const valueDisplay = formatProjectValue(project.value, project.currency);
                 const statusClass = project.status === 'Ongoing' ? 'ongoing' : '';
