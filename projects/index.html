@@ -788,18 +788,43 @@
                 let allImages = [];
                 if (project.images && Array.isArray(project.images) && project.images.length > 0) {
                     allImages = project.images.map(img => {
-                        if (typeof img === 'string') return img;
-                        // Check for base64 data
+                        // If it's a string path, check _imageData for base64
+                        if (typeof img === 'string') {
+                            // If it's already base64 or external URL, use directly
+                            if (img.startsWith('data:image') || img.startsWith('http')) {
+                                return img;
+                            }
+                            // Otherwise check _imageData lookup
+                            if (cmsData && cmsData._imageData && cmsData._imageData[img]) {
+                                return cmsData._imageData[img];
+                            }
+                            // Path without base64 data - skip it
+                            return '';
+                        }
+                        // Check for base64 data in object
                         if (img.data && img.data.startsWith('data:image')) return img.data;
                         if (cmsData && cmsData._imageData && cmsData._imageData[img.path]) {
                             return cmsData._imageData[img.path];
                         }
-                        return img.path || img.data || '';
+                        // If object has data that's base64 or URL, use it
+                        if (img.data && (img.data.startsWith('data:') || img.data.startsWith('http'))) {
+                            return img.data;
+                        }
+                        return '';
                     }).filter(src => src);
-                } else if (project.image) {
+                }
+                
+                // If images array didn't yield anything, fall back to project.image
+                if (allImages.length === 0 && project.image) {
                     let imageSrc = project.image;
-                    if (cmsData && cmsData._imageData && cmsData._imageData[project.image]) {
-                        imageSrc = cmsData._imageData[project.image];
+                    // Check if it's a path that needs _imageData lookup
+                    if (!imageSrc.startsWith('data:image') && !imageSrc.startsWith('http')) {
+                        if (cmsData && cmsData._imageData && cmsData._imageData[imageSrc]) {
+                            imageSrc = cmsData._imageData[imageSrc];
+                        } else {
+                            // Path without base64 - skip
+                            imageSrc = '';
+                        }
                     }
                     if (imageSrc) allImages.push(imageSrc);
                 }

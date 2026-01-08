@@ -325,12 +325,33 @@ const CMS = {
                     valueDisplay = `TZS ${numValue.toLocaleString()}`;
                 }
             }
-            const hasImage = project.image && project.image.trim() !== '';
-            // Check for base64 data if image path exists
-            let imageSrc = hasImage ? project.image : '';
-            if (hasImage && this.data._imageData && this.data._imageData[project.image]) {
-                imageSrc = this.data._imageData[project.image];
+            // Get image source - check multiple places for the actual image data
+            let imageSrc = '';
+            if (project.image && project.image.trim() !== '') {
+                // If image is already base64 or URL, use directly
+                if (project.image.startsWith('data:image') || project.image.startsWith('http')) {
+                    imageSrc = project.image;
+                } else if (this.data._imageData && this.data._imageData[project.image]) {
+                    // It's a path - look up base64 in _imageData
+                    imageSrc = this.data._imageData[project.image];
+                }
             }
+            // If no main image, try first image from images array
+            if (!imageSrc && project.images && Array.isArray(project.images) && project.images.length > 0) {
+                const firstImg = project.images[0];
+                if (typeof firstImg === 'string') {
+                    if (firstImg.startsWith('data:image') || firstImg.startsWith('http')) {
+                        imageSrc = firstImg;
+                    } else if (this.data._imageData && this.data._imageData[firstImg]) {
+                        imageSrc = this.data._imageData[firstImg];
+                    }
+                } else if (firstImg.data && (firstImg.data.startsWith('data:image') || firstImg.data.startsWith('http'))) {
+                    imageSrc = firstImg.data;
+                } else if (firstImg.path && this.data._imageData && this.data._imageData[firstImg.path]) {
+                    imageSrc = this.data._imageData[firstImg.path];
+                }
+            }
+            const hasImage = !!imageSrc;
             return `
             <div class="item-card">
                 ${hasImage ? `<img src="${imageSrc}" alt="${project.title || 'Project'}" class="item-image" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';" onload="this.style.display='block'; this.nextElementSibling.style.display='none';" />` : ''}
