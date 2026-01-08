@@ -2763,17 +2763,21 @@
     <!-- Supabase Client -->
     <script src="../js/supabase-client.js"></script>
 
-    <!-- API Client for connecting to backend -->
-    <script src="../js/api-client.js"></script>
-
     <!-- Auth: Simple password protection -->
     <script>
-        window.supabaseClient = null;
-        window.logout = function () {
-            localStorage.removeItem('cms_token');
-            localStorage.removeItem('cms_user');
-            localStorage.removeItem('kj_cms_auth');
-            window.location.reload();
+        // Ensure logout works with Supabase
+        window.logout = async function () {
+            if (window.cmsLogout) {
+                await window.cmsLogout();
+            } else {
+                if (window.SupabaseClient && SupabaseClient.isConnected()) {
+                    await SupabaseClient.auth.signOut();
+                }
+                localStorage.removeItem('cms_token');
+                localStorage.removeItem('cms_user');
+                localStorage.removeItem('kj_cms_auth');
+                window.location.reload();
+            }
         };
     </script>
 
