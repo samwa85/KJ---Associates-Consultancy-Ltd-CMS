@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Comprehensive quantity surveying services including pre-contract, post-contract, tendering, and dispute resolution services.">
+    <meta name="description"
+        content="Comprehensive quantity surveying services including pre-contract, post-contract, tendering, and dispute resolution services.">
     <title>Services | KJ & Associates Consultancy Ltd</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -26,7 +28,18 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Configuration (must load first) -->
+    <script src="../js/config.js"></script>
+
+    <!-- Supabase JS (Must be after config.js) -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/supabase-config.js"></script>
+    <script src="../js/supabase-client.js"></script>
+
+    <script src="../js/main.js"></script>
 </head>
+
 <body>
     <!-- Navigation -->
     <nav class="navbar">
@@ -85,7 +98,9 @@
     <section class="content-section">
         <div class="container">
             <div class="content-text" style="max-width: 800px; margin: 0 auto 3rem;">
-                <p>KJ & Associates provides a full range of quantity surveying services from project inception through to final account. Our experienced team uses advanced software tools to deliver accurate, timely, and cost-effective solutions for clients across Tanzania.</p>
+                <p>KJ & Associates provides a full range of quantity surveying services from project inception through
+                    to final account. Our experienced team uses advanced software tools to deliver accurate, timely, and
+                    cost-effective solutions for clients across Tanzania.</p>
             </div>
 
             <!-- Pre-Contract Services -->
@@ -95,7 +110,8 @@
                     <div class="service-card">
                         <div class="service-icon"><i data-lucide="lightbulb"></i></div>
                         <h3>Inception & Feasibility</h3>
-                        <p>Budget estimates, cost plans, and cash flow forecasts during project inception and feasibility stages.</p>
+                        <p>Budget estimates, cost plans, and cash flow forecasts during project inception and
+                            feasibility stages.</p>
                         <ul class="service-bullets">
                             <li>Initial budget estimates</li>
                             <li>Cost planning and advice</li>
@@ -216,11 +232,14 @@
     </section>
 
     <!-- CTA Section -->
-    <section class="cta-section" style="background: var(--primary-green); color: var(--white); padding: var(--spacing-xl) 0;">
+    <section class="cta-section"
+        style="background: var(--primary-green); color: var(--white); padding: var(--spacing-xl) 0;">
         <div class="container text-center">
             <h2 style="color: var(--white); margin-bottom: var(--spacing-md);">Need Help With Your Project?</h2>
-            <p style="font-size: 1.1rem; margin-bottom: var(--spacing-lg); opacity: 0.95;">Talk to our experts about how we can assist you.</p>
-            <a href="../contact.html" class="btn" style="background: var(--white); color: var(--primary-green);">Get in Touch</a>
+            <p style="font-size: 1.1rem; margin-bottom: var(--spacing-lg); opacity: 0.95;">Talk to our experts about how
+                we can assist you.</p>
+            <a href="../contact.html" class="btn" style="background: var(--white); color: var(--primary-green);">Get in
+                Touch</a>
         </div>
     </section>
 
@@ -231,7 +250,8 @@
                 <div class="footer-col">
                     <h3>KJ & Associates</h3>
                     <p>Quantity Surveyors & Construction Project Managers</p>
-                    <p class="footer-location"><i data-lucide="map-pin" class="inline-icon"></i> KIJITONYAMA, MABATINI ROAD<br>DAR ES SALAAM, TANZANIA</p>
+                    <p class="footer-location"><i data-lucide="map-pin" class="inline-icon"></i> KIJITONYAMA, MABATINI
+                        ROAD<br>DAR ES SALAAM, TANZANIA</p>
                 </div>
                 <div class="footer-col">
                     <h4>Quick Links</h4>
@@ -263,15 +283,16 @@
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; <script>document.write(new Date().getFullYear())</script> KJ & Associates Consultancy Ltd. All rights reserved.</p>
+                <p>&copy;
+                    <script>document.write(new Date().getFullYear())</script> KJ & Associates Consultancy Ltd. All
+                    rights reserved.
+                </p>
             </div>
         </div>
     </footer>
 
-    <script src="../js/config.js"></script>
-    <script src="../js/main.js"></script>
     <!-- Initialize Lucide Icons -->
     <script>lucide.createIcons();</script>
 </body>
-</html>
 
+</html>
