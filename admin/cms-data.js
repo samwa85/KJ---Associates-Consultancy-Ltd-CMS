@@ -156,21 +156,60 @@ const CMS = {
         }
     },
 
-    // Load data from API or localStorage
-    async loadData() {
-        // Always try to preserve _imageData from localStorage (base64 images)
-        let localImageData = {};
+    // Clean up localStorage to remove base64 images that cause quota issues
+    cleanupLocalStorage() {
         try {
             const stored = localStorage.getItem('kj_cms_data');
-            if (stored) {
-                const localData = JSON.parse(stored);
-                if (localData._imageData) {
-                    localImageData = localData._imageData;
-                }
+            if (!stored) return false;
+            
+            const data = JSON.parse(stored);
+            let needsCleanup = false;
+            
+            // Check if projects have base64 data embedded
+            if (data.projects && Array.isArray(data.projects)) {
+                data.projects = data.projects.map(p => {
+                    const cleanProject = { ...p };
+                    if (cleanProject.image && cleanProject.image.startsWith('data:image')) {
+                        cleanProject.image = `/uploads/projects/${p.id || 'temp'}-cover.jpg`;
+                        needsCleanup = true;
+                    }
+                    if (Array.isArray(cleanProject.images)) {
+                        cleanProject.images = cleanProject.images.map((img, idx) => {
+                            if (typeof img === 'string' && img.startsWith('data:image')) {
+                                needsCleanup = true;
+                                return `/uploads/projects/${p.id || 'temp'}-${idx + 1}.jpg`;
+                            }
+                            return img;
+                        });
+                    }
+                    return cleanProject;
+                });
             }
+            
+            // Remove _imageData entirely from localStorage
+            if (data._imageData) {
+                delete data._imageData;
+                needsCleanup = true;
+            }
+            
+            if (needsCleanup) {
+                localStorage.setItem('kj_cms_data', JSON.stringify(data));
+                console.log('[CMS] Cleaned up localStorage - removed base64 images');
+                return true;
+            }
+            return false;
         } catch (e) {
-            console.warn('[CMS] Could not load _imageData from localStorage');
+            console.warn('[CMS] Cleanup failed, clearing localStorage:', e);
+            // If cleanup fails, clear localStorage entirely and rely on API
+            localStorage.removeItem('kj_cms_data');
+            return true;
         }
+    },
+
+    // Load data from API or localStorage
+    async loadData() {
+        // First, clean up any existing bloated localStorage data
+        this.cleanupLocalStorage();
 
         // Try to load from API first if CMSSync is available
         if (typeof CMSSync !== 'undefined' && CMSSync.apiAvailable) {
@@ -184,9 +223,9 @@ const CMS = {
                             this.data[key] = this.defaults[key];
                         }
                     });
-                    // Restore _imageData from localStorage (base64 images are stored locally)
-                    this.data._imageData = localImageData;
-                    console.log('[CMS] Data loaded from API, _imageData restored from localStorage');
+                    // Initialize empty _imageData for current session
+                    this.data._imageData = {};
+                    console.log('[CMS] Data loaded from API');
                     return;
                 }
             } catch (error) {
