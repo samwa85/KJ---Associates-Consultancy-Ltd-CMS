@@ -239,9 +239,42 @@ const CMS = {
 
     // Save data to localStorage
     saveData(silent = false) {
-        localStorage.setItem('kj_cms_data', JSON.stringify(this.data));
-        if (!silent) {
-            showNotification('Changes saved!', 'success');
+        // Create a copy without _imageData to avoid localStorage quota issues
+        // Base64 images are too large for localStorage (~5MB limit)
+        const dataToSave = { ...this.data };
+        delete dataToSave._imageData;
+        
+        // Also strip base64 data from projects to save space
+        if (dataToSave.projects) {
+            dataToSave.projects = dataToSave.projects.map(p => {
+                const cleanProject = { ...p };
+                // If image is base64, just store a placeholder path
+                if (cleanProject.image && cleanProject.image.startsWith('data:image')) {
+                    cleanProject.image = `/uploads/projects/${p.id || 'temp'}-cover.jpg`;
+                }
+                // Clean images array
+                if (Array.isArray(cleanProject.images)) {
+                    cleanProject.images = cleanProject.images.map((img, idx) => {
+                        if (typeof img === 'string' && img.startsWith('data:image')) {
+                            return `/uploads/projects/${p.id || 'temp'}-${idx + 1}.jpg`;
+                        }
+                        return img;
+                    });
+                }
+                return cleanProject;
+            });
+        }
+        
+        try {
+            localStorage.setItem('kj_cms_data', JSON.stringify(dataToSave));
+            if (!silent) {
+                showNotification('Changes saved!', 'success');
+            }
+        } catch (e) {
+            console.error('localStorage save failed:', e);
+            if (e.name === 'QuotaExceededError') {
+                showNotification('Local storage full. Data will be saved to database only.', 'warning');
+            }
         }
     },
 
@@ -1541,33 +1574,37 @@ function saveProject() {
 
     // Process multiple images
     let images = [];
+    let imagesForAPI = []; // Full base64 data for API
     let mainImage = '';
+    let mainImageForAPI = '';
 
     if (window.projectImages && window.projectImages.length > 0) {
-        // Store base64 data mapping for frontend use (local backup)
+        // Store base64 data mapping for frontend use (memory only, not localStorage)
         if (!CMS.data._imageData) {
             CMS.data._imageData = {};
         }
 
-        images = window.projectImages.map((img, index) => {
-            let finalPath = img.path;
+        window.projectImages.forEach((img, index) => {
             let imageData = img.data || '';
+            let finalPath = img.path || '';
 
             // If it's a base64 image, generate a proper path for reference
             if (imageData && imageData.startsWith('data:image')) {
                 const extension = imageData.split(';')[0].split('/')[1] || 'jpg';
                 finalPath = `/uploads/projects/${itemName}-${actualId}-${index + 1}.${extension}`;
+                // Store in memory for current session display
                 CMS.data._imageData[finalPath] = imageData;
             }
 
-            // Return the actual data (base64 or URL) for storage
-            // This ensures the image data is saved with the project, not just a path
-            return imageData || finalPath;
+            // For localStorage: store paths only (to avoid quota issues)
+            images.push(finalPath || imageData);
+            // For API: store actual base64 data (database has no size limit like localStorage)
+            imagesForAPI.push(imageData || finalPath);
         });
 
-        // First image is the main/cover image - store the ACTUAL DATA (base64 or URL)
-        // This ensures the image displays even without _imageData lookup
+        // First image is the main/cover image
         mainImage = images[0] || '';
+        mainImageForAPI = imagesForAPI[0] || '';
     }
 
     const project = {
@@ -1582,11 +1619,18 @@ function saveProject() {
         year: parseInt(document.getElementById('projectYear').value),
         duration: parseInt(document.getElementById('projectDuration').value),
         description: document.getElementById('projectDescription').value,
-        image: mainImage, // Keep for backward compatibility
-        images: images, // New array for multiple images
+        image: mainImage, // Path for localStorage
+        images: images, // Paths for localStorage
         currency: document.getElementById('projectCurrency').value || undefined,
         services: document.getElementById('projectServices').value.split(',').map(s => s.trim()).filter(s => s),
         featured: document.getElementById('projectFeatured')?.checked === true
+    };
+
+    // Create a version with full image data for API sync
+    const projectForAPI = {
+        ...project,
+        image: mainImageForAPI,
+        images: imagesForAPI
     };
 
     console.log('Saving project with featured:', project.featured, '- Title:', project.title);
@@ -1603,9 +1647,9 @@ function saveProject() {
     // Save to localStorage
     CMS.saveData();
 
-    // Sync to API/database
+    // Sync to API/database (use projectForAPI which has full base64 image data)
     if (typeof CMSSync !== 'undefined' && CMSSync.apiAvailable) {
-        CMSSync.saveProject(project, isNew).then(result => {
+        CMSSync.saveProject(projectForAPI, isNew).then(result => {
             if (result.success) {
                 console.log('[CMS] Project synced to database');
                 showNotification('Project saved successfully', 'success');
