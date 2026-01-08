@@ -10,6 +10,114 @@ if (typeof window.cmsData === 'undefined') {
     window.cmsData = null;
 }
 
+const CMS_STORAGE_KEY = 'kj_cms_data';
+const MAX_CACHE_BYTES = 4_500_000; // ~4.5MB safety limit
+
+function deepClone(obj) {
+    if (!obj) return null;
+    try {
+        return JSON.parse(JSON.stringify(obj));
+    } catch (err) {
+        console.warn('[Main] Failed to clone CMS data for cache:', err);
+        return null;
+    }
+}
+
+function sanitizeImageValue(value) {
+    if (!value) return value;
+
+    if (typeof value === 'string') {
+        return value.startsWith('data:image') ? null : value;
+    }
+
+    if (typeof value === 'object') {
+        if (typeof value.path === 'string') return value.path;
+        if (typeof value.url === 'string') return value.url;
+        if (typeof value.src === 'string') return value.src;
+        if (typeof value.data === 'string' && value.data.startsWith('data:image')) {
+            return null;
+        }
+    }
+
+    return value;
+}
+
+function sanitizeCollectionImages(collection, fields) {
+    if (!Array.isArray(collection)) return collection;
+    return collection.map(item => {
+        const cleanItem = { ...item };
+        fields.forEach(field => {
+            if (field === 'images' && Array.isArray(cleanItem.images)) {
+                cleanItem.images = cleanItem.images
+                    .map(img => sanitizeImageValue(img))
+                    .filter(Boolean);
+            } else if (Object.prototype.hasOwnProperty.call(cleanItem, field)) {
+                cleanItem[field] = sanitizeImageValue(cleanItem[field]);
+            }
+        });
+        return cleanItem;
+    });
+}
+
+function sanitizeCMSDataForCache(data) {
+    const clone = deepClone(data);
+    if (!clone) return null;
+
+    delete clone._imageData;
+
+    clone.projects = sanitizeCollectionImages(clone.projects, ['image', 'images']);
+    clone.team = sanitizeCollectionImages(clone.team, ['photo']);
+    clone.board = sanitizeCollectionImages(clone.board, ['photo']);
+    clone.testimonials = sanitizeCollectionImages(clone.testimonials, ['photo']);
+    clone.clients = sanitizeCollectionImages(clone.clients, ['logo']);
+    clone.slides = sanitizeCollectionImages(clone.slides, ['image']);
+    clone.blog = sanitizeCollectionImages(clone.blog, ['image', 'authorPhoto']);
+    clone.certifications = sanitizeCollectionImages(clone.certifications, ['image']);
+
+    if (clone.branding) {
+        clone.branding = { ...clone.branding };
+        clone.branding.logoImageUrl = sanitizeImageValue(clone.branding.logoImageUrl);
+        clone.branding.logoImageUrlDark = sanitizeImageValue(clone.branding.logoImageUrlDark);
+        clone.branding.faviconUrl = sanitizeImageValue(clone.branding.faviconUrl);
+    }
+
+    if (clone.seo) {
+        clone.seo = { ...clone.seo };
+        clone.seo.ogImage = sanitizeImageValue(clone.seo.ogImage);
+    }
+
+    return clone;
+}
+
+function safeCacheCMSData(data) {
+    if (!data) return;
+
+    try {
+        const sanitized = sanitizeCMSDataForCache(data);
+        if (!sanitized) return;
+
+        const serialized = JSON.stringify(sanitized);
+        if (serialized.length > MAX_CACHE_BYTES) {
+            console.warn('[Main] Skipping CMS cache write - payload too large');
+            localStorage.removeItem(CMS_STORAGE_KEY);
+            return;
+        }
+
+        localStorage.setItem(CMS_STORAGE_KEY, serialized);
+    } catch (error) {
+        if (error?.name === 'QuotaExceededError') {
+            console.warn('[Main] localStorage quota exceeded while caching CMS data. Cache disabled for this session.');
+        } else {
+            console.warn('[Main] Failed to cache CMS data:', error);
+        }
+        try {
+            localStorage.removeItem(CMS_STORAGE_KEY);
+        } catch (e) {
+            // Ignore secondary errors
+        }
+    }
+}
+
 document.addEventListener('DOMContentLoaded', async function () {
 
     // ==================== CMS DATA LOADER ====================
@@ -87,7 +195,7 @@ document.addEventListener('DOMContentLoaded', async function () {
 
             // Cache in localStorage
             if (cmsData.projects.length > 0 || cmsData.clients.length > 0) {
-                localStorage.setItem('kj_cms_data', JSON.stringify(cmsData));
+                safeCacheCMSData(cmsData);
                 console.log('[Main] Data loaded from Supabase and cached');
             }
 
@@ -150,7 +258,7 @@ document.addEventListener('DOMContentLoaded', async function () {
                 apiData.slides.length > 0 ||
                 apiData.testimonials.length > 0
             ) {
-                localStorage.setItem('kj_cms_data', JSON.stringify(apiData));
+                safeCacheCMSData(apiData);
                 console.log('[Main] Data loaded from API and cached');
             }
 
@@ -162,7 +270,7 @@ document.addEventListener('DOMContentLoaded', async function () {
     }
 
     function loadCMSDataFromLocalStorage() {
-        const savedData = localStorage.getItem('kj_cms_data');
+        const savedData = localStorage.getItem(CMS_STORAGE_KEY);
         if (savedData) {
             try {
                 return JSON.parse(savedData);
