@@ -5,8 +5,12 @@
 -- that are causing 400 errors in the Admin Panel
 -- =====================================================
 
+-- Drop existing tables if they exist (clean slate)
+DROP TABLE IF EXISTS services CASCADE;
+DROP TABLE IF EXISTS certifications CASCADE;
+
 -- Create services table
-CREATE TABLE IF NOT EXISTS services (
+CREATE TABLE services (
     id SERIAL PRIMARY KEY,
     title TEXT NOT NULL,
     description TEXT,
@@ -19,7 +23,7 @@ CREATE TABLE IF NOT EXISTS services (
 );
 
 -- Create certifications table
-CREATE TABLE IF NOT EXISTS certifications (
+CREATE TABLE certifications (
     id SERIAL PRIMARY KEY,
     title TEXT NOT NULL,
     issuing_organization TEXT,
@@ -38,12 +42,6 @@ CREATE TABLE IF NOT EXISTS certifications (
 -- Enable RLS on both tables
 ALTER TABLE services ENABLE ROW LEVEL SECURITY;
 ALTER TABLE certifications ENABLE ROW LEVEL SECURITY;
-
--- Drop existing policies if they exist (to avoid errors on re-run)
-DROP POLICY IF EXISTS "Allow public read access to services" ON services;
-DROP POLICY IF EXISTS "Allow authenticated users to manage services" ON services;
-DROP POLICY IF EXISTS "Allow public read access to certifications" ON certifications;
-DROP POLICY IF EXISTS "Allow authenticated users to manage certifications" ON certifications;
 
 -- Create RLS policies for services
 CREATE POLICY "Allow public read access to services"
@@ -84,7 +82,7 @@ FROM certifications;
 DO $$
 BEGIN
     RAISE NOTICE '✅ Tables created successfully!';
-    RAISE NOTICE 'Created: services table';
-    RAISE NOTICE 'Created: certifications table';
+    RAISE NOTICE 'Created: services table with active column';
+    RAISE NOTICE 'Created: certifications table with active column';
     RAISE NOTICE 'RLS policies enabled for both tables';
 END $$;
